@@ -1207,14 +1207,22 @@ def _fit_global_p(
     try:
         with _w.catch_warnings():
             _w.simplefilter("ignore")  # statsmodels convergence chatter
-            # Honour weights by routing through GLM(Binomial), which
-            # accepts ``freq_weights``. sm.Logit doesn't expose that
-            # kwarg, so for the weighted case we use the equivalent
-            # GLM-with-logit-link formulation (same MLE, same f_test API).
+            # Honour weights by routing through GLM(Binomial). We use
+            # ``var_weights`` rather than ``freq_weights``: ``freq_weights``
+            # treats the weight as an integer *count of repeats* and so
+            # scales ``df_resid`` by ``Σw`` — which dramatically inflates
+            # the effective sample size for non-integer sampling weights
+            # (a survey weight calibrated to a 200k population would push
+            # df_resid to 200k instead of n). ``var_weights`` keeps
+            # ``df_resid = n − k``, which is the appropriate convention
+            # for sampling / IPW weights where the weight does not
+            # represent a count. For full design-based inference (with
+            # strata or clusters) use ``ps.SurveyDesign`` end-to-end;
+            # the joint p test here is an SRS-weighted Wald-F.
             if weights_col is not None:
                 w_arr = sub[weights_col].to_numpy(dtype=float)
                 fam = sm.families.Binomial()
-                res = sm.GLM(y, X, family=fam, freq_weights=w_arr).fit(disp=False)
+                res = sm.GLM(y, X, family=fam, var_weights=w_arr).fit(disp=False)
             else:
                 res = sm.Logit(y, X).fit(disp=False, method="newton",
                                           maxiter=100)

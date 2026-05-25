@@ -86,6 +86,29 @@ def tbl_survival(
     for col in (time, event):
         if col not in data.columns:
             raise KeyError(f"column {col!r} not in data")
+
+    # Validate time + event content. ``lifelines`` will silently treat
+    # negative survival times as zero and any nonzero event value as a
+    # death, so input mistakes (e.g. a "censor at last follow-up" column
+    # encoded as 0/1/9, or a follow-up time accidentally negated) can
+    # produce a misleading survival curve without complaint. Fail loud
+    # at the boundary instead.
+    time_num = pd.to_numeric(data[time], errors="coerce")
+    if (time_num < 0).any():
+        n_bad = int((time_num < 0).sum())
+        raise ValueError(
+            f"column {time!r} contains {n_bad} negative value(s); "
+            "survival times must be non-negative."
+        )
+    event_num = pd.to_numeric(data[event], errors="coerce").dropna()
+    bad_events = ~event_num.isin([0, 1])
+    if bool(bad_events.any()):
+        bad_vals = sorted(event_num[bad_events].unique().tolist())
+        raise ValueError(
+            f"column {event!r} must contain only 0/1 (or boolean) "
+            f"values; got unexpected values: {bad_vals!r}."
+        )
+
     if by is not None and by not in data.columns:
         raise KeyError(f"by column {by!r} not in data")
 

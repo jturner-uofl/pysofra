@@ -45,14 +45,48 @@ from .extract import ModelSummary, extract
 def pool(models: list[Any], *, conf_level: float = 0.95) -> ModelSummary:
     """Pool a list of fitted models via Rubin's rules.
 
-    Returns a :class:`ModelSummary` whose estimates / CIs / p-values
-    reflect the across-imputation combination. Pass the result directly
-    into :func:`pysofra.tbl_regression`.
+    Parameters
+    ----------
+    models
+        A list of two or more fitted models, each fit on a separate
+        imputed dataset. Every model must be one of the families
+        recognised by :func:`pysofra.models.extract.extract` —
+        statsmodels (Logit, OLS, GLM, Poisson), lifelines
+        (CoxPHFitter, AFT family), or scikit-learn linear models.
+        All models in the list must share the same coefficient names.
+    conf_level
+        Confidence level for the pooled CIs, in the open interval
+        ``(0, 1)``. Default 0.95.
 
-    Each input must be a fitted model recognised by
-    :func:`pysofra.models.extract.extract` — statsmodels, lifelines,
-    sklearn (sklearn has no SEs so the pool degenerates to a simple
-    mean-of-coefficients).
+    Returns
+    -------
+    ModelSummary
+        A summary whose ``estimates``, ``ci_lo``, ``ci_hi`` and
+        ``pvalues`` reflect Rubin's-rule pooling across the
+        imputed-dataset fits. Pass this directly into
+        :func:`pysofra.tbl_regression` to render a pooled regression
+        table.
+
+    Notes
+    -----
+    The pooled point estimate is the across-imputation mean of the
+    per-imputation estimates. The total variance ``T = Ū + (1 + 1/m)·B``
+    combines the average within-imputation variance ``Ū`` and the
+    between-imputation variance ``B`` (with the small-sample
+    correction ``1 + 1/m``). Confidence intervals use a *t*
+    distribution with Rubin's original degrees-of-freedom
+    ``df = (m − 1)·(1 + Ū / ((1 + 1/m)·B))²``. The newer
+    Barnard–Rubin (1999) df refinement is not yet implemented; for
+    very small per-imputation df it slightly narrows the CI relative
+    to ``mice::pool``.
+
+    References
+    ----------
+    Rubin, D. B. (1987). *Multiple Imputation for Nonresponse in
+      Surveys.* Wiley.
+    Barnard, J., & Rubin, D. B. (1999). Small-sample degrees of
+      freedom with multiple imputation. *Biometrika*, 86(4),
+      948–955.
     """
     if not (0.0 < conf_level < 1.0):
         raise ValueError(

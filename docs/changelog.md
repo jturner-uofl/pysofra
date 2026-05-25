@@ -5,6 +5,25 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a7] — 2026-05-26
+
+### Fixed
+- `tbl_survival` validates `time` (negative → `ValueError`) and
+  `event` (non-`0/1` → `ValueError`); previously passed silently to
+  lifelines.
+- `add_global_p()` on weighted `tbl_one` uses `var_weights=` instead
+  of `freq_weights=` (avoids inflated df_resid on non-integer
+  sampling weights).
+
+### Changed
+- `rao_scott_chisq` docstring honestly states a 10–15% typical
+  disagreement with R `survey::svychisq` (was: optimistic "~5%").
+- Added published-reference citations to every public statistical
+  function (Welch, Wilson, Rao-Scott, Kish, BH, BY, Holm, Hommel,
+  Šidák, Binder, etc.).
+- `pool` and `cohen_d` docstrings now have NumPy-style
+  Parameters/Returns/References sections.
+
 ## [0.1.0a6] — 2026-05-26
 
 ### Fixed

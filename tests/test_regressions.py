@@ -1857,7 +1857,13 @@ class TestWeightedModifiers:
         assert abs(diff_unw[1] - diff_wt[1]) > 1e-6 or \
                abs(diff_unw[2] - diff_wt[2]) > 1e-6
 
-    def test_add_global_p_weighted_matches_glm_freq_weights(self):
+    def test_add_global_p_weighted_matches_glm_var_weights(self):
+        # Reference uses ``var_weights=`` rather than ``freq_weights=``:
+        # for non-integer sampling weights, ``freq_weights`` artificially
+        # inflates df_resid by ``Σw`` (treating the weight as an integer
+        # count of repeats), making the F-test anti-conservative. The
+        # ``var_weights`` convention keeps df_resid = n - k, which is
+        # the appropriate SRS-weighted Wald-F for sampling/IPW weights.
         sm = pytest.importorskip("statsmodels.api")
         df = self._df()
         t = (
@@ -1865,12 +1871,12 @@ class TestWeightedModifiers:
                        weights="w", missing="never", types={"smoker": "dichotomous"})
             .add_global_p()
         )
-        # Manual reference: fit GLM(Binomial) with freq_weights and
+        # Manual reference: fit GLM(Binomial) with var_weights and
         # f_test on the single age coefficient.
         y = (df["arm"] == "B").astype(int).to_numpy()
         X = sm.add_constant(df[["age"]])
         ref = sm.GLM(y, X, family=sm.families.Binomial(),
-                     freq_weights=df["w"].to_numpy(dtype=float)).fit(disp=False)
+                     var_weights=df["w"].to_numpy(dtype=float)).fit(disp=False)
         expected_p = float(ref.f_test("age = 0").pvalue)
         # Get the table's global p for "age"
         row = next(r for r in t.rows if r.cells[0].text == "age")
@@ -1883,3 +1889,40 @@ class TestWeightedModifiers:
         del gp_cell
         assert last_p is not None
         assert abs(float(last_p) - expected_p) < 1e-6, (last_p, expected_p)
+
+
+# ----------------------------------------------------------------------
+# tbl_survival validates time + event content. Previously negative
+# follow-up times and non-0/1 event codes were silently passed
+# through to lifelines (which treats nonzero as a death), producing
+# misleading survival curves without complaint.
+# ----------------------------------------------------------------------
+class TestSurvivalInputValidation:
+    def test_negative_time_raises(self):
+        pytest.importorskip("lifelines")
+        df = pd.DataFrame({
+            "t": [1.0, -2.0, 3.0, 4.0],
+            "e": [0, 1, 1, 0],
+        })
+        with pytest.raises(ValueError, match=r"negative value"):
+            ps.tbl_survival(df, time="t", event="e")
+
+    def test_non_binary_event_raises(self):
+        pytest.importorskip("lifelines")
+        df = pd.DataFrame({
+            "t": [1.0, 2.0, 3.0, 4.0],
+            "e": [0, 1, 9, 1],   # 9 is not 0/1
+        })
+        with pytest.raises(ValueError, match=r"must contain only 0/1"):
+            ps.tbl_survival(df, time="t", event="e")
+
+    def test_valid_inputs_pass(self):
+        pytest.importorskip("lifelines")
+        rng = np.random.default_rng(0)
+        df = pd.DataFrame({
+            "t": rng.exponential(10, 50),
+            "e": rng.integers(0, 2, 50),
+        })
+        # Should not raise.
+        t = ps.tbl_survival(df, time="t", event="e")
+        assert len(t.rows) >= 1

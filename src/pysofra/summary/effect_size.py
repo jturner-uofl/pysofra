@@ -24,8 +24,29 @@ import pandas as pd
 def cohen_d(a: pd.Series | np.ndarray, b: pd.Series | np.ndarray) -> float | None:
     """Cohen's d using the pooled standard deviation.
 
-    ``d = (μ₁ − μ₂) / s_pool``, where the pooled SD weights the two
-    samples by their degrees of freedom.
+    Parameters
+    ----------
+    a, b
+        Two independent samples (``pandas.Series`` or 1-D ``numpy``
+        array). Non-numeric entries are coerced; ``NaN`` rows are
+        dropped per array. Each sample must contain at least two
+        finite values.
+
+    Returns
+    -------
+    float or None
+        ``d = (μ_a − μ_b) / s_pool``, where the pooled SD weights the
+        two samples by their degrees of freedom:
+        ``s_pool = sqrt(((n_a − 1)·s_a² + (n_b − 1)·s_b²) / (n_a + n_b − 2))``.
+        Returns ``None`` if either sample has fewer than 2 finite
+        observations. Returns ``0.0`` if the pooled SD is zero and
+        the two means are identical; ``inf`` if the pooled SD is zero
+        but the means differ (degenerate constant-sample case).
+
+    References
+    ----------
+    Cohen, J. (1988). *Statistical Power Analysis for the Behavioral
+      Sciences* (2nd ed.). Lawrence Erlbaum.
     """
     a_arr = pd.to_numeric(pd.Series(a), errors="coerce").dropna().to_numpy(dtype=float)
     b_arr = pd.to_numeric(pd.Series(b), errors="coerce").dropna().to_numpy(dtype=float)

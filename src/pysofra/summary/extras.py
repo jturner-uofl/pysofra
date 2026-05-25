@@ -731,7 +731,13 @@ def add_ci(
 
 
 def _wilson_ci(x: int, n: int, *, z: float) -> tuple[float, float]:
-    """Wilson score CI for a proportion."""
+    """Wilson score CI for a proportion.
+
+    References
+    ----------
+    Wilson, E. B. (1927). Probable inference, the law of succession,
+      and statistical inference. *J. Am. Stat. Assoc.*, 22(158), 209–212.
+    """
     if n == 0:
         return float("nan"), float("nan")
     p = x / n

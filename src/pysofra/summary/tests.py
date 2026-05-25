@@ -17,6 +17,29 @@ Two layers:
 
 Returns a small :class:`TestResult` so callers can render both the p-value
 and the test name for the footnote.
+
+References
+----------
+Welch, B. L. (1947). The generalization of "Student's" problem when
+  several different population variances are involved. *Biometrika*,
+  34(1/2), 28–35. (Welch's t with Satterthwaite df.)
+Satterthwaite, F. E. (1946). An approximate distribution of estimates
+  of variance components. *Biometrics Bulletin*, 2(6), 110–114.
+Mann, H. B., & Whitney, D. R. (1947). On a test of whether one of
+  two random variables is stochastically larger than the other.
+  *Ann. Math. Statist.*, 18(1), 50–60. (Wilcoxon rank-sum.)
+Kruskal, W. H., & Wallis, W. A. (1952). Use of ranks in one-criterion
+  variance analysis. *J. Am. Stat. Assoc.*, 47(260), 583–621.
+Fisher, R. A. (1922). On the interpretation of χ² from contingency
+  tables, and the calculation of P. *J. Royal Statist. Soc.*,
+  85(1), 87–94.
+Pearson, K. (1900). On the criterion that a given system of
+  deviations from the probable… *Phil. Mag.*, 50(302), 157–175.
+  (Pearson chi-square.)
+Rao, J. N. K., & Scott, A. J. (1981). The analysis of categorical
+  data from complex sample surveys. *J. Am. Stat. Assoc.*, 76,
+  221–230. (Rao–Scott chi-square; see also Rao & Scott 1984.)
+Kish, L. (1965). *Survey Sampling.* Wiley. (Kish design effect.)
 """
 
 from __future__ import annotations
@@ -167,6 +190,15 @@ def svyttest(
     full design and gave inflated t-statistics whenever clusters
     straddled groups; the current formulation matches R to first
     order.
+
+    References
+    ----------
+    Lumley, T. (2010). *Complex Surveys: A Guide to Analysis Using R.*
+      Wiley. Chapter on two-sample tests for survey data.
+    Binder, D. A. (1983). On the variances of asymptotically normal
+      estimators from complex surveys. *Int. Statist. Rev.*, 51(3),
+      279–292. (Taylor linearisation of regression coefficients
+      under complex sampling.)
     """
     df_ = pd.DataFrame({
         "v": pd.to_numeric(values, errors="coerce"),
@@ -319,13 +351,28 @@ def rao_scott_chisq(
     Notes
     -----
     This is a *first-order* Rao–Scott correction using the Kish design
-    effect (a single scalar derived from the weights). For exact parity
-    with R ``survey::svychisq(..., statistic="F")`` — which uses the
-    *generalised* design effect derived from the eigenvalues of the
-    full design covariance matrix — call out to the R ``survey``
-    package directly. Pysofra's first-order approximation typically
-    agrees with R to within ~5% on simple weighted designs and is
-    adequate for descriptive Table 1 use.
+    effect (a single scalar derived from the weights). The fully-correct
+    Rao–Scott statistic uses the *generalised* design effect derived from
+    the eigenvalues of the full design covariance matrix
+    (Rao & Scott, 1981, 1984); R ``survey::svychisq`` implements that
+    version. On non-trivial weighted designs (stratified, clustered, or
+    even simple weighted with non-uniform weights), the Kish
+    approximation here typically disagrees with R ``svychisq`` by
+    **10–15%** in the statistic and a similar amount in the p-value.
+    The approximation is adequate for descriptive Table 1 contexts
+    where the χ² is a guide rather than a publication-grade test
+    statistic; for design-grade chi-square inference, call
+    ``survey::svychisq`` in R directly.
+
+    References
+    ----------
+    Rao, J. N. K., & Scott, A. J. (1981). The analysis of categorical
+      data from complex sample surveys. *J. Am. Stat. Assoc.*,
+      76(374), 221–230.
+    Rao, J. N. K., & Scott, A. J. (1984). On chi-squared tests for
+      multiway contingency tables with cell proportions estimated
+      from survey data. *Ann. Stat.*, 12(1), 46–60.
+    Kish, L. (1965). *Survey Sampling.* Wiley.
     """
     df = pd.DataFrame({
         "v": values,

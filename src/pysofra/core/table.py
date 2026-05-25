@@ -262,6 +262,23 @@ class SofraTable:
         ``fdr_bh`` (Benjamini–Hochberg, default), ``fdr_by``,
         ``bonferroni``, ``holm``, ``hommel``, ``sidak``. Implicitly
         enables p-values when not already on.
+
+        References
+        ----------
+        Benjamini, Y., & Hochberg, Y. (1995). Controlling the false
+          discovery rate: a practical and powerful approach to multiple
+          testing. *J. R. Stat. Soc. B*, 57(1), 289–300. (``fdr_bh``)
+        Benjamini, Y., & Yekutieli, D. (2001). The control of the
+          false discovery rate in multiple testing under dependency.
+          *Ann. Stat.*, 29(4), 1165–1188. (``fdr_by``)
+        Holm, S. (1979). A simple sequentially rejective multiple test
+          procedure. *Scand. J. Stat.*, 6(2), 65–70. (``holm``)
+        Hommel, G. (1988). A stagewise rejective multiple test
+          procedure based on a modified Bonferroni test. *Biometrika*,
+          75(2), 383–386. (``hommel``)
+        Šidák, Z. (1967). Rectangular confidence regions for the
+          means of multivariate normal distributions. *J. Am. Stat.
+          Assoc.*, 62(318), 626–633. (``sidak``)
         """
         return self._with_option(p_value=True, q_value=True, q_method=method)
 

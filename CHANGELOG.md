@@ -5,6 +5,42 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a7] — 2026-05-26
+
+### Fixed
+- **`tbl_survival` validates `time` and `event` content**: negative
+  survival times raise `ValueError`; non-`0/1` event codes raise
+  `ValueError`. Previously these were passed silently to lifelines,
+  which would either clamp negative times to zero or treat any
+  nonzero event value as a death — producing a misleading curve
+  without complaint.
+- **`add_global_p()` on weighted `tbl_one`** now uses
+  ``statsmodels.GLM(..., var_weights=w)`` instead of
+  ``freq_weights=w``. For non-integer sampling weights ``freq_weights``
+  scales ``df_resid`` by ``Σw`` (treating the weight as an integer
+  count of repeats), which inflates the effective sample size and
+  produces anti-conservative p-values. ``var_weights`` keeps
+  ``df_resid = n − k`` — the appropriate SRS-weighted Wald-F
+  convention. For full design-based inference (with strata or
+  clusters) use ``ps.SurveyDesign`` end-to-end.
+
+### Changed
+- **`rao_scott_chisq` docstring** now honestly states a 10–15%
+  typical disagreement with R ``survey::svychisq`` on non-trivial
+  weighted designs (was: an overoptimistic "~5%"). The first-order
+  Kish-DEFF approximation is unchanged; for design-grade chi-square
+  inference call R directly.
+- **Added published-reference citations** to public statistical
+  functions: Welch / Satterthwaite, Wilcoxon (Mann-Whitney 1947),
+  Kruskal-Wallis (1952), Fisher (1922), Pearson chi-square (1900),
+  Wilson score (1927), Rao-Scott (1981/1984), Kish (1965),
+  Benjamini-Hochberg (1995), Benjamini-Yekutieli (2001), Holm
+  (1979), Hommel (1988), Šidák (1967), Binder (1983) Taylor
+  linearisation.
+- **`pool` and `cohen_d` docstrings** now have NumPy-style
+  ``Parameters`` / ``Returns`` / ``References`` sections matching
+  the other public functions.
+
 ## [0.1.0a6] — 2026-05-26
 
 ### Fixed
