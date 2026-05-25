@@ -219,11 +219,14 @@ def categorical_smd(
         df = df[df["w"] > 0]
         if df.empty:
             return None
-        # Weighted contingency: Σw per (level, group).
+        # Weighted contingency: Σw per (level, group). ``unstack`` accepts
+        # only ``int | str | dict | None`` for ``fill_value`` under strict
+        # typing; we pass an int 0 and cast afterwards so any zero-Σw
+        # cells stay numeric.
         ctab = (
             df.groupby(["v", "g"], observed=True)["w"]
             .sum()
-            .unstack(fill_value=0.0)
+            .unstack(fill_value=0)
             .astype(float)
         )
     if levels is not None:

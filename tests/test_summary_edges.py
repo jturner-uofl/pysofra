@@ -1,7 +1,7 @@
 """Descriptive-summary edge-case tests.
 
-Hits the new code paths added by the blockers/highs pass so the suite
-keeps 100% line coverage.
+Exercises infrequently-traversed code paths in the summary builders so
+the regression suite keeps near-100% line coverage.
 """
 
 from __future__ import annotations

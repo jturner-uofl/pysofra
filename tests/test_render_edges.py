@@ -86,11 +86,14 @@ class TestTblOneThreeGroupSvy:
             "strata": rng.choice(["s1", "s2"], size=n),
         })
         d = ps.SurveyDesign(weights="w", strata="strata")
-        t = (
-            ps.tbl_one(df, by="arm", variables=["x"], design=d,
-                       missing="never")
-            .add_p()
-        )
+        # >2 groups under weights emits a UserWarning (design-adjusted
+        # F-test not implemented; falls back to unweighted ANOVA).
+        with pytest.warns(UserWarning, match=r"design-adjusted F-test"):
+            t = (
+                ps.tbl_one(df, by="arm", variables=["x"], design=d,
+                           missing="never")
+                .add_p()
+            )
         # P-value column should be present and finite for the continuous row.
         # (svyttest is bypassed for >2 groups → falls back to ANOVA.)
         p_cells = [c for r in t.rows for c in r.cells if c.kind == "p_value"]

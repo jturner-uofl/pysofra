@@ -3,7 +3,7 @@ message: >
   If you use PySofra in academic work, please cite this software via
   the metadata below.
 title: "PySofra: Publication-Ready Statistical Tables in Python"
-version: 0.1.0a5
+version: 0.1.0a6
 date-released: 2026-05-25
 authors:
   - family-names: Turner

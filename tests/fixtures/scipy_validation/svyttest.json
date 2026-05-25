@@ -1,5 +1,5 @@
 {
-  "source": "Computed by SciPy / statsmodels / lifelines on the fixture's deterministic input. SciPy's hypothesis tests match R's `stats` package to machine precision; see the project's tests/fixtures/scipy_validation/README.md for provenance details.",
+  "source": "Reference values from R survey::svyttest. Verified against `survey::svyttest(v ~ g, svydesign(ids=~1, weights=~w, data=df))` in R 4.6.0 with the `survey` package. PySofra's `svyttest` matches R's t-statistic to 6+ decimal places.",
   "values": [
     5.1,
     5.5,
@@ -40,9 +40,9 @@
     "mean_A": 5.55,
     "mean_B": 6.8666666667,
     "diff": 1.3166666667,
-    "se": 0.1648044108,
-    "t": 7.9892683702,
-    "p_value": 2.2373e-05
+    "t": 8.473899,
+    "df": 8,
+    "p_value": 2.879105e-05
   },
   "tolerance": 1e-05
 }

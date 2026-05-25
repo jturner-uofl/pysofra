@@ -5,6 +5,24 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a6] — 2026-05-26
+
+### Fixed
+- **`svyttest`** now uses full-design Taylor linearisation; matches R
+  `survey::svyttest` to 6+ decimal places. Previous per-group variance
+  formulation could be anti-conservative under cluster-straddling-group
+  designs.
+- **`svyttest` df** corrected to `n_PSU − n_strata − 1`.
+- **`rao_scott_chisq`** normalises weights to `Σw = n` before
+  computing chi-square (matches R `survey::svychisq`).
+- **`tbl_one(weights=...)`** raises on negative / all-zero weights
+  instead of silently dropping.
+- **`tbl_one(...).add_p()`** warns when >2-group continuous under
+  weighted Table 1 falls back to unweighted ANOVA.
+- **`tbl_one(...).add_global_p()`** warns when a prior modifier's
+  column (e.g. `add_difference`) is about to be dropped by the
+  rebuild.
+
 ## [0.1.0a5] — 2026-05-25
 
 ### Fixed

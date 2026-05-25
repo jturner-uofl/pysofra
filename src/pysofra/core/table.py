@@ -355,8 +355,34 @@ class SofraTable:
 
             return add_global_p(self)
         # tbl_one / tbl_summary path: route through the rebuild spec.
+        # The rebuild reconstructs the table from spec.options only;
+        # columns added by post-build modifiers (``add_difference``,
+        # ``add_ci``, ``add_significance_stars``, ...) live in
+        # ``self.rows``/``self.headers`` and are NOT preserved by the
+        # rebuild. Detect a *known* such column by header text and warn
+        # the user so the silent column-drop doesn't mislead them.
+        # The correct chaining order is to call ``add_global_p()``
+        # *before* any column-adding modifier.
         spec = self._spec
         if spec is not None and spec.builder in ("tbl_one", "tbl_summary"):
+            post_build_headers = {"Diff", "[", "[ "}
+            header_texts = (
+                [c.text for c in self.headers[0].cells] if self.headers else []
+            )
+            has_diff_col = any(h.startswith("Diff (") for h in header_texts)
+            has_sig_col = any(h.lower() == "signif." for h in header_texts)
+            del post_build_headers
+            if has_diff_col or has_sig_col:
+                import warnings as _w
+                _w.warn(
+                    "add_global_p() reruns the table builder; any "
+                    "column added by a prior modifier (e.g. add_difference, "
+                    "add_significance_stars) will be dropped. Call "
+                    "add_global_p() BEFORE those modifiers to preserve "
+                    "their columns.",
+                    UserWarning,
+                    stacklevel=2,
+                )
             return self._with_option(
                 global_p=True,
                 global_p_adjust_for=tuple(adjust_for or ()),

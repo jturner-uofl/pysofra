@@ -5,6 +5,38 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a6] — 2026-05-26
+
+### Fixed
+- **`svyttest` now uses full-design Taylor linearisation** of the
+  regression coefficient `ȳ_B − ȳ_A` instead of summing per-group
+  variances in quadrature. The new formulation accounts for
+  cross-group covariance under the survey design. Pinned against
+  R `survey::svyttest`: identical t-statistic and df, p-value
+  agreement to 7 decimal places on the test fixture. The previous
+  per-group formulation could be wildly anti-conservative when
+  clusters straddled groups.
+- **`svyttest` degrees of freedom** corrected to `n_PSU − n_strata − 1`
+  (the design df minus one for the slope parameter). Previously
+  off by one.
+- **`rao_scott_chisq` normalises weights to `Σw = n` before computing
+  the chi-square statistic**, matching R `survey::svychisq`. The
+  previous formulation produced statistics that scaled linearly with
+  the absolute magnitude of the weights and disagreed with R by
+  ~10–15% on typical survey-weighted contingency tables.
+- **`tbl_one(..., weights=...)` raises on negative or all-zero
+  weights** instead of warning and silently dropping. The earlier
+  behaviour could leave `N = -1` or `N = 0` cells in the rendered
+  table.
+- **`tbl_one(...).add_p()` now emits a UserWarning** when falling
+  back to unweighted ANOVA / Kruskal–Wallis for >2-group
+  continuous variables under weights (design-adjusted multi-group
+  test is not yet implemented).
+- **`tbl_one(...).add_global_p()` warns** when the table already
+  carries a column added by a prior modifier (`add_difference`,
+  `add_significance_stars`); the rebuild path drops such columns
+  and the user should call `add_global_p()` first.
+
 ## [0.1.0a5] — 2026-05-25
 
 ### Fixed

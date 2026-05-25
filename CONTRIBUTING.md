@@ -18,7 +18,8 @@ we can scope it together. Helpful issues include:
 * **Bug reports** — please attach a minimal reproducible example, the
   output you observed, the output you expected, and the versions of
   PySofra, Python, and the optional extras you're using
-  (`pysofra --version`, `python -V`, `pip list | grep -E
+  (`python -c "import pysofra; print(pysofra.__version__)"`,
+  `python -V`, `pip list | grep -E
   'lifelines|matplotlib|polars|statsmodels'`).
 * **Feature requests** — describe the use case (preferably with a
   reference to the equivalent R workflow) and an outline of the

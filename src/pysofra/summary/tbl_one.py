@@ -145,17 +145,25 @@ def tbl_one(
     if weights is not None and weights not in data.columns:
         raise KeyError(f"weights column {weights!r} not in data")
     if weights is not None:
-        # Warn — but don't refuse — on negative weights; the standard
-        # behaviour is to drop them (matches survey::svydesign).
-        import warnings
+        # Reject negative or all-zero weights. Earlier alphas merely warned
+        # and "dropped" the offending rows, but that left the displayed
+        # output in inconsistent states (e.g. ``N = -1`` in a group column
+        # when ``int(Σw)`` was computed naively, or ``N = 0`` when every
+        # weight was zero). For a publication-ready library it's safer to
+        # raise loudly: the user must fix their weights column.
         w_col = pd.to_numeric(data[weights], errors="coerce")
         n_neg = int((w_col < 0).sum())
         if n_neg > 0:
-            warnings.warn(
-                f"weights column {weights!r} contains {n_neg} negative value(s); "
-                "rows with negative weight are excluded from summaries.",
-                UserWarning,
-                stacklevel=2,
+            raise ValueError(
+                f"weights column {weights!r} contains {n_neg} negative value(s). "
+                "Negative weights are not supported; drop or correct them "
+                "before calling tbl_one()."
+            )
+        total = float(w_col.fillna(0.0).sum())
+        if total <= 0:
+            raise ValueError(
+                f"weights column {weights!r} has total weight {total!r}; "
+                "at least one positive weight is required."
             )
     excluded: set[str] = {c for c in (by, weights) if c is not None}
     if design is not None:
@@ -673,10 +681,25 @@ def _continuous_rows(
                     cluster=cluster_col,
                 )
             else:
-                # >2 groups under weights: design-adjusted F-test is
-                # out of scope (see the README "discussed but not
-                # implemented" list); fall back to design-naive ANOVA /
-                # Kruskal–Wallis with the existing footnote.
+                # >2 groups under weights: design-adjusted F-test
+                # (svyglm-based) is not yet implemented. We emit a
+                # one-time ``UserWarning`` rather than silently
+                # returning an unweighted p-value — the auditor's red
+                # flag for prior alphas was that this fallback was
+                # invisible to the user on a weighted Table 1.
+                import warnings as _w
+                _w.warn(
+                    f"continuous variable {var!r} has >2 groups under "
+                    "weighted Table 1: design-adjusted F-test is not "
+                    "implemented; falling back to the *unweighted* "
+                    "ANOVA / Kruskal-Wallis p-value. For a weighted "
+                    "test on multi-group data, run the comparison "
+                    "manually via R survey::svyglm or a pairwise "
+                    "weighted t-test (svyttest) with multiplicity "
+                    "adjustment.",
+                    UserWarning,
+                    stacklevel=2,
+                )
                 res = continuous_test(data[var], data[by], nonnormal=nonnormal)
         else:
             res = continuous_test(data[var], data[by], nonnormal=nonnormal)

@@ -47,7 +47,7 @@ source of cross-process non-determinism from renderer output:
   deterministic stream above.
 
 This guarantee is regression-tested in
-[`tests/test_joss_renderer_consistency.py`](https://github.com/jturner-uofl/pysofra/blob/main/tests/test_joss_renderer_consistency.py)
+[`tests/test_renderer_consistency.py`](https://github.com/jturner-uofl/pysofra/blob/main/tests/test_renderer_consistency.py)
 (plot-less tables) and
 [`tests/test_plot_determinism.py`](https://github.com/jturner-uofl/pysofra/blob/main/tests/test_plot_determinism.py)
 (tables with attached forest / KM plots).
