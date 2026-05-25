@@ -195,9 +195,25 @@ def svyttest(
     if not np.isfinite(se) or se == 0:
         return _NA
     t_stat = diff / se
-    # Degrees of freedom: total n minus number of strata (1 if unstratified).
+    # Degrees of freedom: ``n_PSU − n_strata``. This matches the convention
+    # used by Stata ``svy: ttest`` and R ``survey::svyttest`` (with
+    # ``nest=TRUE`` semantics, the default for properly-specified survey
+    # designs). A PSU (primary sampling unit) is the cluster ID when
+    # clustering is specified; otherwise each observation is its own PSU.
+    # When BOTH strata and cluster are present, unique (stratum, cluster)
+    # pairs count as distinct PSUs — this correctly handles the common
+    # case of cluster IDs that happen to repeat across strata.
+    # Using ``N − H`` instead would dramatically over-state df under
+    # clustering (10 clusters of 1000 → df ≈ 9999 vs the correct df ≈ 9)
+    # and produce anti-conservative p-values.
     h = 1 if strata is None else int(pd.Series(strata).nunique())
-    df_deg = max(1, sum(n_per) - h)
+    if "cluster" in df_.columns and "strata" in df_.columns:
+        n_psu = int(df_[["strata", "cluster"]].drop_duplicates().shape[0])
+    elif "cluster" in df_.columns:
+        n_psu = int(df_["cluster"].nunique())
+    else:
+        n_psu = int(len(df_))
+    df_deg = max(1, n_psu - h)
     p = 2 * float(sp_stats.t.sf(abs(t_stat), df=df_deg))
 
     return TestResult(p_value=p, test="Design-adjusted t-test", statistic=t_stat)

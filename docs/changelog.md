@@ -5,6 +5,25 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a5] — 2026-05-25
+
+### Fixed
+- **`svyttest` degrees of freedom** now follow the standard survey
+  convention `n_PSU − n_strata` (matching Stata `svy: ttest` and R
+  `survey::svyttest` with `nest=TRUE`), instead of `N − n_strata`.
+- **AFT models (Weibull / LogNormal / LogLogistic) are now labelled
+  "TR" (Time Ratio)** instead of "HR".
+- **Lifelines regression CIs honour the user-supplied `conf_level`**
+  (previously the CIs reflected the model's fit-time `alpha`).
+- **SMDs on a weighted Table 1 are now weighted**.
+- **`add_ci`, `add_difference`, and `add_global_p` now honour weights**.
+
+### Added
+- `conf_level` range validation in `tbl_regression`, `tbl_survival`,
+  and `pool`.
+- `with_forest_plot()` on a multi-model regression table emits a
+  `UserWarning` noting that only the first model is visualised.
+
 ## [0.1.0a4] — 2026-05-25
 
 ### Added

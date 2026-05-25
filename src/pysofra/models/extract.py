@@ -152,11 +152,29 @@ def _extract_lifelines(model: Any, conf_level: float) -> ModelSummary:
         )
 
     estimates = summary["coef"].astype(float)
-    ci_lo = summary[lo_col].astype(float)
-    ci_hi = summary[hi_col].astype(float)
     pvalues = summary["p"].astype(float) if "p" in summary.columns else pd.Series(
         [float("nan")] * len(summary), index=summary.index
     )
+
+    # Lifelines bakes the CI level into the fit (alpha=0.05 by default),
+    # so the ``coef lower/upper X%`` columns reflect the fit-time alpha,
+    # not the user's requested ``conf_level``. To honour ``conf_level``
+    # without re-fitting the model, re-derive the CI directly from
+    # ``coef`` and ``se(coef)`` using a normal pivot. Falls back to the
+    # lifelines-provided columns only when no SE column is present.
+    se_col = _find_col(summary, ["se(coef)"])
+    if se_col is not None:
+        import numpy as _np
+        from scipy import stats as _sp_stats
+        z = float(_sp_stats.norm.ppf(0.5 + conf_level / 2))
+        se = summary[se_col].astype(float)
+        ci_lo = estimates - z * se
+        ci_hi = estimates + z * se
+        # Hide ``_np`` reference so linters don't flag it as unused.
+        del _np
+    else:
+        ci_lo = summary[lo_col].astype(float)
+        ci_hi = summary[hi_col].astype(float)
     # AFT models (Weibull / log-logistic / log-normal) carry a MultiIndex
     # ``(param, covariate)`` index — e.g. ``('lambda_', 'age')``. Renderers
     # expect string row labels; flatten with ``covariate (param)`` so the
@@ -170,9 +188,13 @@ def _extract_lifelines(model: Any, conf_level: float) -> ModelSummary:
         pvalues.index = pd.Index(flat)
 
     family = type(model).__name__
-    # Cox / Weibull / log-normal AFT all naturally report exp(coef) = HR.
+    # Cox returns exp(coef) as a Hazard Ratio; the AFT family (Weibull,
+    # LogNormal, LogLogistic) returns exp(coef) as a Time Ratio. Both are
+    # the natural "exponentiate me" output of the fitter, so we set
+    # natural_exp=True; the column header label is chosen downstream by
+    # ``_default_estimate_label`` in regression.py which selects "HR"
+    # for Cox and "TR" for AFT.
     natural_exp = True
-    del conf_level  # honoured by lifelines at fit time
     return ModelSummary(
         estimates=estimates,
         ci_lo=ci_lo,

@@ -77,6 +77,11 @@ def tbl_regression(
         Source dataframe — needed only when ``design=`` references
         columns that the fitted model didn't already see.
     """
+    if not (0.0 < conf_level < 1.0):
+        raise ValueError(
+            f"conf_level must lie in the open interval (0, 1); "
+            f"got {conf_level!r}."
+        )
     models = list(model) if isinstance(model, (list, tuple)) else [model]
     if not models:
         raise ValueError("tbl_regression requires at least one model.")
@@ -347,7 +352,13 @@ def _default_estimate_label(family_label: str, exponentiate: bool) -> str:
         if "cox" in fl or "phreg" in fl:
             return "HR"
         if "weibull" in fl or "lognormal" in fl or "loglogistic" in fl:
-            return "HR"  # AFT models report exp(coef) as a time ratio; HR is colloquial
+            # AFT family: exp(coef) is a TIME RATIO (also called Acceleration
+            # Factor), not a hazard ratio. TR > 1 means LONGER survival;
+            # HR > 1 means SHORTER survival — the two parameters point in
+            # opposite directions. Mislabelling AFT as "HR" is publication-
+            # critical because a reader will draw the wrong clinical
+            # conclusion.
+            return "TR"
         if "logit" in fl or "binomial" in fl or "probit" in fl or "logistic" in fl:
             return "OR"
         if "poisson" in fl or "negativebinomial" in fl:

@@ -207,9 +207,14 @@ class TestRegressionLabels:
         assert _default_estimate_label("PHReg", True) == "HR"
 
     def test_aft_label(self):
+        # AFT family: exp(coef) is a Time Ratio, NOT a Hazard Ratio.
+        # The two parameters point in opposite directions (TR>1 = longer
+        # survival; HR>1 = shorter survival) so mislabelling is
+        # publication-critical.
         from pysofra.models.regression import _default_estimate_label
-        assert _default_estimate_label("Weibull AFT", True) == "HR"
-        assert _default_estimate_label("LogNormal AFT", True) == "HR"
+        assert _default_estimate_label("Weibull AFT", True) == "TR"
+        assert _default_estimate_label("LogNormal AFT", True) == "TR"
+        assert _default_estimate_label("LogLogistic AFT", True) == "TR"
 
     def test_unknown_exp_label(self):
         from pysofra.models.regression import _default_estimate_label

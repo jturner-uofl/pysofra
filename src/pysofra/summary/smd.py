@@ -7,6 +7,13 @@ For three or more groups we report the *maximum pairwise* SMD, which is
 the convention used by ``tableone``. Users who want a different summary
 (mean pairwise, single-reference) can post-process the metadata.
 
+Weighted SMDs. When ``weights=`` is supplied, the per-group means /
+variances / proportions are replaced by their weighted counterparts using
+the frequency-weight convention (divisor ``Σw − 1`` for variance, matching
+``statsmodels.stats.weightstats.DescrStatsW``). On a survey-weighted
+``tbl_one`` this is the only way the SMD column can agree with a
+weighted analysis done in R's ``survey`` / ``tableone(weights=)``.
+
 References
 ----------
 Yang, D., & Dalton, J. E. (2012). A unified approach to measuring the
@@ -15,32 +22,75 @@ effect size between two groups using SAS. SAS Global Forum.
 
 from __future__ import annotations
 
+import warnings as _w
 from itertools import combinations
 
 import numpy as np
 import pandas as pd
 
 
-def continuous_smd_pair(a: np.ndarray, b: np.ndarray) -> float | None:
-    """SMD between two continuous samples using pooled SD."""
-    a = a[~np.isnan(a)]
-    b = b[~np.isnan(b)]
+def _weighted_mean_var(x: np.ndarray, w: np.ndarray) -> tuple[float, float]:
+    """Frequency-weighted mean + variance with divisor ``Σw − 1``.
+
+    Matches ``statsmodels.stats.weightstats.DescrStatsW`` (with the
+    default ddof=1) and R's ``Hmisc::wtd.var``.
+    """
+    sw = float(w.sum())
+    if sw <= 1.0:
+        return float("nan"), float("nan")
+    with np.errstate(invalid="ignore", over="ignore"), _w.catch_warnings():
+        _w.simplefilter("ignore", RuntimeWarning)
+        mean = float((w * x).sum() / sw)
+        var = float((w * (x - mean) ** 2).sum() / (sw - 1.0))
+    return mean, var
+
+
+def continuous_smd_pair(
+    a: np.ndarray, b: np.ndarray,
+    *,
+    wa: np.ndarray | None = None,
+    wb: np.ndarray | None = None,
+) -> float | None:
+    """SMD between two continuous samples using pooled SD.
+
+    When ``wa`` / ``wb`` are supplied, the per-group mean and variance are
+    computed using the frequency-weight convention (see
+    :func:`_weighted_mean_var`) and the pooled SD is the unweighted
+    average of the two within-group variances.
+    """
+    # Strip NaN from x and the matching weight position.
+    mask_a = ~np.isnan(a)
+    mask_b = ~np.isnan(b)
+    a = a[mask_a]
+    b = b[mask_b]
+    if wa is not None:
+        wa = wa[mask_a]
+    if wb is not None:
+        wb = wb[mask_b]
     na, nb = a.size, b.size
     if na < 2 or nb < 2:
         return None
+
     # Same ``inf``-safety wrap as ``continuous_stats``: numpy's mean / var
     # emit ``RuntimeWarning`` on inf-bearing inputs which escalates to
     # an exception under the project's ``filterwarnings = error`` gate.
     # The resulting ``mean = inf`` / ``var = nan`` are handled by the
     # explicit ``sd_pool == 0.0`` and ``ma == mb`` checks below.
-    import warnings as _w
     with np.errstate(invalid="ignore", over="ignore"), _w.catch_warnings():
         _w.simplefilter("ignore", RuntimeWarning)
-        ma, mb = float(np.mean(a)), float(np.mean(b))
-        va, vb = float(np.var(a, ddof=1)), float(np.var(b, ddof=1))
+        if wa is None and wb is None:
+            ma, mb = float(np.mean(a)), float(np.mean(b))
+            va, vb = float(np.var(a, ddof=1)), float(np.var(b, ddof=1))
+        else:
+            wa_use = wa if wa is not None else np.ones_like(a, dtype=float)
+            wb_use = wb if wb is not None else np.ones_like(b, dtype=float)
+            ma, va = _weighted_mean_var(a, wa_use)
+            mb, vb = _weighted_mean_var(b, wb_use)
         sd_pool = float(np.sqrt((va + vb) / 2.0))
     if sd_pool == 0.0:
         return 0.0 if ma == mb else float("inf")
+    if not np.isfinite(sd_pool) or not (np.isfinite(ma) and np.isfinite(mb)):
+        return None
     return abs(ma - mb) / sd_pool
 
 
@@ -87,21 +137,56 @@ def categorical_smd_pair(p1: np.ndarray, p2: np.ndarray) -> float | None:
     return float(np.sqrt(val))
 
 
-def continuous_smd(values: pd.Series, groups: pd.Series) -> float | None:
-    """Maximum pairwise continuous SMD across groups."""
-    df = pd.DataFrame({"v": pd.to_numeric(values, errors="coerce"), "g": groups}).dropna()
+def continuous_smd(
+    values: pd.Series,
+    groups: pd.Series,
+    *,
+    weights: pd.Series | None = None,
+) -> float | None:
+    """Maximum pairwise continuous SMD across groups.
+
+    When ``weights`` is supplied it is treated as a frequency weight per
+    observation: each per-group mean / variance is weighted accordingly
+    (see :func:`continuous_smd_pair`).
+    """
+    df = pd.DataFrame({
+        "v": pd.to_numeric(values, errors="coerce"),
+        "g": groups,
+    })
+    if weights is not None:
+        df["w"] = pd.to_numeric(weights, errors="coerce")
+        df = df.dropna(subset=["v", "g", "w"])
+        df = df[df["w"] > 0]
+    else:
+        df = df.dropna(subset=["v", "g"])
     if df.empty:
         return None
-    by_group = {g: x["v"].to_numpy() for g, x in df.groupby("g", observed=True)}
-    keys = list(by_group)
+
+    by_group_v: dict[object, np.ndarray] = {
+        g: x["v"].to_numpy() for g, x in df.groupby("g", observed=True)
+    }
+    by_group_w: dict[object, np.ndarray] | None
+    if weights is not None:
+        by_group_w = {
+            g: x["w"].to_numpy(dtype=float)
+            for g, x in df.groupby("g", observed=True)
+        }
+    else:
+        by_group_w = None
+    keys = list(by_group_v)
     if len(keys) < 2:
         return None
+
+    def _pair(a_key: object, b_key: object) -> float | None:
+        wa = by_group_w[a_key] if by_group_w is not None else None
+        wb = by_group_w[b_key] if by_group_w is not None else None
+        return continuous_smd_pair(
+            by_group_v[a_key], by_group_v[b_key], wa=wa, wb=wb,
+        )
+
     if len(keys) == 2:
-        return continuous_smd_pair(by_group[keys[0]], by_group[keys[1]])
-    pair_results = [
-        continuous_smd_pair(by_group[a], by_group[b])
-        for a, b in combinations(keys, 2)
-    ]
+        return _pair(keys[0], keys[1])
+    pair_results = [_pair(a, b) for a, b in combinations(keys, 2)]
     pairs_cont: list[float] = [p for p in pair_results if p is not None]
     return max(pairs_cont) if pairs_cont else None
 
@@ -110,12 +195,37 @@ def categorical_smd(
     values: pd.Series,
     groups: pd.Series,
     levels: list[object] | tuple[object, ...] | None = None,
+    *,
+    weights: pd.Series | None = None,
 ) -> float | None:
-    """Maximum pairwise categorical SMD across groups."""
-    df = pd.DataFrame({"v": values, "g": groups}).dropna()
-    if df.empty:
-        return None
-    ctab = pd.crosstab(df["v"], df["g"])
+    """Maximum pairwise categorical SMD across groups.
+
+    When ``weights`` is supplied, the per-group, per-level proportions
+    used by the Yang–Dalton formula are weighted proportions
+    (``Σw·I[level=l] / Σw`` within each group) instead of unweighted
+    counts / totals.
+    """
+    if weights is None:
+        df = pd.DataFrame({"v": values, "g": groups}).dropna()
+        if df.empty:
+            return None
+        ctab = pd.crosstab(df["v"], df["g"])
+    else:
+        df = pd.DataFrame({
+            "v": values,
+            "g": groups,
+            "w": pd.to_numeric(weights, errors="coerce"),
+        }).dropna(subset=["v", "g", "w"])
+        df = df[df["w"] > 0]
+        if df.empty:
+            return None
+        # Weighted contingency: Σw per (level, group).
+        ctab = (
+            df.groupby(["v", "g"], observed=True)["w"]
+            .sum()
+            .unstack(fill_value=0.0)
+            .astype(float)
+        )
     if levels is not None:
         ctab = ctab.reindex(index=list(levels), fill_value=0)
     if ctab.shape[0] < 2 or ctab.shape[1] < 2:

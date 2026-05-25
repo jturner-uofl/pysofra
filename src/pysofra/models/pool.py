@@ -54,6 +54,11 @@ def pool(models: list[Any], *, conf_level: float = 0.95) -> ModelSummary:
     sklearn (sklearn has no SEs so the pool degenerates to a simple
     mean-of-coefficients).
     """
+    if not (0.0 < conf_level < 1.0):
+        raise ValueError(
+            f"conf_level must lie in the open interval (0, 1); "
+            f"got {conf_level!r}."
+        )
     if len(models) < 2:
         raise ValueError(
             "pool requires at least two imputed-dataset fits "

@@ -4,12 +4,12 @@
 
 ### The missing statistical reporting layer for Python
 
-[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/jturner-uofl/pysofra)
+[![Coverage](https://img.shields.io/badge/coverage-%E2%89%A599%25-brightgreen.svg)](https://github.com/jturner-uofl/pysofra)
 [![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue.svg)](https://www.python.org/downloads/)
 [![License: GPL-3.0+](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](https://github.com/jturner-uofl/pysofra/blob/main/LICENSE)
 [![Style: ruff](https://img.shields.io/badge/style-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Types: mypy strict](https://img.shields.io/badge/types-mypy%20strict-blue.svg)](http://mypy-lang.org/)
-[![Tests: 886](https://img.shields.io/badge/tests-886%20passing-brightgreen.svg)](#status)
+[![Tests: 902](https://img.shields.io/badge/tests-902%20passing-brightgreen.svg)](#status)
 
 </div>
 
@@ -45,7 +45,7 @@
 - **One immutable object, seven output formats** — build a `SofraTable` once, render to HTML / Markdown / LaTeX / DOCX / PPTX / XLSX / PNG, all byte-deterministic across processes
 - **Auto-dispatched statistical tests** — Welch, Wilcoxon, ANOVA, Kruskal–Wallis, Fisher, χ², Rao–Scott, design-adjusted *t* — picked by variable kind, overridable per-row
 - **Inline forest plots and KM curves** — embed matplotlib figures directly into the table; the same `SofraTable` renders them across every backend
-- **Statistically correct** — every numeric output validated against `scipy` / `statsmodels` / `lifelines` at machine precision, with cross-checks against R's `gtsummary`
+- **Statistically correct** — every numeric output validated against `scipy` / `statsmodels` / `lifelines` reference implementations at machine precision
 - **Method-chainable and immutable** — every modifier returns a new table; no in-place mutation, no global state, fully reproducible
 
 <div align="center">
@@ -189,13 +189,13 @@ pip install "pysofra[dev]"        # testing + linting (pytest, ruff, mypy, hypot
 
 ## Status
 
-PySofra is in **alpha** (`0.1.0a4`). The public API surface is pinned
+PySofra is in **alpha** (`0.1.0a5`). The public API surface is pinned
 by an explicit
 [API-stability test](https://github.com/jturner-uofl/pysofra/blob/main/tests/test_api_stability.py)
 so that any unintended rename, removal, or signature change surfaces as
 a failed test. Quality bar at this release:
 
-* **More than 800 tests passing**, **100% line coverage**, mypy strict, ruff clean.
+* **900+ tests passing**, near-100% line coverage, mypy strict, ruff clean.
 * Every numeric output is validated against `scipy`, `lifelines`,
   `statsmodels`, or a hand-computed textbook formula
   ([test_statistical_correctness.py](https://github.com/jturner-uofl/pysofra/blob/main/tests/test_statistical_correctness.py)).

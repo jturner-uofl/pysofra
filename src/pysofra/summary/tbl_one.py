@@ -467,6 +467,7 @@ def _build(data: pd.DataFrame, spec: TableSpec) -> SofraTable:
             variables=variables, kinds=kinds, labels=labels,
             rows=rows, headers=headers,
             adjust_for=tuple(opts.get("global_p_adjust_for", ()) or ()),
+            weights_col=weights_col,
         )
         footnotes = list(footnotes) + list(footnotes_extra)
 
@@ -684,7 +685,7 @@ def _continuous_rows(
 
     smd_val: float | None = None
     if show_smd and by is not None:
-        smd_val = continuous_smd(data[var], data[by])
+        smd_val = continuous_smd(data[var], data[by], weights=weights)
 
     bold_row = (
         bold_p_mode
@@ -789,7 +790,9 @@ def _categorical_rows(
 
     smd_val: float | None = None
     if show_smd and by is not None:
-        smd_val = categorical_smd(s_all, data[by], levels=levels)
+        smd_val = categorical_smd(
+            s_all, data[by], levels=levels, weights=weights,
+        )
 
     bold_row = bold_p_mode and p_value is not None and p_value < bold_p_threshold
 
@@ -955,6 +958,7 @@ def _attach_global_p(
     rows: list[Row],
     headers: tuple[HeaderRow, ...],
     adjust_for: tuple[str, ...],
+    weights_col: str | None = None,
 ) -> tuple[list[Row], tuple[HeaderRow, ...], list[str]]:
     """Attach a joint-p column to a tbl_one table.
 
@@ -1036,6 +1040,7 @@ def _attach_global_p(
         p_per_var[var] = _fit_global_p(
             data=data, by=by, by_levels=levels,
             var=var, kind=kinds[var], adjust_for=adjust_for,
+            weights_col=weights_col,
         )
 
     # Walk rows, map each to its variable, and append a cell. The map
@@ -1105,6 +1110,7 @@ def _fit_global_p(
     var: str,
     kind: VarKind,
     adjust_for: tuple[str, ...],
+    weights_col: str | None = None,
 ) -> float | None:
     """Fit one logistic regression and return the joint Wald p-value
     for ``var``'s coefficients.
@@ -1136,6 +1142,13 @@ def _fit_global_p(
         if c not in seen:
             seen.add(c)
             cols.append(c)
+    # If the table was built with frequency weights, include the weights
+    # column so the joint Wald-F test uses the same weighted model the
+    # rest of the table is based on. Without this, the row-level
+    # p-values and global p would silently disagree.
+    if weights_col is not None and weights_col not in seen:
+        seen.add(weights_col)
+        cols.append(weights_col)
     sub = data[cols].dropna()
     if sub.empty or sub[by].nunique() < 2:
         return None
@@ -1171,8 +1184,17 @@ def _fit_global_p(
     try:
         with _w.catch_warnings():
             _w.simplefilter("ignore")  # statsmodels convergence chatter
-            res = sm.Logit(y, X).fit(disp=False, method="newton",
-                                      maxiter=100)
+            # Honour weights by routing through GLM(Binomial), which
+            # accepts ``freq_weights``. sm.Logit doesn't expose that
+            # kwarg, so for the weighted case we use the equivalent
+            # GLM-with-logit-link formulation (same MLE, same f_test API).
+            if weights_col is not None:
+                w_arr = sub[weights_col].to_numpy(dtype=float)
+                fam = sm.families.Binomial()
+                res = sm.GLM(y, X, family=fam, freq_weights=w_arr).fit(disp=False)
+            else:
+                res = sm.Logit(y, X).fit(disp=False, method="newton",
+                                          maxiter=100)
     except Exception:  # pragma: no cover — defensive: singular design / no convergence
         return None
 

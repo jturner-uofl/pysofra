@@ -1429,3 +1429,426 @@ class TestTblOneGlobalP:
             assert "AGE" in msg # capitalised — pandas is case-sensitive
             # Bmi is valid so it shouldn't appear as missing.
             assert "'bmi'" not in msg
+
+
+# ----------------------------------------------------------------------
+# Lifelines regression CIs honour user-supplied ``conf_level``
+# (previously: lifelines bakes alpha into the fit, so the CI columns
+# reflected the fit-time level — usually 95% — even when the user
+# requested a different one. The fix re-derives the CI from
+# ``coef`` and ``se(coef)`` using a normal pivot at the requested
+# level.)
+# ----------------------------------------------------------------------
+class TestLifelinesConfLevelHonoured:
+    def test_cph_conf_level_changes_ci_width(self):
+        lifelines = pytest.importorskip("lifelines")
+        from lifelines import CoxPHFitter
+
+        rng = np.random.default_rng(2026)
+        n = 200
+        df = pd.DataFrame({
+            "time": rng.exponential(10, n),
+            "event": rng.integers(0, 2, n),
+            "x": rng.normal(0, 1, n),
+        })
+        cph = CoxPHFitter().fit(df, duration_col="time", event_col="event")
+
+        t95 = ps.tbl_regression(cph, conf_level=0.95)
+        t90 = ps.tbl_regression(cph, conf_level=0.90)
+        t99 = ps.tbl_regression(cph, conf_level=0.99)
+
+        def _ci(t):
+            return next(
+                c.value for c in t.rows[0].cells
+                if c.kind == "ci" and isinstance(c.value, tuple)
+            )
+
+        # tbl_regression CI cells carry (lo, hi); tbl_one's
+        # add_difference carries (point, lo, hi) — don't confuse them.
+        lo95, hi95 = _ci(t95)
+        lo90, hi90 = _ci(t90)
+        lo99, hi99 = _ci(t99)
+        # Narrower at 90%, wider at 99%, with strict inequality.
+        assert (hi90 - lo90) < (hi95 - lo95) < (hi99 - lo99)
+
+    def test_cph_conf_level_matches_manual_normal_pivot(self):
+        """The re-derived CI must equal ``coef ± z*se`` on the log-HR scale,
+        then exponentiated. Verifies against a hand-computed reference."""
+        lifelines = pytest.importorskip("lifelines")
+        sp = pytest.importorskip("scipy.stats")
+        from lifelines import CoxPHFitter
+
+        rng = np.random.default_rng(2027)
+        n = 300
+        df = pd.DataFrame({
+            "time": rng.exponential(8, n),
+            "event": rng.integers(0, 2, n),
+            "x": rng.normal(0, 1, n),
+        })
+        cph = CoxPHFitter().fit(df, duration_col="time", event_col="event")
+        coef = float(cph.summary["coef"].iloc[0])
+        se = float(cph.summary["se(coef)"].iloc[0])
+
+        for lvl in (0.80, 0.90, 0.95, 0.99):
+            t = ps.tbl_regression(cph, conf_level=lvl)
+            ci = next(
+                c.value for c in t.rows[0].cells
+                if c.kind == "ci" and isinstance(c.value, tuple)
+            )
+            z = float(sp.norm.ppf(0.5 + lvl / 2))
+            expected_lo = float(np.exp(coef - z * se))
+            expected_hi = float(np.exp(coef + z * se))
+            assert abs(ci[0] - expected_lo) < 1e-9, (lvl, ci, expected_lo)
+            assert abs(ci[1] - expected_hi) < 1e-9, (lvl, ci, expected_hi)
+
+
+# ----------------------------------------------------------------------
+# AFT family exp(coef) is labelled "TR" (Time Ratio), NOT "HR".
+# Mislabelling is publication-critical because TR>1 means LONGER
+# survival while HR>1 means SHORTER survival — opposite direction.
+# ----------------------------------------------------------------------
+class TestAFTLabelIsTimeRatio:
+    def test_weibull_aft_header_says_TR(self):
+        lifelines = pytest.importorskip("lifelines")
+        from lifelines import WeibullAFTFitter
+
+        rng = np.random.default_rng(2026)
+        n = 150
+        df = pd.DataFrame({
+            "time": rng.exponential(10, n),
+            "event": rng.integers(0, 2, n),
+            "x": rng.normal(0, 1, n),
+        })
+        aft = WeibullAFTFitter().fit(df, duration_col="time", event_col="event")
+        t = ps.tbl_regression(aft)
+        headers = [h.text for h in t.headers[0].cells]
+        assert "TR" in headers, f"expected 'TR' in headers, got {headers}"
+        assert "HR" not in headers, f"AFT must not carry 'HR' label, got {headers}"
+
+
+# ----------------------------------------------------------------------
+# Multi-model with_forest_plot warns the user that only the first model
+# is drawn (the renderer plots a single estimate/CI series per row).
+# Silent first-model-only plotting on a 3-model side-by-side
+# regression would mislead readers about what the figure represents.
+# ----------------------------------------------------------------------
+class TestMultiModelForestPlotWarns:
+    def test_warning_on_multi_model_table(self):
+        sm = pytest.importorskip("statsmodels.api")
+
+        rng = np.random.default_rng(2026)
+        n = 200
+        df = pd.DataFrame({
+            "age": rng.normal(60, 10, n),
+            "bmi": rng.normal(28, 5, n),
+            "event": rng.binomial(1, 0.3, n),
+        })
+        X1 = sm.add_constant(df[["age"]])
+        X2 = sm.add_constant(df[["age", "bmi"]])
+        m1 = sm.Logit(df["event"], X1).fit(disp=False)
+        m2 = sm.Logit(df["event"], X2).fit(disp=False)
+
+        t = ps.tbl_regression([m1, m2], model_labels=["Crude", "Adjusted"])
+        with pytest.warns(UserWarning, match=r"only the first model"):
+            t.with_forest_plot()
+
+    def test_no_warning_on_single_model_table(self):
+        sm = pytest.importorskip("statsmodels.api")
+
+        rng = np.random.default_rng(2027)
+        n = 200
+        df = pd.DataFrame({
+            "age": rng.normal(60, 10, n),
+            "event": rng.binomial(1, 0.3, n),
+        })
+        X = sm.add_constant(df[["age"]])
+        m = sm.Logit(df["event"], X).fit(disp=False)
+        t = ps.tbl_regression(m)
+        # Should NOT warn on single-model.
+        with warnings.catch_warnings():
+            warnings.simplefilter("error")
+            t.with_forest_plot()
+
+
+# ----------------------------------------------------------------------
+# conf_level range validation is enforced consistently across the
+# public API (previously only add_ci / add_difference rejected
+# out-of-range values; tbl_regression / tbl_survival / pool accepted
+# anything and propagated nonsense into model.conf_int / KM CI logic).
+# ----------------------------------------------------------------------
+class TestConfLevelValidatedEverywhere:
+    def test_tbl_regression_rejects_out_of_range(self):
+        sm = pytest.importorskip("statsmodels.api")
+        df = pd.DataFrame({"y": [0, 1] * 25, "x": list(range(50))})
+        m = sm.Logit(df["y"], sm.add_constant(df[["x"]])).fit(disp=False)
+        for bad in (-0.5, 0.0, 1.0, 1.5):
+            with pytest.raises(ValueError, match=r"conf_level"):
+                ps.tbl_regression(m, conf_level=bad)
+
+    def test_tbl_survival_rejects_out_of_range(self):
+        pytest.importorskip("lifelines")
+        rng = np.random.default_rng(0)
+        df = pd.DataFrame({
+            "t": rng.exponential(10, 100),
+            "e": rng.integers(0, 2, 100),
+        })
+        for bad in (-0.5, 0.0, 1.0, 1.5):
+            with pytest.raises(ValueError, match=r"conf_level"):
+                ps.tbl_survival(df, time="t", event="e", conf_level=bad)
+
+    def test_pool_rejects_out_of_range(self):
+        from pysofra import pool
+        sm = pytest.importorskip("statsmodels.api")
+        df = pd.DataFrame({"y": [0, 1] * 25, "x": list(range(50))})
+        m = sm.Logit(df["y"], sm.add_constant(df[["x"]])).fit(disp=False)
+        for bad in (-0.5, 0.0, 1.0, 1.5):
+            with pytest.raises(ValueError, match=r"conf_level"):
+                pool([m, m], conf_level=bad)
+
+
+# ----------------------------------------------------------------------
+# svyttest degrees of freedom now follow standard survey convention
+# ``n_PSU − n_strata`` (matching Stata ``svy: ttest`` and R
+# ``survey::svyttest``), not the previous ``N − n_strata`` which
+# dramatically over-stated df under clustering and produced anti-
+# conservative p-values.
+# ----------------------------------------------------------------------
+class TestSvyttestDF:
+    def _make_clustered(self, seed: int = 2026):
+        rng = np.random.default_rng(seed)
+        n = 600
+        n_clusters = 30
+        df = pd.DataFrame({
+            "arm":     rng.choice(["A", "B"], n, p=[0.5, 0.5]),
+            "y":       rng.normal(10, 3, n),
+            "cluster": rng.integers(0, n_clusters, n),
+            "strata":  rng.choice(["S1", "S2", "S3"], n),
+            "wt":      rng.uniform(0.5, 2.0, n),
+        })
+        df.loc[df["arm"] == "B", "y"] += 0.6
+        return df
+
+    def test_clustered_stratified_df_matches_survey_convention(self):
+        from pysofra.summary.tests import svyttest
+
+        df = self._make_clustered()
+        # Reproduce the df calculation: unique (strata, cluster) pairs
+        # minus n_strata. This is the convention R svyttest uses with
+        # nest=TRUE, which is the standard for properly-specified survey
+        # designs.
+        expected_df = (
+            df[["strata", "cluster"]].drop_duplicates().shape[0]
+            - df["strata"].nunique()
+        )
+
+        res = svyttest(df["y"], df["arm"], df["wt"],
+                       strata=df["strata"], cluster=df["cluster"])
+        # We can't read df_deg out directly — but we can check the p-value
+        # matches what t.sf gives at the expected df.
+        from scipy import stats as sp
+        # Reconstruct the t-stat (sign-agnostic) and check p matches.
+        expected_p = 2 * float(sp.t.sf(abs(res.statistic), df=expected_df))
+        assert abs(res.p_value - expected_p) < 1e-12, (
+            f"svyttest p={res.p_value} doesn't match t.sf at the "
+            f"expected df={expected_df} (got {expected_p})"
+        )
+
+    def test_unclustered_df_equals_n_minus_strata(self):
+        """Without cluster, every observation is its own PSU, so
+        df = n − n_strata (the historic behaviour for unclustered data)."""
+        from pysofra.summary.tests import svyttest
+        from scipy import stats as sp
+
+        df = self._make_clustered()
+        res = svyttest(df["y"], df["arm"], df["wt"], strata=df["strata"])
+        expected_df = len(df) - df["strata"].nunique()
+        expected_p = 2 * float(sp.t.sf(abs(res.statistic), df=expected_df))
+        assert abs(res.p_value - expected_p) < 1e-12
+
+    def test_anticonservative_old_behaviour_does_not_recur(self):
+        """The old buggy code used df = N − H, which on this synthetic
+        clustered dataset would produce df ≈ 597. The fixed code must
+        produce df < 200 (n_PSU − H ≈ 87)."""
+        from pysofra.summary.tests import svyttest
+        from scipy import stats as sp
+
+        df = self._make_clustered()
+        res = svyttest(df["y"], df["arm"], df["wt"],
+                       strata=df["strata"], cluster=df["cluster"])
+        # Recover df_deg empirically: solve for df that makes t.sf agree.
+        # If p = 2 * t.sf(|t|, df), then df is determined; we just check
+        # the p-value implies df is well under N.
+        # Simple proxy: compute the p-value AT the buggy df and at the
+        # corrected df, and confirm res.p_value matches the corrected one.
+        buggy_df = len(df) - df["strata"].nunique()
+        corrected_df = (
+            df[["strata", "cluster"]].drop_duplicates().shape[0]
+            - df["strata"].nunique()
+        )
+        p_buggy = 2 * float(sp.t.sf(abs(res.statistic), df=buggy_df))
+        p_corrected = 2 * float(sp.t.sf(abs(res.statistic), df=corrected_df))
+        assert abs(res.p_value - p_corrected) < 1e-12
+        # And the buggy version would have produced a meaningfully
+        # smaller (anti-conservative) p:
+        assert res.p_value > p_buggy
+
+
+# ----------------------------------------------------------------------
+# SMD column honours weights on a weighted Table 1. Previously the SMD
+# was computed unweighted regardless of weights=, silently disagreeing
+# with R's ``tableone(weights=)`` and ``survey::svystdize`` for the
+# canonical headline use case (weighted Table 1 with SMDs).
+# ----------------------------------------------------------------------
+class TestWeightedSMD:
+    def test_continuous_weighted_smd_matches_statsmodels_reference(self):
+        sm_w = pytest.importorskip("statsmodels.stats.weightstats")
+
+        rng = np.random.default_rng(2026)
+        n = 400
+        df = pd.DataFrame({
+            "arm": rng.choice(["A", "B"], n),
+            "age": rng.normal(60, 10, n),
+            "w":   rng.uniform(0.5, 2.0, n),
+        })
+        df.loc[df["arm"] == "A", "w"] *= 3.0  # make weighting matter
+        # Reference: |mean_A - mean_B| / sqrt((var_A + var_B)/2)
+        # with weighted means / variances at ddof=1.
+        a = df[df["arm"] == "A"]
+        b = df[df["arm"] == "B"]
+        da = sm_w.DescrStatsW(a["age"].to_numpy(), weights=a["w"].to_numpy(), ddof=1)
+        db = sm_w.DescrStatsW(b["age"].to_numpy(), weights=b["w"].to_numpy(), ddof=1)
+        expected = abs(da.mean - db.mean) / float(np.sqrt((da.var + db.var) / 2))
+
+        from pysofra.summary.smd import continuous_smd
+        got = continuous_smd(df["age"], df["arm"], weights=df["w"])
+        assert abs(got - expected) < 1e-12
+
+    def test_weighted_tbl_one_smd_differs_from_unweighted(self):
+        rng = np.random.default_rng(2027)
+        n = 300
+        df = pd.DataFrame({
+            "arm": rng.choice(["A", "B"], n),
+            "age": rng.normal(60, 10, n),
+            "w":   rng.uniform(0.5, 2.0, n),
+        })
+        df.loc[df["arm"] == "A", "w"] *= 4.0
+
+        t_unw = ps.tbl_one(df, by="arm", variables=["age"],
+                           missing="never").add_smd()
+        t_wt  = ps.tbl_one(df, by="arm", variables=["age"], weights="w",
+                           missing="never").add_smd()
+        # SMD cell is the last cell of the "age" row
+        def smd_of(t):
+            r = next(r for r in t.rows if r.cells[0].text == "age")
+            return float(r.cells[-1].value)
+        unw, wtd = smd_of(t_unw), smd_of(t_wt)
+        # Must differ on this synthetic dataset (where weights are non-uniform).
+        assert abs(unw - wtd) > 1e-6
+
+
+# ----------------------------------------------------------------------
+# add_ci / add_difference / add_global_p now honour weights= on a
+# weighted tbl_one. Previously each modifier silently dropped weights
+# and reverted to unweighted computations, producing a table whose
+# row p-values were weighted but whose CIs and joint p-values were
+# unweighted — internally inconsistent.
+# ----------------------------------------------------------------------
+class TestWeightedModifiers:
+    def _df(self, seed: int = 2026):
+        rng = np.random.default_rng(seed)
+        n = 300
+        df = pd.DataFrame({
+            "arm": rng.choice(["A", "B"], n),
+            "age": rng.normal(60, 10, n),
+            "smoker": rng.choice([0, 1], n, p=[0.7, 0.3]),
+            "w": rng.uniform(0.5, 2.0, n),
+        })
+        df.loc[df["arm"] == "A", "w"] *= 3.0
+        return df
+
+    def test_add_ci_weighted_matches_descrstats(self):
+        sm_w = pytest.importorskip("statsmodels.stats.weightstats")
+        df = self._df()
+        t = (
+            ps.tbl_one(df, by="arm", variables=["age"], weights="w",
+                       missing="never")
+            .add_ci(conf_level=0.95)
+        )
+        # Find the per-arm cell text and parse the bracketed CI.
+        # Arm A
+        a = df[df["arm"] == "A"]
+        sm_a = sm_w.DescrStatsW(a["age"].to_numpy(), weights=a["w"].to_numpy(), ddof=1)
+        import math
+        n_eff_a = (a["w"].sum() ** 2) / (a["w"] ** 2).sum()
+        se_a = math.sqrt(sm_a.var / n_eff_a)
+        from scipy import stats as sp
+        tcrit = float(sp.t.ppf(0.975, df=n_eff_a - 1))
+        ref_lo = sm_a.mean - tcrit * se_a
+        ref_hi = sm_a.mean + tcrit * se_a
+        # Pull arm-A cell text
+        row = next(r for r in t.rows if r.cells[0].text == "age")
+        arm_cells = [c.text for c in row.cells[1:3]]
+        # First cell should contain the CI brackets.
+        import re
+        m = re.search(r"\[([\-0-9.]+), ([\-0-9.]+)\]", arm_cells[0])
+        assert m is not None, f"no bracket CI in {arm_cells[0]!r}"
+        got_lo, got_hi = float(m.group(1)), float(m.group(2))
+        # Display rounds to 2 dp; allow that tolerance.
+        assert abs(got_lo - round(ref_lo, 2)) < 0.02
+        assert abs(got_hi - round(ref_hi, 2)) < 0.02
+
+    def test_add_difference_weighted_differs_from_unweighted(self):
+        df = self._df()
+        t_unw = (
+            ps.tbl_one(df, by="arm", variables=["age"], missing="never")
+            .add_difference()
+        )
+        t_wt = (
+            ps.tbl_one(df, by="arm", variables=["age"], weights="w",
+                       missing="never")
+            .add_difference()
+        )
+
+        def diff_cell(t):
+            r = next(r for r in t.rows if r.cells[0].text == "age")
+            cell = next(
+                c for c in r.cells
+                if c.kind == "ci" and isinstance(c.value, tuple)
+                and len(c.value) == 3
+            )
+            return cell.value
+
+        diff_unw = diff_cell(t_unw)
+        diff_wt = diff_cell(t_wt)
+        # Point estimate differs.
+        assert abs(diff_unw[0] - diff_wt[0]) > 1e-6
+        # CI bounds differ.
+        assert abs(diff_unw[1] - diff_wt[1]) > 1e-6 or \
+               abs(diff_unw[2] - diff_wt[2]) > 1e-6
+
+    def test_add_global_p_weighted_matches_glm_freq_weights(self):
+        sm = pytest.importorskip("statsmodels.api")
+        df = self._df()
+        t = (
+            ps.tbl_one(df, by="arm", variables=["age", "smoker"],
+                       weights="w", missing="never", types={"smoker": "dichotomous"})
+            .add_global_p()
+        )
+        # Manual reference: fit GLM(Binomial) with freq_weights and
+        # f_test on the single age coefficient.
+        y = (df["arm"] == "B").astype(int).to_numpy()
+        X = sm.add_constant(df[["age"]])
+        ref = sm.GLM(y, X, family=sm.families.Binomial(),
+                     freq_weights=df["w"].to_numpy(dtype=float)).fit(disp=False)
+        expected_p = float(ref.f_test("age = 0").pvalue)
+        # Get the table's global p for "age"
+        row = next(r for r in t.rows if r.cells[0].text == "age")
+        # global p column is right after p-value column; locate by value
+        gp_cell = next(
+            c for c in row.cells if c.kind == "p_value" and c.value is not None
+        )
+        # Take the LAST p-value cell in the row (rightmost = global p).
+        last_p = [c for c in row.cells if c.kind == "p_value"][-1].value
+        del gp_cell
+        assert last_p is not None
+        assert abs(float(last_p) - expected_p) < 1e-6, (last_p, expected_p)

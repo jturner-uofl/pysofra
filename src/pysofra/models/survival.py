@@ -77,6 +77,11 @@ def tbl_survival(
             "tbl_survival requires lifelines. Install with `pip install lifelines`."
         ) from e
 
+    if not (0.0 < conf_level < 1.0):
+        raise ValueError(
+            f"conf_level must lie in the open interval (0, 1); "
+            f"got {conf_level!r}."
+        )
     data = to_pandas(data)
     for col in (time, event):
         if col not in data.columns:

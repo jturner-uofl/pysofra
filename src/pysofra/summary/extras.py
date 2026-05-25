@@ -14,12 +14,46 @@ from collections.abc import Callable
 from dataclasses import replace
 from typing import Any
 
+import numpy as np
 import pandas as pd
 from scipy import stats as sp_stats
 
 from ..core.format import fmt_number
 from ..core.schema import Cell, HeaderCell, HeaderRow, Row, make_cell
 from ..core.table import SofraTable
+
+
+def _weights_col_from_spec(table: SofraTable) -> str | None:
+    """Return the name of the frequency-weights column attached to this
+    table's tbl_one / tbl_summary spec, or ``None`` if unweighted.
+
+    Centralised here so every modifier in this module honours the same
+    weights= the original ``tbl_one(..., weights='wt')`` call did.
+    """
+    spec = table._spec
+    if spec is None:
+        return None
+    w = spec.options.get("weights") if hasattr(spec, "options") else None
+    return str(w) if w else None
+
+
+def _weighted_mean_var_kish(x: np.ndarray, w: np.ndarray) -> tuple[float, float, float]:
+    """Frequency-weighted mean, weighted variance (divisor Σw − 1), and
+    Kish effective sample size ``n_eff = (Σw)² / Σw²``.
+
+    The Kish ``n_eff`` is the standard plug-in for the SE of a weighted
+    mean (``SE = σ_w / sqrt(n_eff)``); this matches R ``survey::svymean``
+    to first order on unstratified weighted designs and is what the
+    ``DescrStatsW`` class in statsmodels uses as ``nobs`` for inference.
+    """
+    sw = float(w.sum())
+    sw2 = float((w * w).sum())
+    if sw <= 1.0 or sw2 <= 0.0:
+        return float("nan"), float("nan"), 0.0
+    mean = float((w * x).sum() / sw)
+    var = float((w * (x - mean) ** 2).sum() / (sw - 1.0))
+    n_eff = (sw * sw) / sw2
+    return mean, var, n_eff
 
 # ----------------------------------------------------------------------
 # add_global_p — Type-III joint test per categorical variable
@@ -394,23 +428,66 @@ def _add_difference_impl(
     kinds = opts["kinds"]
     variables = opts["variables"]
 
+    # Frequency weights (if the original tbl_one was built with weights=).
+    weights_col = _weights_col_from_spec(table)
+    has_weights = weights_col is not None
+
     diffs: dict[str, tuple[float | None, float | None, float | None]] = {}
     for var in variables:
         if kinds[var] == "continuous":
-            a = pd.to_numeric(data.loc[mask1, var], errors="coerce").dropna()
-            b = pd.to_numeric(data.loc[mask2, var], errors="coerce").dropna()
-            if len(a) < 2 or len(b) < 2:
-                diffs[var] = (None, None, None)
-                continue
-            diff = float(b.mean() - a.mean())
-            se = math.sqrt(b.var(ddof=1) / len(b) + a.var(ddof=1) / len(a))
-            df_w = (
-                (b.var(ddof=1) / len(b) + a.var(ddof=1) / len(a)) ** 2
-                / (
-                    (b.var(ddof=1) / len(b)) ** 2 / (len(b) - 1)
-                    + (a.var(ddof=1) / len(a)) ** 2 / (len(a) - 1)
+            a = pd.to_numeric(data.loc[mask1, var], errors="coerce")
+            b = pd.to_numeric(data.loc[mask2, var], errors="coerce")
+            if has_weights:
+                wa_full = pd.to_numeric(
+                    data.loc[mask1, weights_col], errors="coerce",
                 )
-            )
+                wb_full = pd.to_numeric(
+                    data.loc[mask2, weights_col], errors="coerce",
+                )
+                mask_a = a.notna() & wa_full.notna() & (wa_full > 0)
+                mask_b = b.notna() & wb_full.notna() & (wb_full > 0)
+                a_arr = a[mask_a].to_numpy(dtype=float)
+                b_arr = b[mask_b].to_numpy(dtype=float)
+                wa_arr = wa_full[mask_a].to_numpy(dtype=float)
+                wb_arr = wb_full[mask_b].to_numpy(dtype=float)
+                if a_arr.size < 2 or b_arr.size < 2:
+                    diffs[var] = (None, None, None)
+                    continue
+                ma, va, ne_a = _weighted_mean_var_kish(a_arr, wa_arr)
+                mb, vb, ne_b = _weighted_mean_var_kish(b_arr, wb_arr)
+                if ne_a < 2 or ne_b < 2:
+                    diffs[var] = (None, None, None)
+                    continue
+                diff = float(mb - ma)
+                # Welch SE on weighted means uses Kish effective n's:
+                sa2_n = va / ne_a
+                sb2_n = vb / ne_b
+                se = math.sqrt(sa2_n + sb2_n)
+                df_w = (sa2_n + sb2_n) ** 2 / (
+                    sa2_n ** 2 / max(ne_a - 1, 1)
+                    + sb2_n ** 2 / max(ne_b - 1, 1)
+                )
+            else:
+                a_drop = a.dropna()
+                b_drop = b.dropna()
+                if len(a_drop) < 2 or len(b_drop) < 2:
+                    diffs[var] = (None, None, None)
+                    continue
+                diff = float(b_drop.mean() - a_drop.mean())
+                se = math.sqrt(
+                    b_drop.var(ddof=1) / len(b_drop)
+                    + a_drop.var(ddof=1) / len(a_drop)
+                )
+                df_w = (
+                    (b_drop.var(ddof=1) / len(b_drop)
+                     + a_drop.var(ddof=1) / len(a_drop)) ** 2
+                    / (
+                        (b_drop.var(ddof=1) / len(b_drop)) ** 2
+                        / (len(b_drop) - 1)
+                        + (a_drop.var(ddof=1) / len(a_drop)) ** 2
+                        / (len(a_drop) - 1)
+                    )
+                )
             tcrit = float(sp_stats.t.ppf(0.5 + conf_level / 2, df=df_w))
             diffs[var] = (diff, diff - tcrit * se, diff + tcrit * se)
         elif kinds[var] == "dichotomous":
@@ -423,14 +500,43 @@ def _add_difference_impl(
                 diffs[var] = (None, None, None)
                 continue
             success = lvls[1]
-            n1 = int(mask1.sum())
-            n2 = int(mask2.sum())
-            x1 = int((data.loc[mask1, var] == success).sum())
-            x2 = int((data.loc[mask2, var] == success).sum())
-            if n1 == 0 or n2 == 0:  # pragma: no cover — guarded: by_series == lvl always has ≥1 match
-                diffs[var] = (None, None, None)
-                continue
-            p1, p2 = x1 / n1, x2 / n2
+            if has_weights:
+                w_col = pd.to_numeric(data[weights_col], errors="coerce").fillna(0.0)
+                m1_w = mask1 & (w_col > 0) & s.notna()
+                m2_w = mask2 & (w_col > 0) & s.notna()
+                # Kish effective n + weighted "x" (number of weighted successes
+                # treated as if rounded so Wilson can consume it).
+                sw1 = float(w_col[m1_w].sum())
+                sw2 = float(w_col[m2_w].sum())
+                if sw1 == 0 or sw2 == 0:
+                    diffs[var] = (None, None, None)
+                    continue
+                sw1_2 = float((w_col[m1_w] ** 2).sum())
+                sw2_2 = float((w_col[m2_w] ** 2).sum())
+                # Kish effective n_eff = (Σw)² / Σw²
+                n1 = max(int(round((sw1 ** 2) / sw1_2)), 1)
+                n2 = max(int(round((sw2 ** 2) / sw2_2)), 1)
+                # Weighted success proportion
+                p1 = float(
+                    (w_col[m1_w] * (data.loc[m1_w, var] == success).astype(float)).sum()
+                    / sw1
+                )
+                p2 = float(
+                    (w_col[m2_w] * (data.loc[m2_w, var] == success).astype(float)).sum()
+                    / sw2
+                )
+                # Wilson takes integer (x, n); convert via x = p * n_eff
+                x1 = int(round(p1 * n1))
+                x2 = int(round(p2 * n2))
+            else:
+                n1 = int(mask1.sum())
+                n2 = int(mask2.sum())
+                x1 = int((data.loc[mask1, var] == success).sum())
+                x2 = int((data.loc[mask2, var] == success).sum())
+                if n1 == 0 or n2 == 0:  # pragma: no cover
+                    diffs[var] = (None, None, None)
+                    continue
+                p1, p2 = x1 / n1, x2 / n2
             diff = p2 - p1
             zcrit = float(sp_stats.norm.ppf(0.5 + conf_level / 2))
             # Newcombe's (1998) Method 10 — the Wilson-based hybrid CI
@@ -527,6 +633,11 @@ def add_ci(
     new_rows: list[Row] = []
     z = float(sp_stats.norm.ppf(0.5 + conf_level / 2))
 
+    # Honour the original tbl_one's weights= so the CI reflects the
+    # weighted analysis the rest of the table is built on.
+    weights_col = _weights_col_from_spec(table)
+    has_weights = weights_col is not None
+
     for r in table.rows:
         label = r.cells[0].text
         var = _find_variable_for_row(label, variables, kinds, labels=opts.get("labels"))
@@ -543,12 +654,32 @@ def add_ci(
             old = new_cells[col]
             mask = group_masks[k]
             if kind == "continuous":
-                v = pd.to_numeric(data.loc[mask, var], errors="coerce").dropna()
-                if len(v) < 2:
-                    continue
-                m = float(v.mean())
-                se = float(v.std(ddof=1)) / math.sqrt(len(v))
-                tcrit = float(sp_stats.t.ppf(0.5 + conf_level / 2, df=len(v) - 1))
+                v_series = pd.to_numeric(data.loc[mask, var], errors="coerce")
+                if has_weights:
+                    w_series = pd.to_numeric(
+                        data.loc[mask, weights_col], errors="coerce",
+                    )
+                    keep = v_series.notna() & w_series.notna() & (w_series > 0)
+                    v_arr = v_series[keep].to_numpy(dtype=float)
+                    w_arr = w_series[keep].to_numpy(dtype=float)
+                    if v_arr.size < 2:
+                        continue
+                    m, var_, n_eff = _weighted_mean_var_kish(v_arr, w_arr)
+                    if n_eff < 2 or not (np.isfinite(m) and np.isfinite(var_)):
+                        continue
+                    se = math.sqrt(var_ / n_eff)
+                    tcrit = float(
+                        sp_stats.t.ppf(0.5 + conf_level / 2, df=max(n_eff - 1, 1)),
+                    )
+                else:
+                    v = v_series.dropna()
+                    if len(v) < 2:
+                        continue
+                    m = float(v.mean())
+                    se = float(v.std(ddof=1)) / math.sqrt(len(v))
+                    tcrit = float(
+                        sp_stats.t.ppf(0.5 + conf_level / 2, df=len(v) - 1),
+                    )
                 lo, hi = m - tcrit * se, m + tcrit * se
                 ci = f" [{fmt_number(lo, 2)}, {fmt_number(hi, 2)}]"
                 new_cells[col] = replace(old, text=old.text + ci)
@@ -561,10 +692,28 @@ def add_ci(
                 if len(lvls) != 2:
                     continue
                 success = lvls[1]
-                n = int(data.loc[mask, var].notna().sum())
-                x = int((data.loc[mask, var] == success).sum())
-                if n == 0:
-                    continue
+                if has_weights:
+                    w_full = pd.to_numeric(
+                        data[weights_col], errors="coerce",
+                    ).fillna(0.0)
+                    m2 = mask & (w_full > 0) & s.notna()
+                    sw = float(w_full[m2].sum())
+                    sw2 = float((w_full[m2] ** 2).sum())
+                    if sw == 0 or sw2 == 0:
+                        continue
+                    p = float(
+                        (w_full[m2] *
+                         (data.loc[m2, var] == success).astype(float)).sum() / sw
+                    )
+                    # Kish effective n → integer for Wilson
+                    n_eff = max(int(round((sw * sw) / sw2)), 1)
+                    x = int(round(p * n_eff))
+                    n = n_eff
+                else:
+                    n = int(data.loc[mask, var].notna().sum())
+                    x = int((data.loc[mask, var] == success).sum())
+                    if n == 0:
+                        continue
                 lo, hi = _wilson_ci(x, n, z=z)
                 ci = f" [{fmt_number(100*lo, 1)}%, {fmt_number(100*hi, 1)}%]"
                 new_cells[col] = replace(old, text=old.text + ci)

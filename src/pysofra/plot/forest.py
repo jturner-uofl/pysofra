@@ -101,6 +101,29 @@ def _build_forest_figure(
             "`pip install matplotlib`."
         ) from e
 
+    # Multi-model `tbl_regression` tables emit one estimate / CI / p
+    # column triple per model and a spanning header per model. The
+    # current forest renderer plots a single series, so for multi-model
+    # tables it can only visualise one model. We pick the first model's
+    # columns (matching what gtsummary does by default when given a
+    # multi-model object), and emit a clear ``UserWarning`` so the user
+    # knows the other models were not drawn.
+    n_models = max(1, len(table.spanning_headers))
+    if n_models > 1:
+        import warnings as _w
+        first_label = table.spanning_headers[0].label
+        other_labels = [s.label for s in table.spanning_headers[1:]]
+        _w.warn(
+            f"with_forest_plot on a multi-model regression table plots "
+            f"only the first model ({first_label!r}); the remaining "
+            f"{len(other_labels)} model(s) {other_labels!r} are not "
+            f"visualised. Render one model at a time, or use "
+            f"`with_forest_plot(...)` on each single-model table "
+            f"separately.",
+            UserWarning,
+            stacklevel=2,
+        )
+
     points: list[tuple[str, float, float, float]] = []
     for r in table.rows:
         label = r.cells[0].text
