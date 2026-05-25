@@ -1,0 +1,215 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pysofra"
+version = "0.1.0a4"
+description = "Statistical reporting and table preparation framework for Python — the missing reporting layer."
+readme = "README.md"
+license = { text = "GPL-3.0-or-later" }
+authors = [{ name = "Jason Turner", email = "jason.turner@louisville.edu" }]
+requires-python = ">=3.11"
+keywords = [
+    "statistics",
+    "reporting",
+    "tables",
+    "tableone",
+    "gtsummary",
+    "flextable",
+    "clinical-trials",
+    "biostatistics",
+    "epidemiology",
+    "publication",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Healthcare Industry",
+    "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Topic :: Scientific/Engineering :: Medical Science Apps.",
+]
+dependencies = [
+    "numpy>=1.24",
+    # pandas 3.x raises Pandas4Warning under our ``filterwarnings = error``
+    # gate via third-party DataFrame copies. Cap at <3 until upstream
+    # consumers (lifelines in particular) are clean.
+    "pandas>=2.0,<3",
+    "scipy>=1.11",
+    "statsmodels>=0.14",
+    "python-docx>=1.1",
+]
+
+[project.optional-dependencies]
+# Backend / domain extras — install only what your workflow needs.
+pptx = ["python-pptx>=1.0"]
+xlsx = ["xlsxwriter>=3.2"]
+plot = ["matplotlib>=3.8"]                        # forest / KM plots, table-as-image
+# lifelines<0.31 keeps pandas<3 compatibility and avoids a deprecation
+# storm under our strict warnings filter.
+survival = ["lifelines>=0.27,<0.31", "matplotlib>=3.8"]
+# polars.from_pandas() requires pyarrow at runtime even though polars
+# itself does not declare it; pull it in here so ``pysofra[polars]``
+# actually works out of the box.
+polars = ["polars>=0.20", "pyarrow>=15"]
+sklearn = ["scikit-learn>=1.3"]
+# One-shot meta-extra that pulls everything down at once.
+all = [
+    "python-pptx>=1.0",
+    "xlsxwriter>=3.2",
+    "matplotlib>=3.8",
+    "lifelines>=0.27,<0.31",
+    "polars>=0.20",
+    "pyarrow>=15",
+    "scikit-learn>=1.3",
+]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "ruff>=0.4",
+    "mypy>=1.8",
+    "hypothesis>=6.100",
+    # pandas-stubs sharpens mypy strict typing for pandas surfaces;
+    # without it, ``ignore_missing_imports`` masked real typing
+    # regressions in third-party-mediated code paths.
+    "pandas-stubs>=2.2",
+    # ``openpyxl`` is the canonical reader for the .xlsx files our
+    # xlsxwriter renderer emits; pulled into dev so verification of
+    # XLSX outputs in tests does not require an extra ``pip install``.
+    "openpyxl>=3.1",
+]
+docs = [
+    "mkdocs>=1.5",
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.24",
+]
+
+[project.urls]
+Homepage = "https://github.com/jturner-uofl/pysofra"
+Documentation = "https://github.com/jturner-uofl/pysofra"
+Repository = "https://github.com/jturner-uofl/pysofra"
+Issues = "https://github.com/jturner-uofl/pysofra/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pysofra"]
+
+[tool.hatch.build.targets.sdist]
+# The sdist that goes on PyPI ships the library + tests + license +
+# changelog. Docs, examples, build scripts, and CI config are excluded
+# — users get the importable package, not the development surround.
+include = [
+    "src/pysofra",
+    "tests",
+    "README.md",
+    "LICENSE",
+    "NOTICE",
+    "CHANGELOG.md",
+    "pyproject.toml",
+]
+exclude = [
+    "docs",
+    "examples",
+    "scripts",
+    "site",
+    ".github",
+    "paper",
+    "_local",
+    "_private",
+    "uv.lock",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-ra --strict-markers --strict-config"
+filterwarnings = [
+    "error",
+    # Scipy emits a precision-loss / catastrophic-cancellation
+    # RuntimeWarning on near-identical or NaN-laden samples that
+    # specific sparse-data unit tests exercise on purpose. The exact
+    # emit-site has moved across scipy releases
+    # (``_axis_nan_policy`` -> ``_stats_py`` -> ``_continuous_distns``),
+    # so we suppress the message itself rather than the module path.
+    "ignore:Precision loss occurred in moment calculation:RuntimeWarning",
+    "ignore::RuntimeWarning:scipy.stats._axis_nan_policy",
+]
+
+[tool.coverage.run]
+branch = false
+source = ["src/pysofra"]
+omit = []
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+# Notebooks are tutorial / pedagogical material, not library source.
+# Their lint cleanliness is checked separately on demand; the project's
+# "ruff clean" claim applies to the importable package and test suite.
+extend-exclude = [
+    "examples/*.ipynb",
+    "examples/*.html",
+    "site",
+    ".venv",
+    "_local",
+    "_private",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+# Full strict mode -- ``mypy --strict`` equivalent enabled here so
+# CI catches every typing regression that the README + paper
+# claim is gated. Equivalent to ``mypy --strict``.
+strict = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+warn_return_any = true
+no_implicit_optional = true
+check_untyped_defs = true
+disallow_incomplete_defs = true
+disallow_untyped_defs = true
+disallow_untyped_calls = true
+disallow_any_generics = true
+
+[[tool.mypy.overrides]]
+module = [
+    "lifelines",
+    "lifelines.*",
+    "xlsxwriter",
+    "xlsxwriter.*",
+    "scipy",
+    "scipy.*",
+    "statsmodels",
+    "statsmodels.*",
+    "pptx",
+    "pptx.*",
+    "docx",
+    "docx.*",
+    "matplotlib",
+    "matplotlib.*",
+    "polars",
+    "polars.*",
+    "sklearn",
+    "sklearn.*",
+]
+ignore_missing_imports = true
+

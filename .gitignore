@@ -1,0 +1,48 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+.env
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+.DS_Store
+.idea/
+.vscode/
+
+site/
+docs/_build/
+
+# Local working directories not part of the source distribution.
+paper/
+_local/
+_private/
+
+# Tutorial / example export artefacts — produced on demand by
+# scripts/render_tutorial.py, not part of the source tree.
+*.docx
+*.pptx
+*.xlsx
+examples/tutorial_*.docx
+examples/tutorial_*.pptx
+examples/tutorial_*.xlsx
+examples/tutorial_*.png
+!tests/fixtures/**/*.docx
+!tests/fixtures/**/*.pptx
+!tests/fixtures/**/*.xlsx
+
+# Hypothesis example database (auto-managed)
+.hypothesis/
+
+# uv writes a lockfile when ``uv add`` / ``uv pip install`` is used
+# locally; the project pins its runtime versions explicitly in
+# pyproject.toml, so the uv lockfile is a local convenience that
+# should not ship.
+uv.lock

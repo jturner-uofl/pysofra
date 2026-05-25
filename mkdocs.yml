@@ -1,0 +1,97 @@
+site_name: PySofra
+site_description: Statistical reporting and table preparation framework for Python.
+site_author: Jason Turner
+repo_url: https://github.com/jturner-uofl/pysofra
+repo_name: jturner-uofl/pysofra
+copyright: Copyright &copy; 2026 Jason Turner — GPL-3.0-or-later
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  features:
+    - content.code.copy
+    - content.code.annotate
+    - navigation.instant
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - toc.integrate
+  icon:
+    repo: fontawesome/brands/github
+
+nav:
+  - Home: index.md
+  - Quickstart: quickstart.md
+  - Guides:
+      - Table 1 (tbl_one): guides/tbl_one.md
+      - Summary (tbl_summary): guides/tbl_summary.md
+      - Regression (tbl_regression): guides/tbl_regression.md
+      - Survival (tbl_survival): guides/survival.md
+      - Survey weights: guides/weights.md
+      - Inline plots (forest, KM): guides/plots.md
+      - Composition (merge & stack): guides/composition.md
+      - Themes & styling: guides/themes.md
+      - Exports (HTML/MD/DOCX/LaTeX/PPTX/XLSX): guides/exports.md
+  - Concepts:
+      - SofraTable: concepts/sofratable.md
+      - Statistical tests: concepts/tests.md
+      - Validation: concepts/validation.md
+  - API Reference:
+      - Builders: api/builders.md
+      - Composition: api/composition.md
+      - Models: api/models.md
+      - Effect sizes: api/effect_size.md
+      - Survey design: api/design.md
+      - Themes: api/themes.md
+      - Core types: api/core.md
+  - Changelog: changelog.md
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+plugins:
+  - search
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          paths: [src]
+          options:
+            show_source: false
+            show_root_heading: true
+            show_root_full_path: false
+            docstring_style: numpy
+            members_order: source
+            heading_level: 2
+            separate_signature: true
+            show_signature_annotations: true
+            line_length: 80
+            merge_init_into_class: true

@@ -1,0 +1,10 @@
+* text=auto eol=lf
+
+# Binary / vendored files — keep as-is, do not transform.
+*.png    binary
+*.pdf    binary
+*.docx   binary
+*.pptx   binary
+*.xlsx   binary
+*.jpg    binary
+*.ipynb  text linguist-language=Python

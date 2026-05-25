@@ -1,0 +1,23 @@
+{
+  "source": "Computed by SciPy / statsmodels / lifelines on the fixture's deterministic input. SciPy's hypothesis tests match R's `stats` package to machine precision; see the project's tests/fixtures/scipy_validation/README.md for provenance details.",
+  "observed": [
+    [
+      12,
+      8
+    ],
+    [
+      15,
+      17
+    ],
+    [
+      9,
+      14
+    ]
+  ],
+  "reference": {
+    "statistic": 1.8949885033,
+    "df": 2,
+    "p_value": 0.3877113143
+  },
+  "tolerance": 1e-09
+}

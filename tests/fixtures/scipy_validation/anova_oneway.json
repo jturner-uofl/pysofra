@@ -1,0 +1,33 @@
+{
+  "source": "Computed by SciPy / statsmodels / lifelines on the fixture's deterministic input. SciPy's hypothesis tests match R's `stats` package to machine precision; see the project's tests/fixtures/scipy_validation/README.md for provenance details.",
+  "groups": {
+    "A": [
+      5.1,
+      4.9,
+      6.0,
+      5.5,
+      5.8
+    ],
+    "B": [
+      6.5,
+      7.0,
+      6.8,
+      7.2,
+      6.9
+    ],
+    "C": [
+      4.2,
+      4.5,
+      4.0,
+      4.8,
+      4.3
+    ]
+  },
+  "reference": {
+    "F_statistic": 64.1876675603,
+    "df_between": 2,
+    "df_within": 12,
+    "p_value": 3.902497557e-07
+  },
+  "tolerance": 1e-09
+}

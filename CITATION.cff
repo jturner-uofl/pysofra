@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+message: >
+  If you use PySofra in academic work, please cite this software via
+  the metadata below.
+title: "PySofra: Publication-Ready Statistical Tables in Python"
+version: 0.1.0a4
+date-released: 2026-05-25
+authors:
+  - family-names: Turner
+    given-names: Jason
+    email: jason.turner@louisville.edu
+    # ORCID intentionally omitted until the registered iD is
+    # available; an empty placeholder would propagate into
+    # citation metadata downstream.
+license: GPL-3.0-or-later
+repository-code: "https://github.com/jturner-uofl/pysofra"
+keywords:
+  - statistical reporting
+  - table 1
+  - regression tables
+  - survival analysis
+  - multiple imputation
+  - tableone
+  - gtsummary
+  - flextable
+  - biostatistics
+  - clinical-trials
+  - reproducible research
+  - python
+abstract: >
+  PySofra is a statistical reporting and table preparation framework
+  for Python. It transforms datasets, statistical model outputs, and
+  summary statistics into publication-ready tables across HTML,
+  Markdown, DOCX, LaTeX, PPTX, XLSX, and PNG outputs. PySofra fills the
+  missing statistical reporting layer for Python, providing
+  functionality analogous to the R ecosystem's tableone, gtsummary, and
+  flextable packages within a single coherent Pythonic API.
+identifiers:
+  - type: url
+    value: "https://github.com/jturner-uofl/pysofra"
+    description: Project repository
