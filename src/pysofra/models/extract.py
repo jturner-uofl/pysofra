@@ -23,6 +23,18 @@ class ModelSummary:
     indexed by coefficient name. ``family`` is a short human-readable
     string (``"Logit"``, ``"OLS"``, ``"CoxPHFitter"``, ``"LogisticRegression"``)
     used to pick a sensible estimate column label.
+
+    ``se`` is the per-coefficient standard error on the *log/coef* scale
+    when available (statsmodels ``bse``, lifelines ``se(coef)``);
+    ``None`` for fitters that don't expose SEs (e.g. sklearn linear
+    models). When set, downstream consumers (Rubin's-rule pooling in
+    particular) can use the SE directly instead of back-deriving it
+    from the CI half-width via a critical value of uncertain df.
+
+    ``df_resid`` is the residual degrees of freedom of the per-coef
+    Wald test; ``None`` when the fitter doesn't expose one. Cox and
+    most lifelines fitters use asymptotic normal inference and have
+    no df_resid in the OLS sense.
     """
 
     estimates: pd.Series
@@ -31,6 +43,8 @@ class ModelSummary:
     pvalues: pd.Series
     family: str
     natural_exponentiate: bool  # whether exp() is the natural reporting metric
+    se: pd.Series | None = None
+    df_resid: float | None = None
 
 
 def extract(model: Any, conf_level: float = 0.95) -> ModelSummary:
@@ -80,6 +94,19 @@ def _extract_statsmodels(model: Any, conf_level: float) -> ModelSummary:
     ci.columns = ["lo", "hi"]
     ci = ci.reindex(params.index)
 
+    # Store SE + df_resid when available so Rubin's-rule pooling can
+    # avoid back-deriving SE from the CI half-width (which would mis-
+    # use a z-critical instead of the model's actual t-critical).
+    se_raw = getattr(model, "bse", None)
+    se: pd.Series | None = (
+        pd.Series(se_raw).reindex(params.index).astype(float)
+        if se_raw is not None else None
+    )
+    df_resid_raw = getattr(model, "df_resid", None)
+    df_resid: float | None = (
+        float(df_resid_raw) if df_resid_raw is not None else None
+    )
+
     family_label = _statsmodels_family_label(model)
     natural_exp = _is_log_link(family_label)
 
@@ -90,6 +117,8 @@ def _extract_statsmodels(model: Any, conf_level: float) -> ModelSummary:
         pvalues=pvalues.reindex(params.index).astype(float),
         family=family_label,
         natural_exponentiate=natural_exp,
+        se=se,
+        df_resid=df_resid,
     )
 
 
@@ -163,13 +192,14 @@ def _extract_lifelines(model: Any, conf_level: float) -> ModelSummary:
     # ``coef`` and ``se(coef)`` using a normal pivot. Falls back to the
     # lifelines-provided columns only when no SE column is present.
     se_col = _find_col(summary, ["se(coef)"])
+    se_series: pd.Series | None = None
     if se_col is not None:
         import numpy as _np
         from scipy import stats as _sp_stats
         z = float(_sp_stats.norm.ppf(0.5 + conf_level / 2))
-        se = summary[se_col].astype(float)
-        ci_lo = estimates - z * se
-        ci_hi = estimates + z * se
+        se_series = summary[se_col].astype(float)
+        ci_lo = estimates - z * se_series
+        ci_hi = estimates + z * se_series
         # Hide ``_np`` reference so linters don't flag it as unused.
         del _np
     else:
@@ -195,6 +225,10 @@ def _extract_lifelines(model: Any, conf_level: float) -> ModelSummary:
     # ``_default_estimate_label`` in regression.py which selects "HR"
     # for Cox and "TR" for AFT.
     natural_exp = True
+    # Reindex SE to match flattened estimates index (if AFT MultiIndex
+    # was flattened above).
+    if se_series is not None:
+        se_series = se_series.reindex(estimates.index).astype(float)
     return ModelSummary(
         estimates=estimates,
         ci_lo=ci_lo,
@@ -202,6 +236,8 @@ def _extract_lifelines(model: Any, conf_level: float) -> ModelSummary:
         pvalues=pvalues,
         family=family,
         natural_exponentiate=natural_exp,
+        se=se_series,
+        df_resid=None,  # lifelines uses asymptotic normal inference
     )
 
 

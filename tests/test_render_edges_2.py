@@ -255,11 +255,14 @@ class TestDesignValidation:
         assert np.isnan(m) and np.isnan(var) and n == 0.0
 
     def test_design_mean_var_single_cluster(self):
+        # Only one PSU overall → cluster-robust variance is undefined;
+        # pysofra reports 0 and warns (R survey would error).
         from pysofra.summary.design import design_mean_var
         v = pd.Series([1.0, 2, 3, 4])
         w = pd.Series([1.0] * 4)
-        cluster = pd.Series(["c1"] * 4)  # only one PSU → var=0
-        m, var, _n = design_mean_var(v, w, cluster=cluster)
+        cluster = pd.Series(["c1"] * 4)
+        with pytest.warns(UserWarning, match=r"only one cluster"):
+            m, var, _n = design_mean_var(v, w, cluster=cluster)
         assert var == 0.0
 
 

@@ -295,7 +295,7 @@ class TestSurvivalAtNoneMidTable:
             def confidence_interval_(self):
                 raise RuntimeError("synthetic")
 
-        out = _median_ci(StubKMF(), 0.95)
+        out = _median_ci(StubKMF())
         assert out == (None, None)
 
 
@@ -320,13 +320,24 @@ class TestRegressionDataListSuccess:
         sm = pytest.importorskip("statsmodels.api")
         rng = np.random.default_rng(0)
         n = 60
-        df1 = pd.DataFrame({"x": rng.normal(size=n), "g": rng.choice(["a", "b"], n)})
+        # Use POSITIVE weights — _refit_with_design now rejects
+        # non-positive / non-finite weights with a ValueError (matching
+        # the tbl_one(weights=) policy).
+        df1 = pd.DataFrame({
+            "x": rng.normal(size=n),
+            "w": rng.uniform(0.5, 2.0, size=n),
+            "g": rng.choice(["a", "b"], n),
+        })
         df1["y"] = df1["x"] + rng.normal(size=n)
-        df2 = pd.DataFrame({"x": rng.normal(size=n), "g": rng.choice(["a", "b"], n)})
+        df2 = pd.DataFrame({
+            "x": rng.normal(size=n),
+            "w": rng.uniform(0.5, 2.0, size=n),
+            "g": rng.choice(["a", "b"], n),
+        })
         df2["y"] = 2 * df2["x"] + rng.normal(size=n)
         m1 = sm.OLS(df1["y"], sm.add_constant(df1["x"])).fit()
         m2 = sm.OLS(df2["y"], sm.add_constant(df2["x"])).fit()
-        d = ps.SurveyDesign(weights="x", cluster="g")
+        d = ps.SurveyDesign(weights="w", cluster="g")
         t = ps.tbl_regression([m1, m2], data=[df1, df2], design=d,
                               model_labels=["m1", "m2"])
         assert len(t.rows) >= 1

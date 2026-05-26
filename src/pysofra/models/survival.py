@@ -37,6 +37,7 @@ def tbl_survival(
     pct_digits: int = 1,
     labels: dict[str, str] | None = None,
     show_logrank: bool = True,
+    weights: str | None = None,
 ) -> SofraTable:
     """Build a Kaplan–Meier summary table.
 
@@ -68,6 +69,15 @@ def tbl_survival(
         Optional mapping from group level → display label.
     show_logrank
         Whether to compute and footnote the multi-group log-rank test.
+    weights
+        Optional column carrying per-row sampling/frequency weights.
+        When supplied, the Kaplan–Meier estimator is fit with the
+        ``weights=`` kwarg of ``lifelines.KaplanMeierFitter`` (a
+        weighted product-limit estimator). N totals / events / censored
+        report weighted sums. The log-rank test currently uses
+        unweighted ranks regardless — lifelines does not expose a
+        weighted log-rank — and a footnote flags this when weights are
+        active.
     """
     try:
         from lifelines import KaplanMeierFitter
@@ -140,23 +150,55 @@ def tbl_survival(
     # KM fits per group
     # ------------------------------------------------------------------
     fits: dict[Any, Any] = {}
-    n_total: dict[Any, int] = {}
-    n_events: dict[Any, int] = {}
-    n_censored: dict[Any, int] = {}
+    # ``n_*`` are int under unweighted analysis and float (weighted sum)
+    # when ``weights=`` is passed. We accept either via ``float`` here
+    # because every downstream renderer formats them through ``_fmt_n``
+    # which handles both cases.
+    n_total: dict[Any, float] = {}
+    n_events: dict[Any, float] = {}
+    n_censored: dict[Any, float] = {}
     medians: dict[Any, tuple[float | None, float | None, float | None]] = {}
+
+    # Validate weights column (consistent with tbl_one's policy:
+    # negative or all-zero weights raise loudly rather than warn-and-
+    # drop).
+    if weights is not None:
+        if weights not in data.columns:
+            raise KeyError(f"weights column {weights!r} not in data")
+        w_full = pd.to_numeric(data[weights], errors="coerce")
+        if (w_full < 0).any():
+            raise ValueError(
+                f"weights column {weights!r} contains negative value(s); "
+                "drop or correct them before calling tbl_survival()."
+            )
+        if float(w_full.fillna(0.0).sum()) <= 0:
+            raise ValueError(
+                f"weights column {weights!r} has non-positive total weight."
+            )
 
     for k in group_keys:
         m = group_masks[k]
-        sub = data.loc[m, [time, event]].dropna()
+        cols = [time, event] + ([weights] if weights is not None else [])
+        sub = data.loc[m, cols].dropna()
         kmf = KaplanMeierFitter()
         if len(sub) > 0:
-            kmf.fit(sub[time], sub[event], alpha=1 - conf_level)
+            if weights is not None:
+                w_arr = sub[weights].to_numpy(dtype=float)
+                kmf.fit(sub[time], sub[event],
+                        weights=w_arr, alpha=1 - conf_level)
+                # Report weighted N counts to match the weighted curve.
+                n_total[k] = float(w_arr.sum())
+                events_mask = sub[event].to_numpy(dtype=float) > 0
+                n_events[k] = float(w_arr[events_mask].sum())
+                n_censored[k] = float(n_total[k] - n_events[k])
+            else:
+                kmf.fit(sub[time], sub[event], alpha=1 - conf_level)
+                n_total[k] = int(len(sub))
+                n_events[k] = int(sub[event].sum())
+                n_censored[k] = int(len(sub) - sub[event].sum())
             fits[k] = kmf
-            n_total[k] = int(len(sub))
-            n_events[k] = int(sub[event].sum())
-            n_censored[k] = int(len(sub) - sub[event].sum())
             med = float(kmf.median_survival_time_)
-            med_ci = _median_ci(kmf, conf_level)
+            med_ci = _median_ci(kmf)
             medians[k] = (med, med_ci[0], med_ci[1])
         else:
             fits[k] = None
@@ -200,22 +242,31 @@ def tbl_survival(
             cells.append(make_cell("", value=None))
         return Row(cells=tuple(cells))
 
-    # N total
+    # N totals — render as integers when unweighted, with one decimal
+    # when weighted (so the user can see the sum-of-weights without a
+    # 15-digit float spam).
+    def _fmt_n(v: float | int) -> str:
+        if isinstance(v, int) or float(v).is_integer():
+            return f"{int(v):,}"
+        return f"{v:,.1f}"
+
     rows.append(_row_with_blank_p(
         make_cell("N", align="left"),
-        [make_cell(f"{n_total[k]:,}", value=n_total[k], kind="numeric", align="right")
+        [make_cell(_fmt_n(n_total[k]), value=n_total[k],
+                   kind="numeric", align="right")
          for k in group_keys],
     ))
     # N events
     rows.append(_row_with_blank_p(
         make_cell("Events", align="left"),
-        [make_cell(f"{n_events[k]:,}", value=n_events[k], kind="numeric", align="right")
+        [make_cell(_fmt_n(n_events[k]), value=n_events[k],
+                   kind="numeric", align="right")
          for k in group_keys],
     ))
     # N censored
     rows.append(_row_with_blank_p(
         make_cell("Censored", align="left"),
-        [make_cell(f"{n_censored[k]:,}", value=n_censored[k],
+        [make_cell(_fmt_n(n_censored[k]), value=n_censored[k],
                    kind="numeric", align="right")
          for k in group_keys],
     ))
@@ -279,8 +330,21 @@ def tbl_survival(
     footnotes.append(
         f"Median survival reported with {int(round(conf_level * 100))}% confidence interval."
     )
+    if weights is not None:
+        footnotes.append(
+            f"Kaplan–Meier curves are weighted by {weights!r}; N, events, "
+            "and censored are reported as weighted sums."
+        )
     if has_p_col and logrank_p is not None:
-        footnotes.append("p-value: multivariate log-rank test across groups.")
+        if weights is not None:
+            footnotes.append(
+                "p-value: multivariate log-rank test, computed UNWEIGHTED "
+                "(lifelines does not expose a weighted log-rank). For a "
+                "design-adjusted survival comparison call out to R "
+                "survey::svykm directly."
+            )
+        else:
+            footnotes.append("p-value: multivariate log-rank test across groups.")
 
     del n_groups
     spec = TableSpec(
@@ -356,8 +420,15 @@ def attach_km_plot(
 # Helpers
 # ----------------------------------------------------------------------
 
-def _median_ci(kmf: Any, conf_level: float) -> tuple[float | None, float | None]:
-    """Try to extract a CI for the median survival time from a lifelines KMF."""
+def _median_ci(kmf: Any) -> tuple[float | None, float | None]:
+    """Try to extract a CI for the median survival time from a lifelines KMF.
+
+    The confidence level is fixed by the ``alpha=`` passed at ``kmf.fit``
+    time — lifelines bakes the CI into ``kmf.confidence_interval_`` at
+    fit time and there is no way to re-derive it post-hoc without
+    refitting. Callers must therefore call ``kmf.fit(..., alpha=1−L)``
+    upstream to get an *L*-confidence median CI here.
+    """
     try:
         from lifelines.utils import median_survival_times
 
@@ -368,7 +439,6 @@ def _median_ci(kmf: Any, conf_level: float) -> tuple[float | None, float | None]
             return float(row.iloc[0]), float(row.iloc[1])
     except Exception:  # pragma: no cover
         pass
-    del conf_level
     return None, None
 
 

@@ -115,13 +115,24 @@ def pool(models: list[Any], *, conf_level: float = 0.95) -> ModelSummary:
         index=coef_names,
     )
 
-    # Within-imputation variance Ubar (mean of squared SE estimates) —
-    # derived from CI half-widths so it works for any model with CIs.
+    # Within-imputation variance Ubar — use the explicit per-coef SE
+    # when the extractor provides one (statsmodels, lifelines). Falling
+    # back to back-deriving SE from the CI half-width is only safe
+    # when the CI was built with a z-critical; for statsmodels OLS/
+    # Logit/GLM the CI uses a t-critical, so dividing the half-width
+    # by ``z_crit`` would systematically OVER-state SE and inflate the
+    # pooled CI. Prefer the direct SE every time it's available.
     ses = np.zeros((m, len(coef_names)), dtype=float)
     z_crit = float(sp_stats.norm.ppf(0.5 + conf_level / 2))
     for i, s in enumerate(summaries):
-        half = (s.ci_hi.to_numpy() - s.ci_lo.to_numpy()) / 2.0
-        ses[i, :] = half / z_crit
+        if s.se is not None:
+            ses[i, :] = s.se.reindex(coef_names).to_numpy(dtype=float)
+        else:
+            # sklearn linear models don't expose SE; back-derive from
+            # CI half-width assuming a z-pivot (which is what sklearn
+            # uses when it exposes a CI at all).
+            half = (s.ci_hi.to_numpy() - s.ci_lo.to_numpy()) / 2.0
+            ses[i, :] = half / z_crit
     Ubar = np.nanmean(ses ** 2, axis=0)
 
     # Between-imputation variance B.

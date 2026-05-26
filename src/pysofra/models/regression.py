@@ -433,8 +433,18 @@ def _refit_with_design(model: Any, design: Any, data: Any) -> Any:
                 f"endog length {len(endog)}; pass the same DataFrame the "
                 f"model was fit on."
             )
-        # Negative or NaN weights — drop into the model's own warning system.
-        w = np.where(np.isfinite(w) & (w > 0), w, 0.0)
+        # Validate weights with the same policy as ``tbl_one``: a refit
+        # silently zeroing bad rows would make the SE of a design-aware
+        # model disagree silently with what ``tbl_one(design=…)`` produces
+        # on the same column. Loud failure here.
+        bad_mask = ~(np.isfinite(w) & (w > 0))
+        if bool(bad_mask.any()):
+            n_bad = int(bad_mask.sum())
+            raise ValueError(
+                f"design.weights contains {n_bad} non-positive / non-finite "
+                "value(s). Drop or correct those rows before calling "
+                "tbl_regression(design=…)."
+            )
         weights_arr = w
 
     cluster_arr = None
@@ -480,10 +490,19 @@ def _refit_with_design(model: Any, design: Any, data: Any) -> Any:
     except ImportError as e:  # pragma: no cover — guarded by upstream import
         raise ImportError("design= requires statsmodels.") from e
 
-    # statsmodels emits SpecificationWarning when combining freq_weights
+    # statsmodels emits SpecificationWarning when combining var_weights
     # with cov_type='cluster' in GLM. The combination is what every
     # design-based regression library uses (R's survey::svyglm,
     # Stata's svyset/regress), so we suppress the warning locally.
+    #
+    # We use ``var_weights`` (not ``freq_weights``) for sampling /
+    # IPW weights: ``freq_weights`` scales ``df_resid`` by ``Σw``
+    # (treating w as an integer count of repeats), which inflates the
+    # effective sample size when weights are non-integer and produces
+    # anti-conservative SEs. ``var_weights`` keeps ``df_resid = n − k``,
+    # which is the SRS-weighted convention matching R ``svyglm`` to
+    # first order. (For frequency-weighted analysis where each weight
+    # IS an integer count, the user can pre-replicate the data.)
     import warnings as _w
     try:
         from statsmodels.tools.sm_exceptions import SpecificationWarning
@@ -500,15 +519,15 @@ def _refit_with_design(model: Any, design: Any, data: Any) -> Any:
 
     if inner_name == "GLM":
         return _fit(sm.GLM(endog, exog, family=inner.family,
-                           freq_weights=weights_arr))
+                           var_weights=weights_arr))
 
     if inner_name == "Logit":
         return _fit(sm.GLM(endog, exog, family=sm.families.Binomial(),
-                           freq_weights=weights_arr))
+                           var_weights=weights_arr))
 
     if inner_name == "Poisson":
         return _fit(sm.GLM(endog, exog, family=sm.families.Poisson(),
-                           freq_weights=weights_arr))
+                           var_weights=weights_arr))
 
     raise NotImplementedError(  # pragma: no cover — exotic statsmodels model
         f"design= with weights does not yet support {inner_name!r}. "

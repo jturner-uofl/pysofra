@@ -30,10 +30,25 @@ import pandas as pd
 
 
 def _weighted_mean_var(x: np.ndarray, w: np.ndarray) -> tuple[float, float]:
-    """Frequency-weighted mean + variance with divisor ``Σw − 1``.
+    """Weighted mean + variance with divisor ``Σw − 1``.
 
     Matches ``statsmodels.stats.weightstats.DescrStatsW`` (with the
-    default ddof=1) and R's ``Hmisc::wtd.var``.
+    default ddof=1) and R's ``Hmisc::wtd.var(..., type="unbiased")``.
+
+    Notes
+    -----
+    This divisor is the textbook "frequency-weight" / "unbiased"
+    convention. It is also a sensible choice for "reliability" /
+    "importance" weights that average near 1.
+
+    For *sampling* weights where ``Σw`` represents an inflated
+    population total (e.g. NHANES weights that sum to millions), this
+    convention undercounts the residual df by ``Σw − n`` and produces
+    an overconfident variance. For such designs, use
+    :class:`~pysofra.SurveyDesign` end-to-end (which routes through
+    :func:`~pysofra.summary.design.design_mean_var` with proper Taylor
+    linearisation, FPC, and cluster handling) rather than passing a
+    raw ``weights=`` column to ``tbl_one``.
     """
     sw = float(w.sum())
     if sw <= 1.0:

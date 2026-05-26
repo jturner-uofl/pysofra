@@ -1926,3 +1926,184 @@ class TestSurvivalInputValidation:
         # Should not raise.
         t = ps.tbl_survival(df, time="t", event="e")
         assert len(t.rows) >= 1
+
+
+# ----------------------------------------------------------------------
+# PhD-audit fixes — round 7 (0.1.0a8)
+# ----------------------------------------------------------------------
+
+class TestTblRegressionAddPIsNoOp:
+    """tbl_regression.add_p() previously raised RuntimeError despite the
+    docstring promising a no-op (the spec-routed path tripped a
+    rebuild-context check). Now genuinely returns ``self``."""
+
+    def test_add_p_no_op_on_tbl_regression(self):
+        sm = pytest.importorskip("statsmodels.api")
+        df = pd.DataFrame({"y": [0, 1] * 25, "x": list(range(50))})
+        m = sm.Logit(df["y"], sm.add_constant(df[["x"]])).fit(disp=False)
+        t = ps.tbl_regression(m)
+        t2 = t.add_p()
+        # ``add_p`` should be a true no-op — same object.
+        assert t is t2
+
+
+class TestForestPlotAutoDetectScale:
+    """with_forest_plot() now auto-detects ``log_x`` and ``null_line``
+    from the table's coefficient column header: OR/HR/TR/IRR/RR → log
+    scale at null=1; β/Estimate → linear scale at null=0."""
+
+    def test_logit_OR_uses_log_scale(self):
+        sm = pytest.importorskip("statsmodels.api")
+        pytest.importorskip("matplotlib")
+        df = pd.DataFrame({"y": [0, 1] * 25, "x": list(range(50))})
+        m = sm.Logit(df["y"], sm.add_constant(df[["x"]])).fit(disp=False)
+        t = ps.tbl_regression(m)
+        # Should not raise — OR table with default log_x=auto.
+        t.with_forest_plot()
+
+    def test_ols_beta_uses_linear_scale(self):
+        sm = pytest.importorskip("statsmodels.api")
+        pytest.importorskip("matplotlib")
+        df = pd.DataFrame({"y": [float(i) for i in range(50)],
+                           "x": list(range(50))})
+        m = sm.OLS(df["y"], sm.add_constant(df[["x"]])).fit()
+        t = ps.tbl_regression(m)
+        # Should not raise — β table with default log_x=auto resolves
+        # to log_x=False, null_line=0. Previously the hard-coded
+        # log_x=True would have either crashed or silently dropped
+        # negative β values on the log axis.
+        t.with_forest_plot()
+
+
+class TestHTMLLinkSchemeAllowlist:
+    """HTML renderer now strips javascript: / data: URLs from
+    CellPart(link=...) — previously they passed through unfiltered,
+    creating an XSS vector for tables built from untrusted input."""
+
+    def test_javascript_url_replaced_with_about_blank(self):
+        from pysofra.core.schema import (
+            Cell,
+            CellPart,
+            HeaderCell,
+            HeaderRow,
+            Row,
+        )
+        from pysofra.core.table import SofraTable
+        parts = (CellPart(text="click", link="javascript:alert(1)"),)
+        t = SofraTable(
+            rows=(Row(cells=(Cell(text="click", parts=parts),)),),
+            headers=(HeaderRow(cells=(HeaderCell(text="X"),)),),
+        )
+        html = t.to_html()
+        assert "javascript:" not in html
+        assert "about:blank" in html
+
+    def test_https_url_preserved(self):
+        from pysofra.core.schema import (
+            Cell,
+            CellPart,
+            HeaderCell,
+            HeaderRow,
+            Row,
+        )
+        from pysofra.core.table import SofraTable
+        parts = (CellPart(text="x", link="https://example.com/p?q=1"),)
+        t = SofraTable(
+            rows=(Row(cells=(Cell(text="x", parts=parts),)),),
+            headers=(HeaderRow(cells=(HeaderCell(text="X"),)),),
+        )
+        assert "https://example.com" in t.to_html()
+
+
+class TestDesignFPCUnstratified:
+    """SurveyDesign(fpc=...) without strata now actually applies the
+    finite-population correction. Previously FPC was silently dropped
+    in the unstratified branch."""
+
+    def test_fpc_reduces_variance_without_strata(self):
+        from pysofra.summary.design import design_mean_var
+        v = pd.Series([1.0, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+        w = pd.Series([2.0] * 10)
+        fpc = pd.Series([100] * 10)  # n=10 out of N=100
+        _, v_no_fpc, _ = design_mean_var(v, w)
+        _, v_fpc, _ = design_mean_var(v, w, fpc=fpc)
+        # FPC = 1 − n/N = 1 − 10/100 = 0.9 → variance scaled by 0.9
+        assert abs(v_fpc - 0.9 * v_no_fpc) < 1e-12
+
+
+class TestLonelyPSUWarns:
+    """A stratum with a single PSU produces an undefined cluster
+    variance contribution. Pysofra now emits a UserWarning and treats
+    the stratum's contribution as zero (R survey errors by default)."""
+
+    def test_lonely_psu_warns(self):
+        from pysofra.summary.design import design_mean_var
+        v = pd.Series([1.0, 2, 3, 10, 11, 12])
+        w = pd.Series([1.0] * 6)
+        strata = pd.Series(["A", "A", "A", "B", "B", "B"])
+        cluster = pd.Series(["c1"] * 3 + ["c2"] * 3)  # both strata lonely
+        with pytest.warns(UserWarning, match=r"lonely PSU"):
+            design_mean_var(v, w, strata=strata, cluster=cluster)
+
+    def test_single_overall_cluster_warns(self):
+        from pysofra.summary.design import design_mean_var
+        v = pd.Series([1.0, 2, 3, 4])
+        w = pd.Series([1.0] * 4)
+        cluster = pd.Series(["c1"] * 4)  # only one PSU overall
+        with pytest.warns(UserWarning, match=r"only one cluster"):
+            design_mean_var(v, w, cluster=cluster)
+
+
+class TestTblSurvivalWeights:
+    """tbl_survival now accepts a `weights=` column and threads it
+    through lifelines' weighted KM. Weighted N totals differ from
+    unweighted N totals on non-uniform weights."""
+
+    def test_weighted_n_differs_from_unweighted(self):
+        pytest.importorskip("lifelines")
+        rng = np.random.default_rng(0)
+        n = 200
+        df = pd.DataFrame({
+            "t": rng.exponential(10, n),
+            "e": rng.integers(0, 2, n),
+            "arm": rng.choice(["A", "B"], n),
+            "w": rng.uniform(0.5, 2.0, n),
+        })
+        df.loc[df["arm"] == "A", "w"] *= 3.0
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            t_unw = ps.tbl_survival(df, time="t", event="e", by="arm")
+            t_wt = ps.tbl_survival(df, time="t", event="e", by="arm",
+                                   weights="w")
+        n_unw = next(r for r in t_unw.rows if r.cells[0].text == "N")
+        n_wt = next(r for r in t_wt.rows if r.cells[0].text == "N")
+        # The weighted N for arm A should be roughly 3× the unweighted N
+        # (since arm A's weights were 3×); at minimum the weighted N
+        # differs from the unweighted N for both arms.
+        for col in (1, 2):
+            assert n_unw.cells[col].value != n_wt.cells[col].value
+
+    def test_negative_weights_raise(self):
+        pytest.importorskip("lifelines")
+        df = pd.DataFrame({
+            "t": [1.0, 2, 3, 4, 5],
+            "e": [0, 1, 1, 0, 1],
+            "w": [-1.0, 1.0, 1.0, 1.0, 1.0],
+        })
+        with pytest.raises(ValueError, match=r"negative"):
+            ps.tbl_survival(df, time="t", event="e", weights="w")
+
+
+class TestRebuildDropsColumnWarning:
+    """All spec-changing modifiers (not just add_global_p) now warn
+    when chaining them after add_difference / add_ci /
+    add_significance_stars would silently drop those columns."""
+
+    def test_add_p_after_add_difference_warns(self):
+        df = pd.DataFrame({
+            "arm": ["A", "B"] * 25,
+            "x": [float(i) for i in range(50)],
+        })
+        t = ps.tbl_one(df, by="arm", variables=["x"], missing="never")
+        with pytest.warns(UserWarning, match=r"column.*will be dropped"):
+            t.add_difference().add_p()

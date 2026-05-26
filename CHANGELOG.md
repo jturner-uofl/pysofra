@@ -5,6 +5,75 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a8] — 2026-05-26
+
+### Fixed
+- **`SurveyDesign(fpc=...)` now actually applies the finite-population
+  correction when no strata are given.** Previously the FPC was
+  silently dropped in the unstratified branch of ``design_mean_var``;
+  a user who configured ``SurveyDesign(weights=..., fpc=...)`` got the
+  same variance as if the FPC had been omitted.
+- **Lonely PSU warning.** A stratum (or the whole design) containing
+  only one cluster now emits a clear ``UserWarning`` from
+  ``design_mean_var``. R's ``survey`` package errors by default in
+  this case because the cluster-robust variance is undefined; pysofra
+  warns and contributes zero so the rest of the table still renders.
+- **Stratified variance centring.** The Taylor-linearised variance for
+  the stratified-unclustered case now centres residuals on the
+  stratum-specific mean rather than on zero, matching the textbook
+  formula and R ``survey::svyrecvar``. The previous form
+  systematically inflated variance whenever the influence-function
+  mean drifted off zero within a stratum.
+- **Multiple-imputation pool uses direct SE** (when available) instead
+  of back-deriving from the CI half-width with a z-pivot. Statsmodels
+  CIs are t-based; dividing the half-width by ``z`` over-stated SE.
+  The fix stores SE on ``ModelSummary`` from extractors that expose it
+  (statsmodels ``bse``, lifelines ``se(coef)``) and falls back to the
+  z-pivot only for fitters that don't (sklearn).
+- **`tbl_regression.add_p()` is genuinely a no-op** on tbl_regression
+  tables (previously raised ``RuntimeError`` despite docstring
+  promising a no-op).
+- **Forest-plot scale auto-detection.** ``with_forest_plot()`` now
+  picks ``log_x``/``null_line`` from the table's coefficient column
+  header — exponentiated families (OR/HR/TR/IRR/RR) get log-scale at
+  null=1; raw-coefficient families (β/Estimate) get linear at null=0.
+  Explicit kwargs still override.
+- **HTML link scheme allowlist.** ``CellPart(link=...)`` URLs are now
+  filtered against an allowlist of safe schemes (http/https/mailto/
+  ftp/ftps, plus relative paths and fragments); ``javascript:`` and
+  ``data:`` are replaced with ``about:blank``. Closes an XSS vector
+  for tables built from untrusted input.
+- **`_refit_with_design` raises on invalid weights** instead of
+  silently zeroing rows (matches the existing ``tbl_one(weights=)``
+  policy).
+- **`tbl_regression(design=)` uses `var_weights`** rather than
+  ``freq_weights`` when refitting under a survey design. The
+  ``freq_weights`` convention scales ``df_resid`` by ``Σw`` (treating
+  the weight as an integer count of repeats), inflating effective N
+  on non-integer sampling weights. ``var_weights`` keeps
+  ``df_resid = n − k``, matching R ``survey::svyglm`` to first order.
+
+### Added
+- **`tbl_survival(weights=)`**: lifelines' weighted KM is now exposed.
+  Weighted N totals / events / censored are reported as weighted sums;
+  the log-rank test is unweighted (lifelines doesn't expose a
+  weighted log-rank) and a footnote flags this when weights are
+  active.
+- **Rebuild-drop warning extended to every spec-changing modifier**
+  (was only `add_global_p`). Calling any of ``.add_p``, ``.add_smd``,
+  ``.add_overall``, ``.add_n``, ``.add_q``, ``.add_global_p`` after a
+  column-adding modifier (``add_difference``, ``add_ci``,
+  ``add_significance_stars``) now emits a ``UserWarning`` naming the
+  dropped columns and recommending the right call order.
+
+### Changed
+- ``_weighted_mean_var`` docstring now explicitly distinguishes
+  frequency / reliability weights (where ``Σw − 1`` is appropriate)
+  from sampling weights with large ``Σw`` (where ``SurveyDesign``
+  should be used instead).
+- ``_median_ci`` no longer accepts a redundant ``conf_level`` argument
+  (the level is fixed at KMF fit time).
+
 ## [0.1.0a7] — 2026-05-26
 
 ### Fixed

@@ -9,7 +9,7 @@
 [![License: GPL-3.0+](https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg)](https://github.com/jturner-uofl/pysofra/blob/main/LICENSE)
 [![Style: ruff](https://img.shields.io/badge/style-ruff-purple.svg)](https://github.com/astral-sh/ruff)
 [![Types: mypy strict](https://img.shields.io/badge/types-mypy%20strict-blue.svg)](http://mypy-lang.org/)
-[![Tests: 906](https://img.shields.io/badge/tests-906%20passing-brightgreen.svg)](#status)
+[![Tests: 917](https://img.shields.io/badge/tests-917%20passing-brightgreen.svg)](#status)
 
 </div>
 
@@ -189,7 +189,7 @@ pip install "pysofra[dev]"        # testing + linting (pytest, ruff, mypy, hypot
 
 ## Status
 
-PySofra is in **alpha** (`0.1.0a7`). The public API surface is pinned
+PySofra is in **alpha** (`0.1.0a8`). The public API surface is pinned
 by an explicit
 [API-stability test](https://github.com/jturner-uofl/pysofra/blob/main/tests/test_api_stability.py)
 so that any unintended rename, removal, or signature change surfaces as

@@ -416,9 +416,47 @@ def _render_parts(c: Cell) -> str:
         if p.color:
             s = f'<span style="color:{html.escape(p.color)};">{s}</span>'
         if p.link:
-            s = f'<a href="{html.escape(p.link)}">{s}</a>'
+            s = f'<a href="{_safe_link_href(p.link)}">{s}</a>'
         out.append(s)
     return "".join(out)
+
+
+# Schemes accepted for rendered ``<a href=…>`` attributes. Anything
+# else — including the notorious ``javascript:`` and ``data:`` — is
+# dropped onto a no-op ``about:blank`` to prevent a malicious CellPart
+# from injecting an executable URL into a published table.
+_SAFE_URL_SCHEMES = frozenset({"http", "https", "mailto", "ftp", "ftps"})
+
+
+def _safe_link_href(raw: str) -> str:
+    """Render an HTML-attribute-safe href, dropping unsafe URL schemes.
+
+    Accepts:
+      * Relative URLs (no scheme prefix)
+      * Fragment-only URLs (``#section``)
+      * Absolute URLs with a scheme in :data:`_SAFE_URL_SCHEMES`
+
+    Anything else (notably ``javascript:`` and ``data:``) is rewritten
+    to ``about:blank`` so an untrusted ``CellPart(link=…)`` cannot
+    inject an executable URL into the table's published HTML.
+    """
+    if not raw:
+        return ""
+    stripped = raw.strip()
+    if not stripped or stripped.startswith("#") or stripped.startswith("/"):
+        return html.escape(stripped)
+    # Scheme detection: characters up to the first ``:`` form the scheme,
+    # provided they are URL-scheme legal (letters/digits/+-./). This
+    # mirrors RFC 3986's stricter definition; relative URLs that
+    # contain a ``:`` later (e.g. ``foo.txt?q=1:2``) are still allowed
+    # because we only inspect the prefix before the first ``:``.
+    colon = stripped.find(":")
+    if colon < 0:
+        return html.escape(stripped)
+    scheme = stripped[:colon].lower()
+    if scheme in _SAFE_URL_SCHEMES:
+        return html.escape(stripped)
+    return "about:blank"
 
 
 def _render_tfoot(table: SofraTable, inlines: _ThemeInlines) -> str:

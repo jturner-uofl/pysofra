@@ -139,8 +139,51 @@ def design_mean_var(
     # Residuals for the mean estimator.
     e = w.to_numpy() * (v.to_numpy() - mean)
 
+    # Emit a UserWarning when ANY stratum or cluster has exactly one PSU
+    # (the "lonely PSU" problem). The standard cluster-variance estimator
+    # needs at least 2 PSUs to compute a within-stratum sum-of-squares;
+    # with 1 PSU it silently contributes 0, *under-estimating* the
+    # variance. R ``survey::svyrecvar`` errors by default
+    # (``options(survey.lonely.psu='fail')``); we warn and contribute 0
+    # so the rest of the table still renders, but the user is on notice.
+    import warnings as _w
+    if strata is not None and cluster is not None:
+        n_psu_per_stratum = (
+            pd.Series(cluster).groupby(pd.Series(strata)).nunique()
+        )
+        lonely = n_psu_per_stratum[n_psu_per_stratum < 2]
+        if not lonely.empty:
+            _w.warn(
+                f"{len(lonely)} stratum/strata contain only one cluster "
+                "('lonely PSU'); their variance contribution is taken as "
+                "zero, which UNDER-ESTIMATES the design-based variance. "
+                "R's survey package errors by default on this. Combine "
+                "or drop the affected strata, or use a replicate-weight "
+                "variance estimator.",
+                UserWarning,
+                stacklevel=2,
+            )
+    elif cluster is not None:
+        if int(pd.Series(cluster).nunique()) < 2:
+            _w.warn(
+                "design has only one cluster overall; the cluster-robust "
+                "variance is undefined and reported as zero. Add more "
+                "clusters or drop the cluster argument.",
+                UserWarning,
+                stacklevel=2,
+            )
+
     if strata is None and cluster is None:
         var_num = float(np.sum(e ** 2)) * (n / max(n - 1, 1))
+        # Apply FPC in the unstratified-unclustered branch too. The
+        # standard formula is ``Var(ȳ_w) ∝ (1 − n/N) · Σ residuals²``;
+        # earlier alphas only applied FPC inside the stratified branch,
+        # silently dropping it for designs configured with only
+        # ``weights=`` and ``fpc=``.
+        if fpc is not None and fpc.size > 0:
+            fpc_val = float(fpc.iloc[0])
+            f = min(1.0, n / max(fpc_val, 1.0))
+            var_num *= 1.0 - f
     elif strata is None:
         assert cluster is not None
         # Single-stage clusters; sum residuals within each cluster, take
@@ -153,6 +196,11 @@ def design_mean_var(
                 * (n_clust / (n_clust - 1))
         else:
             var_num = 0.0
+        # Apply FPC in the clustered-unstratified branch as well.
+        if fpc is not None and fpc.size > 0:
+            fpc_val = float(fpc.iloc[0])
+            f = min(1.0, n_clust / max(fpc_val, 1.0))
+            var_num *= 1.0 - f
     else:
         # Stratified, possibly with clusters within strata.
         var_num = 0.0
@@ -166,6 +214,13 @@ def design_mean_var(
                 psu_totals = pd.Series(e_h).groupby(c_h).sum().to_numpy()
                 n_h = int(psu_totals.size)
                 if n_h > 1:
+                    # Centre on the stratum-specific PSU-total mean.
+                    # The textbook Taylor estimator within a stratum is
+                    # ``(n_h/(n_h−1))·Σ(s_hk − s̄_h)²``; the previous
+                    # ``Σ s_hk²`` form (which centres on the global zero)
+                    # over-states the variance whenever the per-stratum
+                    # influence-function mean is non-zero, which it
+                    # generally is in stratified data.
                     mean_h = float(psu_totals.mean())
                     contrib = float(np.sum((psu_totals - mean_h) ** 2)) \
                         * (n_h / (n_h - 1))
@@ -173,11 +228,14 @@ def design_mean_var(
                     contrib = 0.0
             else:
                 n_h = int(e_h.size)
-                contrib = (
-                    float(np.sum(e_h ** 2)) * (n_h / (n_h - 1))
-                    if n_h > 1
-                    else 0.0
-                )
+                if n_h > 1:
+                    # Same correction in the stratified-unclustered
+                    # case: centre on the stratum mean, not on zero.
+                    mean_h = float(e_h.mean())
+                    contrib = float(np.sum((e_h - mean_h) ** 2)) \
+                        * (n_h / (n_h - 1))
+                else:
+                    contrib = 0.0
 
             if fpc is not None and idx_arr.size > 0:
                 fpc_h = float(fpc.iloc[idx_arr].iloc[0])

@@ -248,6 +248,15 @@ class SofraTable:
         ``tbl_regression`` p-values are already present and this is a
         no-op.
         """
+        # tbl_regression tables already carry a p-value column for every
+        # row. The spec records a ``tbl_regression`` builder but has no
+        # rebuild closure (the model is the source of truth, not a
+        # DataFrame), so the spec-routed path below would raise
+        # RuntimeError if we let it through. Short-circuit the no-op
+        # explicitly to match the docstring promise.
+        spec = self._spec
+        if spec is not None and spec.builder == "tbl_regression":
+            return self
         return self._with_option(p_value=True, p_overrides=dict(overrides))
 
     def add_smd(self) -> SofraTable:
@@ -372,34 +381,12 @@ class SofraTable:
 
             return add_global_p(self)
         # tbl_one / tbl_summary path: route through the rebuild spec.
-        # The rebuild reconstructs the table from spec.options only;
-        # columns added by post-build modifiers (``add_difference``,
-        # ``add_ci``, ``add_significance_stars``, ...) live in
-        # ``self.rows``/``self.headers`` and are NOT preserved by the
-        # rebuild. Detect a *known* such column by header text and warn
-        # the user so the silent column-drop doesn't mislead them.
-        # The correct chaining order is to call ``add_global_p()``
-        # *before* any column-adding modifier.
+        # The drop-warning logic lives in ``_with_option`` so every
+        # rebuild-triggering modifier (add_p, add_smd, add_q, add_n,
+        # add_overall, add_global_p, …) emits the same warning when a
+        # prior post-build column would be discarded by the rebuild.
         spec = self._spec
         if spec is not None and spec.builder in ("tbl_one", "tbl_summary"):
-            post_build_headers = {"Diff", "[", "[ "}
-            header_texts = (
-                [c.text for c in self.headers[0].cells] if self.headers else []
-            )
-            has_diff_col = any(h.startswith("Diff (") for h in header_texts)
-            has_sig_col = any(h.lower() == "signif." for h in header_texts)
-            del post_build_headers
-            if has_diff_col or has_sig_col:
-                import warnings as _w
-                _w.warn(
-                    "add_global_p() reruns the table builder; any "
-                    "column added by a prior modifier (e.g. add_difference, "
-                    "add_significance_stars) will be dropped. Call "
-                    "add_global_p() BEFORE those modifiers to preserve "
-                    "their columns.",
-                    UserWarning,
-                    stacklevel=2,
-                )
             return self._with_option(
                 global_p=True,
                 global_p_adjust_for=tuple(adjust_for or ()),
@@ -836,8 +823,8 @@ class SofraTable:
     def with_forest_plot(
         self,
         *,
-        log_x: bool = True,
-        null_line: float = 1.0,
+        log_x: bool | None = None,
+        null_line: float | None = None,
         position: str = "above",
         **plot_kwargs: Any,
     ) -> SofraTable:
@@ -848,8 +835,36 @@ class SofraTable:
         the plot is guaranteed to match the displayed numbers. The
         attached plot carries SVG / PNG / PDF serialisations so it
         embeds in HTML, DOCX, PPTX, and LaTeX output consistently.
+
+        ``log_x`` and ``null_line`` default to ``None`` and are
+        auto-detected from the table's coefficient column header:
+        exponentiated families (OR / HR / TR / IRR / RR) get
+        ``log_x=True, null_line=1.0``; raw-coefficient families
+        (β / Estimate) get ``log_x=False, null_line=0.0``. Pass an
+        explicit value to override.
         """
         from ..plot.forest import forest_plot
+
+        # Auto-detect from the table's estimate-column header text.
+        # tbl_regression sets one of: "OR", "HR", "TR", "IRR", "RR",
+        # "exp(β)" (exponentiated families) or "β" / "Estimate"
+        # (raw-coefficient families). Multi-model tables repeat the
+        # header per model; we only need the first match.
+        if log_x is None or null_line is None:
+            EXP_HEADERS = {"OR", "HR", "TR", "IRR", "RR", "exp(β)"}
+            RAW_HEADERS = {"β", "Estimate"}
+            header_texts: list[str] = []
+            for hr in self.headers:
+                header_texts.extend(c.text for c in hr.cells)
+            is_exp = any(h in EXP_HEADERS for h in header_texts)
+            is_raw = any(h in RAW_HEADERS for h in header_texts)
+            # If both or neither match, default to exp (the historical
+            # behaviour). Most regression tables in clinical reporting
+            # are exponentiated.
+            if log_x is None:
+                log_x = not (is_raw and not is_exp)
+            if null_line is None:
+                null_line = 0.0 if (is_raw and not is_exp) else 1.0
 
         plot = forest_plot(self, log_x=log_x, null_line=null_line, **plot_kwargs)
         if position not in ("above", "below"):
@@ -953,6 +968,38 @@ class SofraTable:
                 f"set_caption, with_footnotes, bold_p, with_forest_plot, "
                 f"etc.) and renderers still work."
             )
+        # Detect post-build columns added by chained modifiers
+        # (``add_difference``, ``add_ci``, ``add_significance_stars``)
+        # that the rebuild path will silently discard. We warn ONCE per
+        # rebuild, no matter which modifier triggered it. The correct
+        # ordering is "modifiers that change the spec first, modifiers
+        # that add columns last."
+        header_texts = (
+            [c.text for c in self.headers[0].cells] if self.headers else []
+        )
+        dropped: list[str] = []
+        for txt in header_texts:
+            txt_lower = txt.lower()
+            # add_stat_label uses "Statistic"; don't sweep up legitimate
+            # stat columns the builder added itself.
+            if txt_lower in ("stat", "statistic"):
+                continue
+            if txt.startswith("Diff (") or txt_lower == "signif.":
+                dropped.append(txt)
+        if dropped:
+            import warnings as _w
+            _w.warn(
+                f"This statistical modifier reruns the table builder; "
+                f"{len(dropped)} column(s) added by a prior modifier "
+                f"({dropped!r}) will be dropped from the result. Call "
+                "spec-changing modifiers (.add_p, .add_smd, .add_q, "
+                ".add_overall, .add_n, .add_global_p) BEFORE column-"
+                "adding modifiers (.add_difference, .add_ci, "
+                ".add_significance_stars) to preserve their columns.",
+                UserWarning,
+                stacklevel=3,
+            )
+
         new_spec = self._spec.updated(**changes)
         rebuilt = self._rebuild(new_spec)
         # Preserve presentational state (theme, caption) across rebuilds.

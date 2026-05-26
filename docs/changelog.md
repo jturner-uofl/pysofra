@@ -5,6 +5,32 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a8] — 2026-05-26
+
+### Fixed
+- `SurveyDesign(fpc=...)` now applies FPC even when no strata are given.
+- Lonely PSU (single cluster in a stratum) emits a `UserWarning`.
+- Stratified variance now centres residuals on the stratum mean (was zero).
+- `pool()` uses direct SE from `ModelSummary.se` instead of back-deriving
+  from the CI half-width with a z-pivot.
+- `tbl_regression.add_p()` is genuinely a no-op on tbl_regression tables.
+- `with_forest_plot()` auto-detects log/linear scale from the table's
+  coefficient column header (OR/HR/TR/IRR → log; β/Estimate → linear).
+- HTML link scheme allowlist: `javascript:` / `data:` URLs in
+  `CellPart(link=...)` are replaced with `about:blank`.
+- `_refit_with_design` raises on invalid weights instead of silently zeroing.
+- `tbl_regression(design=)` uses `var_weights` (not `freq_weights`)
+  to match R `survey::svyglm` to first order on non-integer weights.
+
+### Added
+- `tbl_survival(weights=)`: weighted KM via lifelines.
+- Rebuild-drop warning extended to every spec-changing modifier.
+
+### Changed
+- `_weighted_mean_var` docstring distinguishes freq/reliability
+  weights from large-Σw sampling weights.
+- `_median_ci` drops the redundant `conf_level` parameter.
+
 ## [0.1.0a7] — 2026-05-26
 
 ### Fixed

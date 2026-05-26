@@ -97,6 +97,7 @@ def test_tbl_survival_signature_stable():
     expected = (
         "data", "time", "event", "by", "times", "times_label",
         "conf_level", "digits", "pct_digits", "labels", "show_logrank",
+        "weights",
     )
     actual = tuple(p[0] for p in _params(ps.tbl_survival))
     assert actual == expected

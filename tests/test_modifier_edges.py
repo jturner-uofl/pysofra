@@ -434,13 +434,15 @@ class TestRendererSmallRemnants:
 # ----------------------------------------------------------------------
 class TestDesignFinal:
     def test_design_mean_var_stratum_single_psu(self):
-        # Stratified with single cluster per stratum → contrib=0 branch
+        # Stratified with single cluster per stratum → "lonely PSU"
+        # warning fires; per-stratum variance contribution is 0.
         from pysofra.summary.design import design_mean_var
         v = pd.Series([1.0, 2.0, 3.0, 4.0])
         w = pd.Series([1.0] * 4)
         strata = pd.Series(["s1", "s1", "s2", "s2"])
         cluster = pd.Series(["c1", "c1", "c2", "c2"])
-        m, var, _n = design_mean_var(v, w, strata=strata, cluster=cluster)
+        with pytest.warns(UserWarning, match=r"lonely PSU"):
+            m, _var, _n = design_mean_var(v, w, strata=strata, cluster=cluster)
         assert not np.isnan(m)
 
     def test_replicate_mean_var_zero_weights(self):
