@@ -50,13 +50,18 @@ def _weighted_mean_var(x: np.ndarray, w: np.ndarray) -> tuple[float, float]:
     linearisation, FPC, and cluster handling) rather than passing a
     raw ``weights=`` column to ``tbl_one``.
     """
-    sw = float(w.sum())
+    import math
+    sw = math.fsum(w.tolist()) if w.size else 0.0
     if sw <= 1.0:
         return float("nan"), float("nan")
     with np.errstate(invalid="ignore", over="ignore"), _w.catch_warnings():
         _w.simplefilter("ignore", RuntimeWarning)
-        mean = float((w * x).sum() / sw)
-        var = float((w * (x - mean) ** 2).sum() / (sw - 1.0))
+        # Compensated summation: ``math.fsum`` is exactly-rounded so the
+        # SMD numerator is stable even when ``Σw`` and ``Σ w x²`` differ
+        # by many orders of magnitude (typical of sampling-weighted
+        # propensity-score balance tables).
+        mean = math.fsum((w * x).tolist()) / sw
+        var = math.fsum((w * (x - mean) ** 2).tolist()) / (sw - 1.0)
     return mean, var
 
 

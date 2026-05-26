@@ -443,7 +443,19 @@ def _safe_link_href(raw: str) -> str:
     if not raw:
         return ""
     stripped = raw.strip()
-    if not stripped or stripped.startswith("#") or stripped.startswith("/"):
+    # Reject UNC-style paths early. ``\\server\share`` is a Windows
+    # file URL that some browsers (notably Internet Explorer / legacy
+    # Edge) will silently resolve over SMB when present in an ``href``.
+    # That's an exfiltration vector — the act of *viewing* the rendered
+    # table triggers an outbound NTLM handshake to ``server``. We also
+    # reject any ``href`` that begins with ASCII control characters
+    # (``\x00``…``\x1f``, ``\x7f``) which some user agents strip before
+    # parsing, opening a "smuggling past scheme check" attack.
+    if stripped.startswith("\\\\") or stripped.startswith("\\"):
+        return "about:blank"
+    if stripped[:1] < " " or stripped[:1] == "\x7f":
+        return "about:blank"
+    if stripped.startswith("#") or stripped.startswith("/"):
         return html.escape(stripped)
     # Scheme detection: characters up to the first ``:`` form the scheme,
     # provided they are URL-scheme legal (letters/digits/+-./). This

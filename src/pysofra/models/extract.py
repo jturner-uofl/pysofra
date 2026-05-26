@@ -35,6 +35,21 @@ class ModelSummary:
     Wald test; ``None`` when the fitter doesn't expose one. Cox and
     most lifelines fitters use asymptotic normal inference and have
     no df_resid in the OLS sense.
+
+    ``separation_suspected`` flags coefficients whose magnitude or
+    standard error indicates the fit is non-identified (complete or
+    quasi-complete separation in a logistic model, perfect
+    collinearity in OLS, etc.). The renderer surfaces a footnote when
+    any such row is present so the user is not silently presented
+    with a publication-rendered ``exp(coef) = 5e18``.
+
+    ``ph_violations`` lists the covariates whose Schoenfeld-residual
+    test rejects proportional hazards (Cox PH only). Empty tuple when
+    the assumption is not violated or the test was not run. The
+    renderer adds a footnote when this is non-empty so the user is
+    nudged to refit with stratification or time-varying terms before
+    publishing a Cox-PH HR that doesn't satisfy the model's central
+    assumption.
     """
 
     estimates: pd.Series
@@ -45,6 +60,93 @@ class ModelSummary:
     natural_exponentiate: bool  # whether exp() is the natural reporting metric
     se: pd.Series | None = None
     df_resid: float | None = None
+    separation_suspected: bool = False
+    ph_violations: tuple[str, ...] = ()
+
+
+# Thresholds for detecting non-identification / separation.
+# |coef| > 30 on the log scale means exp(coef) > 1e13 — a "ratio" no
+# real biomedical effect produces. SE > 100 on the log scale signals
+# the Hessian was effectively singular (the standard fingerprint of
+# complete separation in MLE).
+_SEPARATION_COEF_THRESHOLD = 30.0
+_SEPARATION_SE_THRESHOLD = 100.0
+
+
+# Schoenfeld-residual p-value threshold for flagging Cox PH violations.
+# 0.05 is the conventional cutpoint; the renderer footnote merely points
+# the user at the diagnostic, it does not block rendering.
+_PH_VIOLATION_THRESHOLD = 0.05
+
+
+def _cox_ph_violations(model: Any) -> tuple[str, ...]:
+    """Run ``lifelines.statistics.proportional_hazard_test`` on a Cox fit.
+
+    Returns the names of covariates whose Schoenfeld-residual test
+    rejects proportional hazards at ``p < _PH_VIOLATION_THRESHOLD``.
+    Silently returns an empty tuple if the diagnostic fails for any
+    reason (e.g. fitter type mismatch, training-data unavailable, or
+    a lifelines version where the API differs) because PH diagnostics
+    are a *secondary* render concern — a crash here must not swallow
+    the actual table.
+    """
+    if type(model).__name__ != "CoxPHFitter":
+        return ()
+    # ``proportional_hazard_test`` needs the training dataframe.
+    # CoxPHFitter stashes it on the fitter under different names across
+    # lifelines versions; check the common ones in order. ``or``-chain
+    # won't work here because pandas DataFrames raise on bool().
+    training = None
+    for attr in ("training_data_", "_training_data", "training_df"):
+        candidate = getattr(model, attr, None)
+        if candidate is not None:
+            training = candidate
+            break
+    if training is None:
+        return ()
+    try:
+        from lifelines.statistics import proportional_hazard_test  # type: ignore[import-untyped]
+        result = proportional_hazard_test(model, training)
+    except Exception:  # pragma: no cover — defensive
+        return ()
+    summary = getattr(result, "summary", None)
+    if summary is None or "p" not in getattr(summary, "columns", []):
+        return ()
+    violations: list[str] = []
+    for idx, p in summary["p"].items():
+        try:
+            p_f = float(p)
+        except (TypeError, ValueError):
+            continue
+        if p_f < _PH_VIOLATION_THRESHOLD:
+            name = idx[0] if isinstance(idx, tuple) else idx
+            if name not in violations:
+                violations.append(str(name))
+    return tuple(violations)
+
+
+def _suspect_separation(params: pd.Series, bse: pd.Series | None) -> bool:
+    """Heuristic detector for non-identified MLE fits.
+
+    Returns ``True`` if any coefficient magnitude exceeds
+    :data:`_SEPARATION_COEF_THRESHOLD` (so its exponentiated form would
+    render as an absurd point estimate) or any standard error exceeds
+    :data:`_SEPARATION_SE_THRESHOLD` (so the asymptotic CI is
+    meaningless). Both criteria together would catch a Logit fit on
+    perfectly-separable data: the optimiser walks off to the boundary
+    and statsmodels reports a finite-but-huge coefficient with a
+    blown-up SE.
+    """
+    p = pd.to_numeric(params, errors="coerce").dropna()
+    if p.empty:
+        return False
+    if bool((p.abs() > _SEPARATION_COEF_THRESHOLD).any()):
+        return True
+    if bse is not None:
+        s = pd.to_numeric(bse, errors="coerce").dropna()
+        if not s.empty and bool((s > _SEPARATION_SE_THRESHOLD).any()):
+            return True
+    return False
 
 
 def extract(model: Any, conf_level: float = 0.95) -> ModelSummary:
@@ -119,6 +221,7 @@ def _extract_statsmodels(model: Any, conf_level: float) -> ModelSummary:
         natural_exponentiate=natural_exp,
         se=se,
         df_resid=df_resid,
+        separation_suspected=_suspect_separation(params, se),
     )
 
 
@@ -229,6 +332,7 @@ def _extract_lifelines(model: Any, conf_level: float) -> ModelSummary:
     # was flattened above).
     if se_series is not None:
         se_series = se_series.reindex(estimates.index).astype(float)
+    ph_violations = _cox_ph_violations(model)
     return ModelSummary(
         estimates=estimates,
         ci_lo=ci_lo,
@@ -238,6 +342,7 @@ def _extract_lifelines(model: Any, conf_level: float) -> ModelSummary:
         natural_exponentiate=natural_exp,
         se=se_series,
         df_resid=None,  # lifelines uses asymptotic normal inference
+        ph_violations=ph_violations,
     )
 
 

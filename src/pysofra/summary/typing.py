@@ -63,14 +63,22 @@ def infer_kind(series: pd.Series) -> VarKind:
     if is_numeric_dtype(series):
         uniques = s.unique()
         # Exactly {0, 1} (or {0.0, 1.0}) is a strong dichotomous signal.
-        # ``int(np.inf)`` raises ``OverflowError``; columns containing
-        # ``inf`` or ``-inf`` are by definition not 0/1, so we fall
-        # through to the continuous branch instead of crashing.
+        # We require **exact** numeric equality to 0 and 1 — the earlier
+        # ``int(x)`` truncation incorrectly classified e.g.
+        # ``[0.1, 0.2, 0.9, 1.1]`` as dichotomous because
+        # ``{int(0.1), int(1.1)} == {0, 1}``. ``inf`` / ``-inf`` /
+        # ``nan`` never compare equal to 0 or 1, so they fall through
+        # to the continuous branch automatically.
         try:
-            uvals = set(int(x) for x in uniques)
-            if uvals.issubset({0, 1}) and len(uvals) == 2:
+            arr = np.asarray(uniques, dtype=float)
+            allowed = np.isclose(arr, 0.0) | np.isclose(arr, 1.0)
+            n_unique = int(len(arr))
+            if (
+                bool(np.all(allowed))
+                and n_unique == 2
+            ):
                 return "dichotomous"
-        except (TypeError, ValueError, OverflowError):
+        except (TypeError, ValueError):
             pass
 
         try:

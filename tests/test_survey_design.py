@@ -142,6 +142,19 @@ class TestTblOneWithDesign:
 
     def test_design_routes_through_rao_scott(self, survey_df):
         design = ps.SurveyDesign(weights="w", strata="strata")
-        t = ps.tbl_one(survey_df, by="arm", design=design,
-                       variables=["age", "sex"]).add_p()
+        # Stratified/clustered designs now emit a UserWarning because the
+        # Kish-DEFF first-order approximation in ``rao_scott_chisq`` does
+        # not use the strata/cluster covariance structure.
+        import warnings
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            t = ps.tbl_one(survey_df, by="arm", design=design,
+                           variables=["age", "sex"]).add_p()
         assert any("Rao" in f for f in t.footnotes)
+
+    def test_design_with_strata_warns_on_rao_scott(self, survey_df):
+        design = ps.SurveyDesign(weights="w", strata="strata")
+        import pytest
+        with pytest.warns(UserWarning, match="first-order Kish-DEFF"):
+            ps.tbl_one(survey_df, by="arm", design=design,
+                       variables=["sex"]).add_p()

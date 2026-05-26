@@ -107,6 +107,31 @@ def tbl_regression(
     summaries = [extract(m, conf_level=conf_level) for m in models]
     labels = dict(labels or {})
 
+    # Cox-PH diagnostic: lifelines doesn't stash the training X on the
+    # fitter, so ``_extract_lifelines`` can't run the Schoenfeld test
+    # unaided. When the user passes ``data=`` (already the entry point
+    # for survey-design refits) we have everything we need; run the
+    # check here and patch the ph_violations field on the summary.
+    if data is not None:
+        from dataclasses import replace as _replace_sum
+        from .extract import _cox_ph_violations as _ph_check
+        if isinstance(data, (list, tuple)):
+            data_per_model = list(data)
+        else:
+            data_per_model = [data] * len(models)
+        for i, (m, d) in enumerate(zip(models, data_per_model, strict=True)):
+            if d is None or type(m).__name__ != "CoxPHFitter":
+                continue
+            # Stash training_data_ on the fitter so the helper finds it.
+            if getattr(m, "training_data_", None) is None:
+                try:
+                    m.training_data_ = d  # type: ignore[attr-defined]
+                except Exception:
+                    pass
+            viols = _ph_check(m)
+            if viols:
+                summaries[i] = _replace_sum(summaries[i], ph_violations=viols)
+
     if len(summaries) == 1:
         tbl = _build_single(
             summaries[0],
@@ -170,6 +195,35 @@ def _build_single(
         ))
 
     footnotes = _footnotes(summary.family, exp, conf_level, label, has_ci=True)
+    if getattr(summary, "separation_suspected", False):
+        # Surface a non-identified fit. statsmodels emits its own
+        # ``PerfectSeparationWarning`` at fit time, but by the time the
+        # model reaches ``tbl_regression`` that warning is gone — the
+        # only visible signal is a finite-but-huge coefficient and an
+        # enormous SE. The user must see something in the rendered
+        # table or they will publish an OR of 5e18.
+        footnotes.append(
+            "WARNING: at least one coefficient appears non-identified "
+            "(complete or quasi-complete separation, near-singular "
+            "design, or collinear predictors). The displayed point "
+            "estimates and CIs are unreliable; refit with a "
+            "penalised method (e.g. Firth logistic) or drop the "
+            "offending term."
+        )
+    ph_violations = getattr(summary, "ph_violations", ()) or ()
+    if ph_violations:
+        # Cox PH assumption violation. The HR is a single-number summary
+        # of the hazard ratio over follow-up; if it varies with time the
+        # reported HR is a (weighted) average of an effect that changes
+        # sign or magnitude across the study window. Stratify or add a
+        # time-varying coefficient before publishing.
+        names = ", ".join(ph_violations)
+        footnotes.append(
+            f"Proportional-hazards assumption rejected for: {names} "
+            f"(Schoenfeld residual test, p < 0.05). The HR is a "
+            "time-averaged effect — consider stratifying on these "
+            "covariates or fitting a time-varying coefficient."
+        )
     spec = TableSpec(
         builder="tbl_regression",
         options={

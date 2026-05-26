@@ -5,6 +5,32 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a9] — 2026-05-26
+
+### Fixed
+- Numeric `[0.1, 0.2, 0.9, 1.1]` is no longer classified as dichotomous
+  (the old `int(x)` truncation collapsed it to `{0, 1}`).
+- `tbl_regression` flags logistic / GLM fits with separation
+  (|coef| or SE above the non-identification threshold).
+- `tbl_one(design=…)` warns when Rao–Scott chi-square falls back on
+  the first-order Kish-DEFF approximation under strata or clusters.
+- `tbl_regression(CoxPHFitter, data=df)` runs `proportional_hazard_test`
+  on the training frame and lists any covariate that violates PH.
+- `weighted_continuous_stats`, `_weighted_mean_var_kish`, and the SMD
+  weighted-mean helper use `math.fsum` for compensated summation.
+- Rebuild-drop warning now catches `add_n`, `add_ci`, and
+  `add_significance_stars` columns via a metadata tag (was: only
+  `add_difference` / `signif.` via header-text match).
+- HTML link allowlist blocks UNC paths (`\\server\share`) and
+  control-character-prefixed hrefs.
+- DOCX cell / caption / footnote text is stripped of XML 1.0-illegal
+  control chars so user-supplied `\x00` doesn't corrupt the file.
+
+### Changed
+- `tests/test_scipy_validation.py` → `tests/test_pinned_references.py`;
+  `test_matches_r` methods → `test_matches_pinned_reference` (honest
+  about the fixture source, which is SciPy, not a live R run).
+
 ## [0.1.0a8] — 2026-05-26
 
 ### Fixed

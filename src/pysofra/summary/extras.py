@@ -23,6 +23,27 @@ from ..core.schema import Cell, HeaderCell, HeaderRow, Row, make_cell
 from ..core.table import SofraTable
 
 
+_POST_BUILD_META_KEY = "_post_build_added_headers"
+
+
+def _tag_post_build(table: SofraTable, *header_texts: str) -> SofraTable:
+    """Record on ``table.metadata`` that these column headers were added
+    by a post-build modifier.
+
+    The downstream rebuild detector reads this list to warn when a
+    later spec-changing modifier (``.add_p``, ``.add_smd``, ...) is
+    about to discard them. Centralising the tag here means every
+    column-adding modifier opts in uniformly — pattern-matching on
+    header text alone misses headers like ``""`` (significance stars)
+    or generic ``"N"`` that could legitimately collide with builder
+    output.
+    """
+    existing = tuple(table.metadata.get(_POST_BUILD_META_KEY, ()))
+    new_md = dict(table.metadata)
+    new_md[_POST_BUILD_META_KEY] = existing + tuple(header_texts)
+    return replace(table, metadata=new_md)
+
+
 def _weights_col_from_spec(table: SofraTable) -> str | None:
     """Return the name of the frequency-weights column attached to this
     table's tbl_one / tbl_summary spec, or ``None`` if unweighted.
@@ -46,12 +67,17 @@ def _weighted_mean_var_kish(x: np.ndarray, w: np.ndarray) -> tuple[float, float,
     to first order on unstratified weighted designs and is what the
     ``DescrStatsW`` class in statsmodels uses as ``nobs`` for inference.
     """
-    sw = float(w.sum())
-    sw2 = float((w * w).sum())
+    # Compensated summation: ``math.fsum`` is exactly-rounded so the
+    # mean and (mean-centred) variance are insensitive to accumulation
+    # order even on long arrays with mixed-magnitude weights.
+    import math
+    w_list = w.tolist() if w.size else []
+    sw = math.fsum(w_list)
+    sw2 = math.fsum((w * w).tolist()) if w.size else 0.0
     if sw <= 1.0 or sw2 <= 0.0:
         return float("nan"), float("nan"), 0.0
-    mean = float((w * x).sum() / sw)
-    var = float((w * (x - mean) ** 2).sum() / (sw - 1.0))
+    mean = math.fsum((w * x).tolist()) / sw
+    var = math.fsum((w * (x - mean) ** 2).tolist()) / (sw - 1.0)
     n_eff = (sw * sw) / sw2
     return mean, var, n_eff
 
@@ -97,7 +123,8 @@ def add_significance_stars(
     cleaned_headers: list[HeaderRow] = []
     for hr in new_headers:
         cleaned_headers.append(hr)
-    return replace(table, headers=tuple(cleaned_headers), rows=tuple(new_rows))
+    out = replace(table, headers=tuple(cleaned_headers), rows=tuple(new_rows))
+    return _tag_post_build(out, "Signif.")
 
 
 def add_n(table: SofraTable) -> SofraTable:
@@ -133,7 +160,8 @@ def add_n(table: SofraTable) -> SofraTable:
         new_rows.append(_insert_after_label_cell(
             r, text, value=n_for.get(var) if var else None,
         ))
-    return replace(table, headers=new_headers, rows=tuple(new_rows))
+    out = replace(table, headers=new_headers, rows=tuple(new_rows))
+    return _tag_post_build(out, "N")
 
 
 def add_stat_label(table: SofraTable) -> SofraTable:
@@ -587,7 +615,8 @@ def _add_difference_impl(
             value = None
         new_rows.append(_insert_after_groups_cell(r, text, value=value,
                                                   kind="ci"))
-    return replace(table, headers=new_headers, rows=tuple(new_rows))
+    out = replace(table, headers=new_headers, rows=tuple(new_rows))
+    return _tag_post_build(out, f"Diff ({int(round(conf_level * 100))}% CI)")
 
 
 # ----------------------------------------------------------------------
@@ -723,11 +752,16 @@ def add_ci(
         f"Bracketed intervals: {int(round(conf_level*100))}% confidence "
         "interval (Welch for means, Wilson-score for proportions)."
     )
-    return replace(
+    out = replace(
         table,
         rows=tuple(new_rows),
         footnotes=tuple([*table.footnotes, fn]),
     )
+    # ``add_ci`` modifies existing cell text in place rather than
+    # inserting a new column, but a subsequent rebuild *still* discards
+    # the bracketed CIs (the rebuilt cells are formatted from scratch).
+    # Tag the table so the rebuild detector warns about the loss.
+    return _tag_post_build(out, "CI (bracketed)")
 
 
 def _wilson_ci(x: int, n: int, *, z: float) -> tuple[float, float]:

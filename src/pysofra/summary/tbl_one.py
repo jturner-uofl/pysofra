@@ -421,6 +421,7 @@ def _build(data: pd.DataFrame, spec: TableSpec) -> SofraTable:
                 bold_p_threshold=bold_p_threshold,
                 test_override=test_override,
                 weights=w_series,
+                design=design,
             )
             rows.extend(row_blocks)
             if test_used:
@@ -767,6 +768,7 @@ def _categorical_rows(
     bold_p_threshold: float,
     test_override: str | None = None,
     weights: pd.Series | None = None,
+    design: SurveyDesign | None = None,
 ) -> tuple[list[Row], str | None]:
     """Produce a header row + one row per level (+ optional missing)."""
     s_all = data[var]
@@ -805,6 +807,28 @@ def _categorical_rows(
             res = run_named_test(test_override, s_all, data[by], kind="categorical")
         elif weights is not None:
             # Survey-weighted data → Rao–Scott corrected chi-square.
+            # The implementation here uses the *first-order* Kish-DEFF
+            # approximation, which only knows about the weight values
+            # (not strata or clusters). Under a SurveyDesign with strata
+            # or clusters the correct correction uses the full design
+            # covariance (Rao & Scott 1981, eqn 3.4), which we do not
+            # implement. Warn the user so they don't take the p-value as
+            # publication-grade and point them at R ``survey::svychisq``.
+            if design is not None and (
+                design.strata is not None or design.cluster is not None
+            ):
+                import warnings
+                warnings.warn(
+                    f"Rao–Scott chi-square for {var!r}: pysofra uses the "
+                    "first-order Kish-DEFF approximation which does not "
+                    "account for stratification or clustering in the "
+                    "provided SurveyDesign. The reported p-value may "
+                    "disagree with R ``survey::svychisq`` by 10–15% or "
+                    "more. For design-grade chi-square inference on "
+                    "complex surveys, call ``survey::svychisq`` in R.",
+                    UserWarning,
+                    stacklevel=2,
+                )
             res = rao_scott_chisq(s_all, data[by], weights)
         else:
             res = categorical_test(s_all, data[by])

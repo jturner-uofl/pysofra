@@ -39,7 +39,7 @@ def _load(name: str) -> dict:
 
 
 class TestWelchTTest:
-    def test_matches_r(self):
+    def test_matches_pinned_reference(self):
         fx = _load("welch_t_test.json")
         x = pd.Series(fx["x"])
         y = pd.Series(fx["y"])
@@ -57,7 +57,7 @@ class TestWelchTTest:
 
 
 class TestWilcoxonRankSum:
-    def test_matches_r(self):
+    def test_matches_pinned_reference(self):
         fx = _load("wilcoxon_rank_sum.json")
         values = pd.Series(fx["x"] + fx["y"])
         groups = pd.Series(["A"] * len(fx["x"]) + ["B"] * len(fx["y"]))
@@ -69,7 +69,7 @@ class TestWilcoxonRankSum:
 
 
 class TestChiSquare:
-    def test_matches_r(self):
+    def test_matches_pinned_reference(self):
         fx = _load("chi_square.json")
         observed = np.array(fx["observed"])
         chi2, p, dof, _expected = sp_stats.chi2_contingency(observed, correction=False)
@@ -81,7 +81,7 @@ class TestChiSquare:
 
 
 class TestFisher2x2:
-    def test_matches_r(self):
+    def test_matches_pinned_reference(self):
         fx = _load("fisher_2x2.json")
         observed = np.array(fx["observed"])
         v = []
@@ -98,7 +98,7 @@ class TestFisher2x2:
 
 
 class TestOneWayAnova:
-    def test_matches_r(self):
+    def test_matches_pinned_reference(self):
         fx = _load("anova_oneway.json")
         values: list[float] = []
         groups: list[str] = []
@@ -119,7 +119,7 @@ class TestOneWayAnova:
 
 
 class TestKruskalWallis:
-    def test_matches_r(self):
+    def test_matches_pinned_reference(self):
         fx = _load("kruskal_wallis.json")
         values: list[float] = []
         groups: list[str] = []
@@ -137,7 +137,7 @@ class TestKruskalWallis:
 
 
 class TestStudentT:
-    def test_matches_r(self):
+    def test_matches_pinned_reference(self):
         fx = _load("student_t.json")
         x = pd.Series(fx["x"])
         y = pd.Series(fx["y"])
@@ -153,7 +153,7 @@ class TestStudentT:
 
 
 class TestWeightedMean:
-    def test_matches_r(self):
+    def test_matches_pinned_reference(self):
         from pysofra.summary.weights import weighted_continuous_stats
         fx = _load("weighted_mean.json")
         v = pd.Series(fx["values"])

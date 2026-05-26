@@ -40,6 +40,6 @@ Each fixture pairs:
   lifelines output for the same computation.
 
 The reference values are computed inside `pytest` collection (see
-`tests/test_scipy_validation.py`) — that is the only canonical source
+`tests/test_pinned_references.py`) — that is the only canonical source
 of truth. The JSONs are versioned and checked into the repo for
 diff-friendly inspection.

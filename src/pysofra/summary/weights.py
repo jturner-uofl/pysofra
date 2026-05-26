@@ -21,10 +21,30 @@ the weights *are* the counts).
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
+
+
+def _fsum(arr: np.ndarray) -> float:
+    """Kahan-Babuška-Neumaier-equivalent compensated sum.
+
+    Wraps :func:`math.fsum` which provides full-precision (i.e.
+    exactly-rounded) summation for ``float`` iterables. The cost is
+    O(n) and the benefit is independence from accumulation order —
+    important for weighted sums where ``Σ w_i x_i`` and
+    ``Σ w_i (x_i − μ)²`` can lose 5–6 digits of precision under
+    naïve ``np.sum`` on long arrays with mixed magnitudes (e.g.
+    NHANES-scale survey weights that span 4–5 orders of magnitude).
+    Empty input returns ``0.0`` (matching ``math.fsum([])``).
+    """
+    if arr.size == 0:
+        return 0.0
+    # ``math.fsum`` consumes any iterable of floats; converting to
+    # a Python list once is cheaper than tolist() inside a loop.
+    return math.fsum(arr.tolist())
 
 
 @dataclass(frozen=True)
@@ -54,19 +74,22 @@ def weighted_continuous_stats(
     v_v = v[valid]
     w_v = w[valid]
 
-    n_missing = float(np.sum(w[np.isnan(v) & ~np.isnan(w)]))
-    n_eff = float(np.sum(w_v))
+    n_missing = _fsum(w[np.isnan(v) & ~np.isnan(w)])
+    n_eff = _fsum(w_v)
 
     if n_eff <= 0 or v_v.size == 0:
         nan = float("nan")
         return WeightedContinuousStats(0.0, n_missing, nan, nan, nan, nan, nan, nan, nan)
 
-    mean = float(np.sum(w_v * v_v) / n_eff)
+    # Compensated weighted mean and variance.  ``math.fsum`` is
+    # exactly-rounded, so ``Σ w_i x_i`` and ``Σ w_i (x_i − μ)²`` no
+    # longer leak precision under heterogeneous sampling weights.
+    mean = _fsum(w_v * v_v) / n_eff
     # Frequency-weighted unbiased variance is undefined when the effective
     # sample size collapses to one (or fewer). NaN propagates through
     # ``fmt_mean_sd`` so the cell shows ``—`` rather than ``(0.00)``.
     var = (
-        float(np.sum(w_v * (v_v - mean) ** 2) / (n_eff - 1))
+        _fsum(w_v * (v_v - mean) ** 2) / (n_eff - 1)
         if n_eff > 1
         else float("nan")
     )

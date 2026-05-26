@@ -48,7 +48,7 @@ class DocxRenderer:
         if table.caption:
             cap = doc.add_paragraph()
             cap.alignment = WD_ALIGN_PARAGRAPH.LEFT
-            run = cap.add_run(table.caption)
+            run = cap.add_run(_xml_safe(table.caption))
             run.bold = True
             run.font.name = font_name
             run.font.size = Pt(font_size + 1)
@@ -105,7 +105,7 @@ class DocxRenderer:
         if table.footnotes:
             for footnote in table.footnotes:
                 para = doc.add_paragraph()
-                run = para.add_run(footnote)
+                run = para.add_run(_xml_safe(footnote))
                 run.italic = True
                 run.font.name = font_name
                 run.font.size = Pt(max(8, font_size - 1))
@@ -152,6 +152,23 @@ def _embed_png(doc: Any, png_bytes: bytes, width_in: float) -> None:
     run.add_picture(io.BytesIO(png_bytes), width=Inches(width_in))
 
 
+# ASCII control characters that aren't legal in XML 1.0 character data
+# (everything < 0x20 except TAB / LF / CR plus 0x7F). python-docx will
+# happily write them, producing a .docx that Word refuses to open with
+# "the file is corrupt". We strip them at the seam so a user-supplied
+# label containing a stray ``\x00`` doesn't trash the published file.
+_XML_FORBIDDEN = "".join(
+    chr(c) for c in (*range(0x00, 0x09), 0x0B, 0x0C, *range(0x0E, 0x20), 0x7F)
+)
+_XML_FORBIDDEN_TBL = str.maketrans({c: None for c in _XML_FORBIDDEN})
+
+
+def _xml_safe(s: Any) -> str:
+    if not isinstance(s, str):
+        s = str(s)
+    return s.translate(_XML_FORBIDDEN_TBL)
+
+
 def _set_cell_text(cell: Any, text: str, *, bold: bool, italic: bool,
                    font_name: str, font_size: int, align: str | None,
                    indent_em: float = 0.0,
@@ -173,7 +190,7 @@ def _set_cell_text(cell: Any, text: str, *, bold: bool, italic: bool,
     if parts:
         # One run per CellPart, each carrying its own formatting.
         for p in parts:
-            run = para.add_run(p.text)
+            run = para.add_run(_xml_safe(p.text))
             run.bold = bool(p.bold) or bold
             run.italic = bool(p.italic) or italic
             run.font.name = font_name
@@ -193,7 +210,7 @@ def _set_cell_text(cell: Any, text: str, *, bold: bool, italic: bool,
                 except Exception:  # pragma: no cover — bad colour string
                     pass
         return
-    run = para.add_run(text)
+    run = para.add_run(_xml_safe(text))
     run.bold = bold
     run.italic = italic
     run.font.name = font_name

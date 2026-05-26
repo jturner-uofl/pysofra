@@ -968,33 +968,42 @@ class SofraTable:
                 f"set_caption, with_footnotes, bold_p, with_forest_plot, "
                 f"etc.) and renderers still work."
             )
-        # Detect post-build columns added by chained modifiers
-        # (``add_difference``, ``add_ci``, ``add_significance_stars``)
-        # that the rebuild path will silently discard. We warn ONCE per
-        # rebuild, no matter which modifier triggered it. The correct
-        # ordering is "modifiers that change the spec first, modifiers
-        # that add columns last."
-        header_texts = (
-            [c.text for c in self.headers[0].cells] if self.headers else []
-        )
-        dropped: list[str] = []
-        for txt in header_texts:
-            txt_lower = txt.lower()
-            # add_stat_label uses "Statistic"; don't sweep up legitimate
-            # stat columns the builder added itself.
-            if txt_lower in ("stat", "statistic"):
-                continue
-            if txt.startswith("Diff (") or txt_lower == "signif.":
-                dropped.append(txt)
+        # Detect post-build artefacts added by chained modifiers
+        # (``add_n``, ``add_difference``, ``add_ci``,
+        # ``add_significance_stars``) that the rebuild path will silently
+        # discard. The modifiers themselves tag the table via the
+        # ``_post_build_added_headers`` metadata key on insertion, so
+        # this check is independent of column-header text — it
+        # correctly catches headers like ``"N"`` (which is too generic
+        # to safely pattern-match) and ``""`` (the empty placeholder
+        # for significance stars). Fall back to the legacy header-text
+        # heuristic for tables produced on older PySofra versions that
+        # don't carry the tag.
+        dropped = list((self.metadata or {}).get(
+            "_post_build_added_headers", ()
+        ))
+        if not dropped:
+            header_texts = (
+                [c.text for c in self.headers[0].cells] if self.headers else []
+            )
+            for txt in header_texts:
+                txt_lower = txt.lower()
+                if txt_lower in ("stat", "statistic"):
+                    # ``add_stat_label`` uses "Statistic"; don't sweep
+                    # up legitimate stat columns the builder added
+                    # itself.
+                    continue
+                if txt.startswith("Diff (") or txt_lower == "signif.":
+                    dropped.append(txt)
         if dropped:
             import warnings as _w
             _w.warn(
                 f"This statistical modifier reruns the table builder; "
                 f"{len(dropped)} column(s) added by a prior modifier "
-                f"({dropped!r}) will be dropped from the result. Call "
-                "spec-changing modifiers (.add_p, .add_smd, .add_q, "
-                ".add_overall, .add_n, .add_global_p) BEFORE column-"
-                "adding modifiers (.add_difference, .add_ci, "
+                f"({list(dropped)!r}) will be dropped from the result. "
+                "Call spec-changing modifiers (.add_p, .add_smd, .add_q, "
+                ".add_overall, .add_global_p) BEFORE column-adding "
+                "modifiers (.add_n, .add_difference, .add_ci, "
                 ".add_significance_stars) to preserve their columns.",
                 UserWarning,
                 stacklevel=3,

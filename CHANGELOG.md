@@ -5,6 +5,67 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a9] — 2026-05-26
+
+### Fixed
+- **Float dichotomous misclassification.** A column like
+  ``[0.1, 0.2, 0.9, 1.1]`` was previously classified as ``dichotomous``
+  because the old detector cast each value through ``int(x)`` before
+  membership-testing against ``{0, 1}`` — the truncation collapsed
+  ``0.1 → 0`` and ``1.1 → 1``. The dichotomous test now requires exact
+  numeric equality to ``0.0`` or ``1.0`` (via ``np.isclose``) so only
+  genuine 0/1 indicators trigger the branch.
+- **Logit / GLM separation surfaced.** Statsmodels emits a
+  ``PerfectSeparationWarning`` at fit time, but by the time the fitter
+  reaches ``tbl_regression`` that warning is gone and the rendered
+  table shows a finite-but-huge OR with a multi-thousand-unit CI.
+  ``tbl_regression`` now inspects ``|coef|`` and ``SE`` thresholds and,
+  when either crosses the non-identification boundary, appends a
+  ``WARNING: at least one coefficient appears non-identified …``
+  footnote pointing the user at Firth logistic / collinearity audit.
+- **Rao–Scott design awareness.** ``tbl_one(design=…)`` with a strata
+  or cluster column now emits a ``UserWarning`` when the categorical
+  chi-square falls back on the first-order Kish-DEFF approximation,
+  which doesn't use the strata/cluster covariance. The warning points
+  users at R ``survey::svychisq`` for design-grade inference.
+- **Cox PH assumption check.** When a fitted ``CoxPHFitter`` is passed
+  to ``tbl_regression(..., data=df)``, the table now runs
+  ``lifelines.statistics.proportional_hazard_test`` on the training
+  frame and appends a footnote listing any covariate whose Schoenfeld
+  residual test rejects proportional hazards at *p* < 0.05. Without
+  ``data=`` the check is silently skipped (lifelines doesn't stash
+  the training X on the fitter).
+- **Compensated weighted summation.** ``weighted_continuous_stats``,
+  ``_weighted_mean_var_kish``, and the SMD weighted-mean helper now
+  use ``math.fsum`` for ``Σ w_i x_i`` and ``Σ w_i (x_i − μ)²``. The
+  exactly-rounded accumulator removes order-dependent precision loss
+  on long arrays with heterogeneous sampling weights (e.g. NHANES-
+  scale weights spanning 4–5 orders of magnitude).
+- **Rebuild-drop warning now catches ``add_n`` / ``add_ci`` /
+  ``add_significance_stars`` columns**, not just ``add_difference``.
+  The detector switched from header-text pattern-matching to a
+  metadata-tag inserted by each column-adding modifier so it
+  correctly catches headers like ``"N"`` (too generic to match
+  safely) and ``""`` (the empty placeholder for significance stars).
+- **HTML link allowlist hardened.** ``CellPart(link=…)`` now blocks
+  UNC-style paths (``\\server\share``) and ``href`` values that start
+  with ASCII control characters, both of which are routes around the
+  scheme allowlist on legacy / Windows browsers.
+- **DOCX control-character sanitization.** Cell, caption, and footnote
+  text are stripped of XML 1.0–illegal control chars (``\x00``–``\x08``,
+  ``\x0B``, ``\x0C``, ``\x0E``–``\x1F``, ``\x7F``) before being
+  written, so a user-supplied label containing a stray ``\x00`` no
+  longer produces a .docx that Word refuses to open.
+
+### Changed
+- ``tests/test_scipy_validation.py`` renamed to
+  ``tests/test_pinned_references.py``; the ``test_matches_r`` method
+  name (which implied a live R cross-check, when the fixtures are
+  pinned SciPy reference values) is renamed to
+  ``test_matches_pinned_reference``. Fixture provenance is unchanged
+  — they remain ``scipy.stats`` / ``statsmodels`` / ``lifelines``
+  outputs.
+
 ## [0.1.0a8] — 2026-05-26
 
 ### Fixed
