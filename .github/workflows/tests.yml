@@ -57,27 +57,28 @@ jobs:
           pip install -e ".[all,dev]"
           pip install jupyter nbconvert ipykernel
 
-      - name: Set up R 4.4
+      - name: Set up R 4.4 (with Posit Public Package Manager)
+        # Using the P3M repo serves pre-built Linux binaries (built
+        # against Ubuntu 22.04 runner libs) so we skip all source
+        # compilation and system-library hunting (libuv-dev, libgit2,
+        # cmake, etc.) that gtsummary's dep tree pulls in.
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: "4.4"
+          use-public-rspm: true
 
-      - name: Install Ubuntu system deps for R fontconfig/curl/xml
-        # gtsummary -> gt -> systemfonts/textshaping pull in C libraries
-        # that aren't on the Ubuntu runner by default; without these,
-        # install.packages() silently skips the package and the later
-        # library() call in cross_validate.R fails.
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends \
-            libcurl4-openssl-dev libxml2-dev libssl-dev \
-            libfontconfig1-dev libharfbuzz-dev libfribidi-dev \
-            libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev
-
-      - name: Install R packages
-        run: |
-          Rscript -e 'install.packages(c("survey", "haven", "jsonlite", "dplyr", "gtsummary", "gt"), repos="https://cloud.r-project.org", Ncpus=2)'
-          Rscript -e 'for (p in c("survey","haven","jsonlite","dplyr","gtsummary","gt")) if (!requireNamespace(p, quietly=TRUE)) stop(sprintf("package %s did not install", p))'
+      - name: Install R packages (binary from P3M)
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::survey
+            any::haven
+            any::jsonlite
+            any::dplyr
+            any::gtsummary
+            any::gt
+          # Skip extra runs (this project has no DESCRIPTION).
+          dependencies: '"hard"'
 
       - name: Cache NHANES download
         uses: actions/cache@v4
