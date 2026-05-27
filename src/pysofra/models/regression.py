@@ -113,21 +113,21 @@ def tbl_regression(
     # for survey-design refits) we have everything we need; run the
     # check here and patch the ph_violations field on the summary.
     if data is not None:
+        import contextlib
         from dataclasses import replace as _replace_sum
+
         from .extract import _cox_ph_violations as _ph_check
-        if isinstance(data, (list, tuple)):
-            data_per_model = list(data)
-        else:
-            data_per_model = [data] * len(models)
+        data_per_model = (
+            list(data) if isinstance(data, (list, tuple))
+            else [data] * len(models)
+        )
         for i, (m, d) in enumerate(zip(models, data_per_model, strict=True)):
             if d is None or type(m).__name__ != "CoxPHFitter":
                 continue
             # Stash training_data_ on the fitter so the helper finds it.
             if getattr(m, "training_data_", None) is None:
-                try:
+                with contextlib.suppress(Exception):
                     m.training_data_ = d  # type: ignore[attr-defined]
-                except Exception:
-                    pass
             viols = _ph_check(m)
             if viols:
                 summaries[i] = _replace_sum(summaries[i], ph_violations=viols)

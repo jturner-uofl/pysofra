@@ -22,7 +22,6 @@ from ..core.format import fmt_number
 from ..core.schema import Cell, HeaderCell, HeaderRow, Row, make_cell
 from ..core.table import SofraTable
 
-
 _POST_BUILD_META_KEY = "_post_build_added_headers"
 
 

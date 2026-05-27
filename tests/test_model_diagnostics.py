@@ -81,10 +81,9 @@ class TestCoxPHViolationFootnote:
         cf = CoxPHFitter().fit(df, "week", "arrest")
         # Make sure no training data was stashed.
         if hasattr(cf, "training_data_"):
-            try:
+            import contextlib
+            with contextlib.suppress(AttributeError, TypeError):
                 delattr(cf, "training_data_")
-            except (AttributeError, TypeError):
-                pass
         tbl = ps.tbl_regression(cf)
         joined = " ".join(tbl.footnotes)
         # Either there is no PH footnote (no training data → silent), or

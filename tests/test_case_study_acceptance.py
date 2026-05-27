@@ -60,7 +60,7 @@ pytestmark = pytest.mark.skipif(
 
 
 @pytest.fixture(scope="module")
-def executed_notebook() -> "nbformat.NotebookNode":  # noqa: F821
+def executed_notebook() -> nbformat.NotebookNode:  # noqa: F821
     """Execute the notebook in a side copy so the committed file isn't touched.
 
     ``jupyter nbconvert --execute`` exits non-zero on any cell error,
