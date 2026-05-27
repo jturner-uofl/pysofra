@@ -160,7 +160,12 @@ EXPECTED_SOFRATABLE_METHODS = frozenset({
     # rendering
     "to_html", "to_markdown", "to_latex", "to_latex_file",
     "to_docx", "to_pptx", "to_xlsx", "to_image",
+    "to_quarto", "to_typst", "to_typst_file",
     "to_dict",
+    # reproducibility — snapshot lock (0.1.0a10)
+    "snapshot_hash", "lock_snapshot", "assert_snapshot",
+    # publication safety (0.1.0a10)
+    "check_safety", "with_safety_warnings",
 })
 
 EXPECTED_SOFRATABLE_ATTRIBUTES = frozenset({

@@ -5,6 +5,26 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a10] — 2026-05-27
+
+### Added — Capabilities beyond R / gtsummary
+- **Snapshot lock** (`snapshot_hash` / `lock_snapshot` / `assert_snapshot`)
+  for binding-contract reproducibility — pin a published table to a
+  content hash; CI fails on substantive drift.
+- **Publication-safety auto-checker** (`check_safety` /
+  `with_safety_warnings`) — flags extreme proportions, SD>mean,
+  sparse p-values, |SMD|>1, extreme exp(coef), dominant missingness.
+- **Quarto export** (`to_quarto(format=, label=, caption=)`) — first-
+  class Quarto fenced blocks with cross-references.
+- **Typst renderer** (`to_typst` / `to_typst_file`) — first stats
+  package in either Python or R with native Typst support.
+- **CLI**: `pysofra table data.csv --by arm --out table1.docx`,
+  `pysofra check`, `pysofra version`.
+
+### Notebook
+- Section V (Steps 33-37) demonstrates each new feature with
+  binding asserts. Notebook now covers 37 audited contracts.
+
 ## [0.1.0a9] — 2026-05-26
 
 ### Fixed

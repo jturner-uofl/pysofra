@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pysofra"
-version = "0.1.0a9"
+version = "0.1.0a10"
 description = "Statistical reporting and table preparation framework for Python — the missing reporting layer."
 readme = "README.md"
 license = { text = "GPL-3.0-or-later" }
@@ -45,6 +45,11 @@ dependencies = [
     "statsmodels>=0.14",
     "python-docx>=1.1",
 ]
+
+[project.scripts]
+# Expose a `pysofra` shell command for one-shot table building from
+# CSV / Parquet / Excel / etc.  See `pysofra --help`.
+pysofra = "pysofra.cli:main"
 
 [project.optional-dependencies]
 # Backend / domain extras — install only what your workflow needs.

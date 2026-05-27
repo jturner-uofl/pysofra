@@ -5,6 +5,51 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a10] — 2026-05-27
+
+### Added — Capabilities beyond R / gtsummary
+- **Snapshot lock** for binding-contract reproducibility:
+  `SofraTable.snapshot_hash()` returns a SHA-256 of the table's
+  *logical content* (rendered Markdown + footnotes + spanning
+  headers — not its presentational randomness like the per-render
+  CSS class). `.lock_snapshot(path)` writes a JSON pin file;
+  `.assert_snapshot(path)` raises with a unified diff if the table
+  has drifted. The intended workflow is: author runs `lock_snapshot`
+  once when the paper is submitted; CI runs `assert_snapshot` on
+  every PR to fail loudly if any change to the upstream pipeline
+  would alter the published numbers. No equivalent exists in
+  gtsummary.
+- **Publication-safety auto-checker**: `SofraTable.check_safety()`
+  scans a built table for patterns historically associated with
+  errata or retractions — 100 %/0 % proportions on n ≥ 30, SD > |Mean|,
+  p < 0.001 with cell n < 30, |SMD| > 1.0, exp(coef) outside
+  [0.1, 10], variables > 50 % missing — and returns a list of
+  `SafetyWarning` objects. `.with_safety_warnings()` attaches them
+  as footnotes on the rendered table. No other Python or R
+  reporting package does this.
+- **Quarto-native export**: `SofraTable.to_quarto(format='html'|'latex',
+  label=, caption=)` emits a properly-formatted Quarto fenced
+  pass-through block with optional cross-reference label
+  (`#tbl-XXX`) and caption, so the table is one `{{< include >}}`
+  away from a `.qmd` document.
+- **Typst renderer**: `SofraTable.to_typst()` /
+  `.to_typst_file(path)` produces a Typst `#table(...)` block with
+  per-column alignment, spanning headers, and italic footnotes.
+  PySofra is, to the authors' knowledge, the **first stats-reporting
+  package in either Python or R** to ship a native Typst backend.
+- **Command-line interface**: a `pysofra` console entry point
+  exposes `pysofra table data.csv --by arm --vars age,sex --out
+  table1.docx` (build a Table 1 in one shot from a tabular file),
+  `pysofra check data.csv --by arm` (run the safety checker; exit
+  code 2 on any flag — handy for shell pipelines and Makefiles),
+  and `pysofra version`.
+
+### Narrative-audit notebook
+- Added **Section V (Steps 33-37)** demonstrating each of the five
+  additions above with binding assertions. The notebook now covers
+  **37 audited seams** in 81 cells, and every assertion fires on
+  every commit through the CI workflow.
+
 ## [0.1.0a9] — 2026-05-26
 
 ### Fixed

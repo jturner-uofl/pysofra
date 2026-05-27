@@ -797,6 +797,125 @@ class SofraTable:
             )
         return XlsxRenderer(sheet_name=sheet_name).write(self, Path(path))
 
+    def to_quarto(
+        self,
+        *,
+        format: str = "html",
+        label: str | None = None,
+        caption: str | None = None,
+    ) -> str:
+        """Render the table as a Quarto-fenced block.
+
+        Quarto (`https://quarto.org`) is the dominant reproducible-
+        research authoring framework across Python and R. A Quarto
+        block emitted here can be ``include``-d directly in a ``.qmd``
+        document and Quarto will render it natively for the target
+        output format.
+
+        Parameters
+        ----------
+        format
+            One of ``"html"`` or ``"latex"``. ``html`` emits a
+            ``:::{=html}`` fence containing the HTML render — used
+            when the parent Quarto document targets HTML / EPUB.
+            ``latex`` emits a ``:::{=latex}`` fence containing the
+            LaTeX render — used when targeting PDF.
+        label
+            Optional Quarto cross-reference label of the form
+            ``"tbl-XXX"``. When given, the block is wrapped in
+            ``::: {#tbl-XXX}`` so ``@tbl-XXX`` cross-references
+            elsewhere in the document resolve.
+        caption
+            Optional caption text. When ``label`` is also set, this
+            becomes the table's official Quarto caption.
+
+        Returns
+        -------
+        str
+            A Quarto-source string ready to paste into a ``.qmd`` file
+            or pass to ``quarto render``.
+        """
+        from ..render.quarto import to_quarto as _to_q
+        return _to_q(self, format=format, label=label, caption=caption)
+
+    def to_typst(self) -> str:
+        """Render the table as Typst markup.
+
+        Typst (`https://typst.app/`) is a modern document-preparation
+        system positioned as a faster, simpler alternative to LaTeX.
+        The returned string is a ``#table(...)`` block ready to paste
+        into a ``.typ`` document.
+        """
+        from ..render.typst import TypstRenderer
+        return TypstRenderer().render(self)
+
+    def to_typst_file(self, path: str | Path) -> Path:
+        """Write the table to a ``.typ`` file (Typst source)."""
+        from ..render.typst import TypstRenderer
+        return TypstRenderer().write(self, Path(path))
+
+    # ------------------------------------------------------------------
+    # Reproducibility — snapshot lock
+    # ------------------------------------------------------------------
+    def snapshot_hash(self) -> str:
+        """SHA-256 of the table's logical content (Markdown + footnotes).
+
+        See :mod:`pysofra.core.snapshot` for the precise content
+        policy.
+        """
+        from .snapshot import snapshot_hash as _h
+        return _h(self)
+
+    def lock_snapshot(self, path: str | Path) -> dict[str, Any]:
+        """Write a snapshot lock file pinning this table's content.
+
+        Use ``assert_snapshot`` later (in CI, in unit tests, in the
+        analysis script's smoke check) to verify the table hasn't
+        drifted from the pinned version.
+        """
+        from .snapshot import lock_snapshot as _lock
+        return _lock(self, path)
+
+    def assert_snapshot(self, path: str | Path) -> None:
+        """Raise ``AssertionError`` if the table differs from ``path``.
+
+        The error message includes a unified diff between the pinned
+        content and the current content, so the author can see
+        exactly which row / footnote / spanning header changed.
+        """
+        from .snapshot import assert_snapshot as _assert
+        return _assert(self, path)
+
+    # ------------------------------------------------------------------
+    # Publication-safety checks
+    # ------------------------------------------------------------------
+    def check_safety(self) -> list:
+        """Scan the table for retraction-prone patterns.
+
+        Returns a list of
+        :class:`pysofra.core.safety.SafetyWarning` objects describing
+        any flagged rows (extreme proportions, suspect SDs, sparse-
+        cell p-values, extreme effect sizes, dominant missingness).
+        An empty list means no flags.
+        """
+        from .safety import check_safety as _check
+        return _check(self)
+
+    def with_safety_warnings(self) -> SofraTable:
+        """Append a "Safety warnings" footnote summarising flagged rows.
+
+        Equivalent to::
+
+            for w in t.check_safety():
+                t = t.with_footnote(f"SAFETY: {w}")
+
+        Use this in published-analysis scripts so the rendered table
+        carries the diagnostic flags into the paper alongside the
+        numbers.
+        """
+        from .safety import with_safety_warnings as _attach
+        return _attach(self)
+
     # ------------------------------------------------------------------
     # Inline plot attachment
     # ------------------------------------------------------------------
