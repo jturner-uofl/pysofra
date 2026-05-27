@@ -62,9 +62,22 @@ jobs:
         with:
           r-version: "4.4"
 
+      - name: Install Ubuntu system deps for R fontconfig/curl/xml
+        # gtsummary -> gt -> systemfonts/textshaping pull in C libraries
+        # that aren't on the Ubuntu runner by default; without these,
+        # install.packages() silently skips the package and the later
+        # library() call in cross_validate.R fails.
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            libcurl4-openssl-dev libxml2-dev libssl-dev \
+            libfontconfig1-dev libharfbuzz-dev libfribidi-dev \
+            libfreetype6-dev libpng-dev libtiff5-dev libjpeg-dev
+
       - name: Install R packages
         run: |
           Rscript -e 'install.packages(c("survey", "haven", "jsonlite", "dplyr", "gtsummary", "gt"), repos="https://cloud.r-project.org", Ncpus=2)'
+          Rscript -e 'for (p in c("survey","haven","jsonlite","dplyr","gtsummary","gt")) if (!requireNamespace(p, quietly=TRUE)) stop(sprintf("package %s did not install", p))'
 
       - name: Cache NHANES download
         uses: actions/cache@v4
