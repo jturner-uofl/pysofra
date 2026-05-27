@@ -262,6 +262,125 @@ class TestStep18CrossFormatConsistency:
                 "and DOCX renders") in text
 
 
+class TestStep19Rubin:
+    """Step 19 — pool() reproduces Rubin (1987) Eq 3.1.6 to ≤ 1e-10."""
+
+    def test_rubin_hand_calculation(self, executed_notebook):
+        cell = _cell_with(executed_notebook, "Hand-derived Rubin values")
+        text = _stream_text(cell)
+        assert "reproduces Rubin (1987)" in text
+        assert "ASSERTION OK" in text
+
+
+class TestStep20WilsonCI:
+    def test_wilson_matches_newcombe_and_statsmodels(self, executed_notebook):
+        cell = _cell_with(executed_notebook, "_wilson_ci")
+        text = _stream_text(cell)
+        assert "Wilson CI matches Newcombe (1998)" in text
+
+
+class TestStep21KMMatchesLifelines:
+    def test_km_exact_match(self, executed_notebook):
+        cell = _cell_with(executed_notebook, "kmf_ref")
+        text = _stream_text(cell)
+        assert "matches lifelines reference to" in text
+        assert "ASSERTION OK" in text
+
+
+class TestStep22EnvironmentManifest:
+    def test_manifest_pinned(self, executed_notebook):
+        cell = _cell_with(executed_notebook, "Environment manifest")
+        text = _stream_text(cell)
+        for k in ("python", "pysofra", "numpy", "pandas", "scipy",
+                  "statsmodels", "lifelines", "sklearn"):
+            assert k in text, f"manifest missing key {k}"
+        assert "running on PySofra ≥ 0.1.0a9" in text
+
+
+class TestStep23SeedDeterminism:
+    def test_pool_seed_deterministic(self, executed_notebook):
+        cell = _cell_with(executed_notebook, "_mi_pool")
+        text = _stream_text(cell)
+        assert "same seed → identical pooled output bytes" in text
+
+
+class TestStep24LonelyPSUvsR:
+    def test_lonely_psu_partial_agreement_with_R(self, executed_notebook):
+        cell = _cell_with(executed_notebook, "lonely_mask")
+        text = _stream_text(cell)
+        # Either the assertion passed (R reference present) or the
+        # cell skipped because R_reference.json wasn't generated.
+        ok = ("ASSERTION OK — lonely-PSU warning fired" in text
+              or "skipping R assertion" in text)
+        assert ok, f"unexpected lonely-PSU output:\n{text[:500]}"
+
+
+class TestStep25PolarsParity:
+    def test_polars_matches_pandas(self, executed_notebook):
+        cell = _cell_with(executed_notebook, "pl.from_pandas")
+        text = _stream_text(cell)
+        assert "polars and pandas produce identical" in text
+
+
+class TestStep26CompensatedSummation:
+    def test_extreme_weights_rel_err(self, executed_notebook):
+        cell = _cell_with(executed_notebook, "Fraction")
+        text = _stream_text(cell)
+        assert "weighted mean" in text and "relative error" in text
+        assert "ASSERTION OK" in text
+
+
+class TestStep27WeightedKM:
+    def test_weighted_km_matches_lifelines(self, executed_notebook):
+        cell = _cell_with(executed_notebook, "kmf_w")
+        text = _stream_text(cell)
+        assert "weighted KM matches lifelines reference to" in text
+
+
+class TestStep28WelchDF:
+    def test_satterthwaite_df_matches_scipy(self, executed_notebook):
+        cell = _cell_with(executed_notebook, "ttest_ind")
+        text = _stream_text(cell)
+        assert "Welch t-stat agrees PS↔scipy to 1e-12" in text
+        assert "Satterthwaite df matches scipy" in text
+
+
+class TestStep29Apistrat:
+    def test_lumley_apistrat_reproduced(self, executed_notebook):
+        cell = _cell_with(executed_notebook, "apistrat_path")
+        text = _stream_text(cell)
+        ok = ("Lumley (2010) apistrat example reproduced" in text
+              or "skipped — apistrat.csv not present" in text
+              or "skipped — R_reference.json absent" in text)
+        assert ok, f"unexpected apistrat output:\n{text[:500]}"
+
+
+class TestStep30PermutationInvariance:
+    def test_design_stats_invariant_under_shuffle(self, executed_notebook):
+        cell = _cell_with(executed_notebook, "shuffle(seed=")
+        text = _stream_text(cell)
+        assert "invariant to row permutation" in text
+
+
+class TestStep31MethodChainIntegrity:
+    def test_full_chain_no_drop_warnings(self, executed_notebook):
+        cell = _cell_with(executed_notebook, "chained =")
+        text = _stream_text(cell)
+        assert "rebuild-drop warnings fired: 0" in text
+        assert "full modifier chain produced 6+ columns" in text
+
+
+class TestStep32GracefulDegradation:
+    def test_empty_single_nan_no_crash(self, executed_notebook):
+        cell = _cell_with(executed_notebook, "empty_df")
+        text = _stream_text(cell)
+        # No "CRASHED" rows
+        assert "CRASHED" not in text
+        assert ("empty, single-row, and all-NaN inputs each "
+                "produced either a clean table or an intentional "
+                "exception") in text
+
+
 class TestGtsummaryComparison:
     """If the gtsummary positioning notebook is present (and its R-side
     reference has been generated by ``Rscript R/build_reference.R``),

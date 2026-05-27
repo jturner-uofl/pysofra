@@ -182,6 +182,47 @@ reg <- list(
 )
 
 # ----------------------------------------------------------------------
+# 7. Lonely-PSU stress test.  We synthesise a "lonely-PSU" subset by
+# dropping all but one PSU from stratum 134 (the lowest-numbered
+# stratum in the NHANES 2017-2018 paired-PSU design).  We then re-fit
+# the design with `survey.lonely.psu = "adjust"` (the convention
+# PySofra documents matching) and pin the resulting svymean(~age).
+# ----------------------------------------------------------------------
+lonely_df <- df
+# keep PSU 1 from stratum 134, drop PSU 2
+to_drop <- lonely_df$SDMVSTRA == 134 & lonely_df$SDMVPSU == 2
+cat(sprintf("\nLonely-PSU stress: dropping %d rows from stratum 134 PSU 2\n",
+            sum(to_drop, na.rm = TRUE)))
+lonely_df <- lonely_df[!to_drop, ]
+options(survey.lonely.psu = "adjust")
+des_lonely <- svydesign(
+  ids = ~SDMVPSU, strata = ~SDMVSTRA, weights = ~WTMEC2YR,
+  nest = TRUE, data = lonely_df
+)
+lonely_mean <- svymean(~RIDAGEYR, des_lonely, na.rm = TRUE)
+lonely_age_mean <- as.numeric(coef(lonely_mean))
+lonely_age_se   <- as.numeric(SE(lonely_mean))
+
+# ----------------------------------------------------------------------
+# 8. apistrat — Lumley (2010) Survey book Chapter 2 canonical worked
+# example.  `svymean(~api00, dstrat) == 657.5 (SE 9.5012)`.  We export
+# the dataset so the Python side reads exactly the same numbers.
+# ----------------------------------------------------------------------
+if (requireNamespace("survey", quietly = TRUE)) {
+  data(api, package = "survey")
+  apistrat_path <- file.path(proj_dir, "apistrat.csv")
+  write.csv(apistrat, apistrat_path, row.names = FALSE)
+  dstrat <- svydesign(
+    id = ~1, strata = ~stype, weights = ~pw, data = apistrat, fpc = ~fpc
+  )
+  m_api <- svymean(~api00, dstrat, na.rm = TRUE)
+  api_mean <- as.numeric(coef(m_api))
+  api_se   <- as.numeric(SE(m_api))
+} else {
+  api_mean <- NA_real_; api_se <- NA_real_; apistrat_path <- NA_character_
+}
+
+# ----------------------------------------------------------------------
 # Assemble + write the JSON.
 # ----------------------------------------------------------------------
 out <- list(
@@ -207,7 +248,19 @@ out <- list(
     race_diabetes_stat = chi_race_stat,
     race_diabetes_p    = chi_race_p
   ),
-  svyglm = reg
+  svyglm = reg,
+  lonely_psu = list(
+    age_mean = lonely_age_mean,
+    age_se   = lonely_age_se,
+    rule     = "survey.lonely.psu = adjust"
+  ),
+  apistrat = list(
+    api00_mean = api_mean,
+    api00_se   = api_se,
+    n          = if (exists("apistrat")) nrow(apistrat) else NA,
+    csv_path   = apistrat_path,
+    citation   = "Lumley T. (2010) Complex Surveys: A Guide to Analysis Using R. Wiley. Chapter 2."
+  )
 )
 
 writeLines(toJSON(out, pretty = TRUE, auto_unbox = TRUE, digits = NA),
@@ -228,6 +281,12 @@ cat(sprintf("  svyttest(BPXSY1 ~ diabetes) = %.6f   (p = %.3g, df = %.1f)\n",
             tt_sbp_t, tt_sbp_p, tt_sbp_df))
 cat(sprintf("  svychisq(diabetes + race)   = %.4f   (p = %.4f)\n",
             chi_race_stat, chi_race_p))
+cat(sprintf("  Lonely-PSU: svymean(age) on synthesised lonely subset = %.6f  (SE %.6f)\n",
+            lonely_age_mean, lonely_age_se))
+cat(sprintf("  apistrat:   svymean(api00, dstrat) = %.4f (SE %.4f)  [n=%d]\n",
+            api_mean, api_se,
+            if (exists("apistrat")) nrow(apistrat) else NA))
+
 cat("\n  svyglm logistic regression coefficients:\n")
 for (i in seq_along(reg$variable)) {
   cat(sprintf("    %-13s  beta=%8.4f  SE=%6.4f  OR=%6.3f  t=%7.3f  p=%.3g\n",

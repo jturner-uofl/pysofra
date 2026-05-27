@@ -6,7 +6,7 @@
     "analytic_n": 4971,
     "analytic_n_mod": 4261,
     "cache_dir": "/Users/jasonturner/Projects/pysofra/examples/jss_case_study/_nhanes_cache",
-    "timestamp_utc": "2026-05-27T14:33:36Z"
+    "timestamp_utc": "2026-05-27T17:41:32Z"
   },
   "svymean": {
     "age_mean": 48.6824114715359,
@@ -33,5 +33,17 @@
     "odds_ratio": [0.000296094415946781, 1.06657219655116, 1.44827161444993, 1.10360862620724, 0.988034260086047, 0.911634231839295, 0.589200965244188],
     "t_value": [-19.554755550615, 14.0847073524258, 2.24488290447193, 15.3827841154637, -0.257421730761478, -0.487694321788266, -3.5839801604061],
     "p_value": [1.10728937737859e-08, 1.94664933977636e-07, 0.0514314175437032, 9.06188911532804e-08, 0.802642228225527, 0.637426256367288, 0.00589396641534106]
+  },
+  "lonely_psu": {
+    "age_mean": 48.7523559032581,
+    "age_se": 0.601764564453136,
+    "rule": "survey.lonely.psu = adjust"
+  },
+  "apistrat": {
+    "api00_mean": 662.287363159321,
+    "api00_se": 9.40894080278458,
+    "n": 200,
+    "csv_path": "/Users/jasonturner/Projects/pysofra/examples/jss_case_study/apistrat.csv",
+    "citation": "Lumley T. (2010) Complex Surveys: A Guide to Analysis Using R. Wiley. Chapter 2."
   }
 }
