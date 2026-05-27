@@ -1,0 +1,124 @@
+{
+  "meta": {
+    "gtsummary_version": "2.5.0",
+    "R_version": "R version 4.6.0 (2026-04-24)",
+    "n_total": 200,
+    "n_drug_a": 98,
+    "n_drug_b": 102,
+    "timestamp_utc": "2026-05-27T14:43:07Z"
+  },
+  "table_body": [
+    {
+      "variable": "age",
+      "label": "Age",
+      "row_type": "label",
+      "stat_drug_a": "46 (37, 60)",
+      "stat_drug_b": "48 (39, 56)",
+      "p_value": 0.7183
+    },
+    {
+      "variable": "marker",
+      "label": "Marker Level (ng/mL)",
+      "row_type": "label",
+      "stat_drug_a": "0.84 (0.23, 1.60)",
+      "stat_drug_b": "0.52 (0.18, 1.21)",
+      "p_value": 0.0847
+    },
+    {
+      "variable": "stage",
+      "label": "T Stage",
+      "row_type": "label",
+      "stat_drug_a": null,
+      "stat_drug_b": null,
+      "p_value": 0.8662
+    },
+    {
+      "variable": "stage",
+      "label": "T1",
+      "row_type": "level",
+      "stat_drug_a": "28 (29%)",
+      "stat_drug_b": "25 (25%)",
+      "p_value": null
+    },
+    {
+      "variable": "stage",
+      "label": "T2",
+      "row_type": "level",
+      "stat_drug_a": "25 (26%)",
+      "stat_drug_b": "29 (28%)",
+      "p_value": null
+    },
+    {
+      "variable": "stage",
+      "label": "T3",
+      "row_type": "level",
+      "stat_drug_a": "22 (22%)",
+      "stat_drug_b": "21 (21%)",
+      "p_value": null
+    },
+    {
+      "variable": "stage",
+      "label": "T4",
+      "row_type": "level",
+      "stat_drug_a": "23 (23%)",
+      "stat_drug_b": "27 (26%)",
+      "p_value": null
+    },
+    {
+      "variable": "grade",
+      "label": "Grade",
+      "row_type": "label",
+      "stat_drug_a": null,
+      "stat_drug_b": null,
+      "p_value": 0.8708
+    },
+    {
+      "variable": "grade",
+      "label": "I",
+      "row_type": "level",
+      "stat_drug_a": "35 (36%)",
+      "stat_drug_b": "33 (32%)",
+      "p_value": null
+    },
+    {
+      "variable": "grade",
+      "label": "II",
+      "row_type": "level",
+      "stat_drug_a": "32 (33%)",
+      "stat_drug_b": "36 (35%)",
+      "p_value": null
+    },
+    {
+      "variable": "grade",
+      "label": "III",
+      "row_type": "level",
+      "stat_drug_a": "31 (32%)",
+      "stat_drug_b": "33 (32%)",
+      "p_value": null
+    },
+    {
+      "variable": "response",
+      "label": "response",
+      "row_type": "label",
+      "stat_drug_a": "28 (29%)",
+      "stat_drug_b": "33 (34%)",
+      "p_value": 0.5304
+    },
+    {
+      "variable": "death",
+      "label": "death",
+      "row_type": "label",
+      "stat_drug_a": "52 (53%)",
+      "stat_drug_b": "60 (59%)",
+      "p_value": 0.4118
+    },
+    {
+      "variable": "ttdeath",
+      "label": "Months to Death/Censor",
+      "row_type": "label",
+      "stat_drug_a": "23.5 (17.4, 24.0)",
+      "stat_drug_b": "21.2 (14.5, 24.0)",
+      "p_value": 0.1446
+    }
+  ]
+}
