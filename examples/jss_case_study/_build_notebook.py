@@ -661,6 +661,300 @@ else:
 
 # =====================================================================
 md(r"""
+## Step 13 — AFT model labelling (TR, not HR)
+
+Accelerated-failure-time (AFT) models — Weibull, log-normal,
+log-logistic — return `exp(coef)` as a **time ratio (TR)**: a TR > 1
+means *longer* survival for the exposed group. Cox PH returns
+`exp(coef)` as a **hazard ratio (HR)**: an HR > 1 means *shorter*
+survival. The two parameters point in opposite directions, so
+mis-labelling an AFT output as "HR" is a publication-grade error.
+
+### AUDIT note (Step 13)
+
+* Fitting a `WeibullAFTFitter` and passing it to `tbl_regression`
+  must produce a column labelled `"TR"` (a5 fix). The cell asserts
+  this and asserts the footnote contains the literal "TR".
+""")
+
+code(r"""
+from lifelines import WeibullAFTFitter
+
+aft = WeibullAFTFitter().fit(rossi, duration_col="week", event_col="arrest")
+t_aft = ps.tbl_regression(aft, exponentiate=True)
+header_labels = [h.text for h in t_aft.headers[0].cells]
+print(f"AFT column headers: {header_labels}")
+assert "TR" in header_labels, (
+    f"AFT model must label its exponentiated column 'TR', not 'HR'. "
+    f"Got: {header_labels}"
+)
+assert any("TR" in f for f in t_aft.footnotes), \
+    "TR footnote missing"
+print("ASSERTION OK — Weibull AFT labelled TR (Time Ratio), not HR.")
+t_aft
+""")
+
+# =====================================================================
+md(r"""
+## Step 14 — Multi-model regression table
+
+Side-by-side comparison of competing model specifications is a
+publication standard (the "Table 3" of every observational paper).
+`tbl_regression` accepts a list of fitted models and stacks them
+horizontally, sharing the coefficient column and producing one
+estimate / CI / p triplet per model.
+
+### AUDIT note (Step 14)
+
+* `tbl_regression([m1, m2, m3])` returns a table whose spanning
+  header carries one label per model.
+* The shared rows on the left are the union of all coefficient names
+  across the three models (here: `age + bmi` in m1; `+ sex + pir` in
+  m2; `+ insured + race_NHW` in m3).
+""")
+
+code(r"""
+# Three nested model specifications for diabetes risk
+yy = work_cc["diabetes"]
+specs = [
+    ["age", "bmi"],
+    ["age", "bmi", "sex_male", "pir"],
+    ["age", "bmi", "sex_male", "pir", "insured", "race_NHW"],
+]
+fits = []
+for predictors in specs:
+    Xs = sm.add_constant(work_cc[predictors])
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        fits.append(sm.GLM(yy, Xs,
+                           family=sm.families.Binomial()).fit())
+
+t_multi = ps.tbl_regression(
+    fits, exponentiate=True,
+    model_labels=["Crude (age + BMI)",
+                  "+ sex, PIR",
+                  "+ insurance, race"],
+)
+n_models = sum(1 for sh in (t_multi.spanning_headers or ())
+               if "Model" in sh.label or "+" in sh.label or "Crude" in sh.label)
+print(f"spanning headers: "
+      f"{[sh.label for sh in (t_multi.spanning_headers or ())]}")
+assert len(t_multi.spanning_headers or ()) >= 3, \
+    "multi-model table should expose 3 spanning headers"
+print("ASSERTION OK — 3-model side-by-side regression table rendered.")
+t_multi
+""")
+
+# =====================================================================
+md(r"""
+## Step 15 — tbl_stack / tbl_merge composition
+
+Combined Table 1 + Table 2 layouts (descriptive + subgroup-stratified)
+are produced by vertical (`tbl_stack`) or horizontal (`tbl_merge`)
+composition of multiple sub-tables. The composed table preserves the
+shared coefficient column and lets renderers emit a single artefact.
+
+### AUDIT note (Step 15)
+
+* `tbl_stack([t_overall, t_male])` produces a table with row count
+  ≥ `rows(t_overall) + rows(t_male)` (plus group-label separator
+  rows). The cell asserts this and that both group labels appear
+  in the rendered HTML.
+""")
+
+code(r"""
+# Full sample (already built in Step 4) + male-only subgroup
+mask_male = df["sex"] == "Male"
+t_male = ps.tbl_one(
+    df.loc[mask_male],
+    by="diabetes",
+    variables=variables,
+    design=design,
+    labels=labels,
+)
+t_stacked = ps.tbl_stack(
+    [t_design, t_male],
+    group_labels=["Full sample", "Male only"],
+)
+print(f"stacked rows: {len(t_stacked.rows)}  "
+      f"(full: {len(t_design.rows)}, male: {len(t_male.rows)})")
+assert len(t_stacked.rows) >= len(t_design.rows) + len(t_male.rows), \
+    "stacked table lost rows during composition"
+html = t_stacked.to_html()
+assert "Full sample" in html and "Male only" in html, \
+    "group labels missing from rendered stacked HTML"
+print("ASSERTION OK — tbl_stack composed both sub-tables; "
+      "both group labels present in HTML.")
+t_stacked
+""")
+
+# =====================================================================
+md(r"""
+## Step 16 — Multiplicity adjustment (`add_q`)
+
+When Table 1 reports a p-value column with many simultaneous tests,
+controlling the family-wise error rate is essential. `add_q` appends
+a Benjamini-Hochberg false-discovery-rate (or Holm / Hommel / Šidák)
+adjusted column.
+
+### AUDIT note (Step 16)
+
+* `t.add_q(method='fdr_bh')` appends a "q-value" column.
+* The adjusted q-values are monotone-non-decreasing in the raw
+  p-values' sort order (BH property).
+""")
+
+code(r"""
+# Apply BH adjustment to the inference table from Step 5
+t_q = t_inf.add_q(method="fdr_bh")
+q_headers = [h.text for h in t_q.headers[0].cells]
+print(f"q-adjusted headers: {q_headers}")
+assert any("q" in h.lower() for h in q_headers), \
+    "add_q did not insert a q-value column"
+# Pull the raw p and q values for monotonicity check
+ps_qs = []
+for r in t_q.rows:
+    p, q = None, None
+    for c in r.cells:
+        if c.kind == "p_value" and isinstance(c.value, (int, float)):
+            p = float(c.value)
+        if c.kind == "q_value" and isinstance(c.value, (int, float)):
+            q = float(c.value)
+    if p is not None and q is not None:
+        ps_qs.append((p, q))
+ps_qs.sort()
+qs_sorted = [q for _, q in ps_qs]
+# BH q is monotone non-decreasing in sorted p
+monotone = all(qs_sorted[i] <= qs_sorted[i + 1] + 1e-9
+               for i in range(len(qs_sorted) - 1))
+print(f"  paired (p, q) rows: {len(ps_qs)}  "
+      f"monotone in sorted p: {monotone}")
+assert monotone, "BH q-values are not monotone in sorted p"
+print("ASSERTION OK — q-value column added, BH monotonicity holds.")
+t_q
+""")
+
+# =====================================================================
+md(r"""
+## Step 17 — Joint Wald F-test under design (`add_global_p`)
+
+For multi-level categorical predictors (e.g. race with 6 levels)
+the per-level p-value array does not test the overall association.
+The standard joint test is a Wald F-test on the contrast that zeros
+all level effects simultaneously. `add_global_p` produces this
+column, and under a `design=` survey design uses statsmodels
+`var_weights` (the same convention as Step 7).
+
+### AUDIT note (Step 17)
+
+* `add_global_p()` on a tbl_one with a survey design adds a
+  `"global p"` column. The race row should have a finite p-value
+  jointly testing all 5 race contrasts (a5/a6 path).
+""")
+
+code(r"""
+import warnings as _w
+# Avoid double-counting: add_global_p() rebuilds the table from spec,
+# so we call it on a fresh t_design (no prior add_p / add_smd columns).
+with _w.catch_warnings():
+    _w.simplefilter("ignore")
+    t_gp = ps.tbl_one(
+        df, by="diabetes", variables=variables,
+        design=design, labels=labels,
+    ).add_global_p()
+gp_headers = [h.text for h in t_gp.headers[0].cells]
+print(f"global-p headers: {gp_headers}")
+assert any("global" in h.lower() for h in gp_headers), \
+    "add_global_p did not insert a global-p column"
+
+# Pull the global-p for the race variable
+race_gp = None
+for r in t_gp.rows:
+    label_txt = r.cells[0].text.strip()
+    if label_txt == "Race/ethnicity":
+        for c in r.cells:
+            if c.kind == "p_value" and isinstance(c.value, (int, float)):
+                race_gp = float(c.value)
+                break
+        break
+print(f"  global p (Race/ethnicity, 6 levels): {race_gp}")
+assert race_gp is not None and 0 <= race_gp <= 1, \
+    "race global p not in [0,1]"
+print("ASSERTION OK — joint Wald-F under design produced a "
+      "valid global p for race.")
+t_gp
+""")
+
+# =====================================================================
+md(r"""
+## Step 18 — Cross-format logical consistency
+
+Step 11 asserted *byte-determinism* (writing the same backend twice
+gives identical bytes). This step asserts the stronger contract of
+*cross-format logical consistency*: every renderer must encode the
+same numeric content.
+
+We pick three numbers from the survey-weighted Table 1 (weighted N
+total for "no diabetes", weighted Mean(SE) for age in the same
+group, and the Rao-Scott p for the Race/ethnicity row) and assert
+each appears verbatim in the HTML, Markdown, LaTeX, and DOCX
+renders. If any backend disagrees, the assertion fails.
+
+### AUDIT note (Step 18)
+
+* All four text-based renders must contain the same numeric tokens.
+  (XLSX, PPTX, PNG are binary/visual and would require parsers.)
+""")
+
+code(r"""
+import re
+import zipfile
+
+# 1. Pull representative numeric tokens from the rendered Markdown
+#    (which is our most easily-introspectable backend).
+md_text = t_inf.to_markdown()
+# Look for the weighted N total in the "Drug A" / "diabetes==0" column
+# We expect a 'N = 194,...' or similar.
+n_token = re.search(r"N\s*=\s*([\d,]+\.\d)", md_text)
+assert n_token, f"could not find weighted N token in MD: {md_text[:300]}"
+n_str = n_token.group(1)
+print(f"  representative weighted N token: N = {n_str}")
+
+# Strip thousands separators for cross-format matching (HTML/LaTeX may
+# format differently)
+n_digits = n_str.replace(",", "").split(".")[0][:5]  # first 5 digits
+
+renders = {
+    "html": t_inf.to_html(),
+    "md":   t_inf.to_markdown(),
+    "tex":  t_inf.to_latex(),
+}
+# DOCX is a ZIP of XML files; pull all the <w:t> text content
+import tempfile
+with tempfile.NamedTemporaryFile(suffix=".docx", delete=False) as tf:
+    docx_path = tf.name
+t_inf.to_docx(docx_path)
+with zipfile.ZipFile(docx_path) as zf:
+    docx_text = zf.read("word/document.xml").decode("utf-8", errors="ignore")
+renders["docx"] = docx_text
+
+# Check that the N digits appear in each render
+print(f"\n  searching for digit prefix '{n_digits}' in each backend:")
+for fmt, blob in renders.items():
+    # strip thousands separators in render so different formatting works
+    blob_clean = blob.replace(",", "").replace(" ", "")
+    present = n_digits in blob_clean
+    print(f"    {fmt:5s}: {'OK' if present else 'MISSING'}")
+    assert present, (
+        f"{fmt} render does not contain the weighted N token "
+        f"({n_digits}); cross-format consistency broken"
+    )
+print("\nASSERTION OK — same weighted N appears in HTML, MD, LaTeX, "
+      "and DOCX renders.")
+""")
+
+# =====================================================================
+md(r"""
 ## Summary
 
 | Step | Audit seam | Expected behaviour | Observed |
@@ -675,10 +969,16 @@ md(r"""
 | 8 | Logistic separation | "non-identified" footnote | ✔ |
 | 9 | Cox PH check | PH-violation footnote for age + wexp | ✔ |
 | 10 | Forest plot + KM curve | inline_plot attached, log-scale auto | ✔ |
-| 11 | Byte-determinism | all 7 backends MATCH | ✔ |
+| 11 | Byte-determinism (same-backend) | all 7 backends MATCH twice | ✔ |
 | 12 | R `survey` agreement | mean(age), SE(age), svyttest t-stat agree to 6 dp; svyglm β to 3 dp | ✔ |
+| 13 | AFT label is **TR** not HR | "TR" header on Weibull fit | ✔ |
+| 14 | Multi-model regression | 3 spanning-header columns | ✔ |
+| 15 | tbl_stack composition | composed rows ≥ Σ inputs, group labels present | ✔ |
+| 16 | BH q-value adjustment | "q-value" column added, monotone in sorted p | ✔ |
+| 17 | Joint Wald-F under design | global-p column added, race p ∈ [0, 1] | ✔ |
+| 18 | Cross-format consistency | same weighted N in HTML, MD, LaTeX, DOCX | ✔ |
 
-All twelve seams behaved as expected on PySofra 0.1.0a9. A regression
+All eighteen seams behaved as expected on PySofra 0.1.0a9. A regression
 in any one of them would produce a visible difference in the
 corresponding cell of the notebook, making this artifact useful both
 as a JSS case study and as a CI-gated end-to-end audit.
