@@ -7796,7 +7796,7 @@ a.anchor-link {
 <!-- End of mermaid configuration --></head>
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
 <main>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=12085451">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=42f8111b">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7867,11 +7867,14 @@ be "small."</li>
 <li><strong>Age standardisation</strong> (direct/indirect) is not a PySofra feature.
 A user wanting age-standardised prevalence should compute it
 externally and pass it as a derived variable.</li>
-<li><strong>Cluster-robust regression SEs</strong> under <code>tbl_regression(design=)</code>
-use statsmodels <code>var_weights</code>, which is correct to first order but
-not the full sandwich estimator R <code>survey::svyglm</code> uses. <strong>Step 39
-quantifies the gap.</strong></li>
 </ul>
+<p><strong>Resolved in 0.1.0a14</strong> (was a limitation through 0.1.0a13):
+<code>tbl_regression(design=)</code> now computes the full Taylor-linearisation
+cluster-robust sandwich (<code>survey_glm_vcov</code>) and matches R
+<code>survey::svyglm</code> on β, SE, and p-value to numerical precision (Step
+39), with empirically-calibrated 95 % CI coverage (Step 47). The
+categorical Rao–Scott chi-square (Step 38) remains a first-order
+Kish-DEFF approximation — that one is still documented, not closed.</p>
 <p><strong>Reproducibility.</strong> All data are downloaded directly from CDC's
 public NHANES portal. No credentials, IRB, or registration is
 required. The first cell caches files under <code>_nhanes_cache/</code>.</p>
@@ -7881,7 +7884,7 @@ Section-VI cross-validation: <code>survey</code> ≥ 4.4, <code>gtsummary</code>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=39783f4e">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=2fb2ad10">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7912,14 +7915,14 @@ Section-VI cross-validation: <code>survey</code> ≥ 4.4, <code>gtsummary</code>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>PySofra version: 0.1.0a13
+<pre>PySofra version: 0.1.0a14
 </pre>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d35e5944">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=817fc0ff">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7946,7 +7949,7 @@ must produce exactly the kinds shown in the printed table.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=7516ca48">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=011897fc">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8037,7 +8040,7 @@ Variable-kind inference:
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=42f7d8ce">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=821d30e3">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8054,7 +8057,7 @@ for steps 4 and 5.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b6556e6b">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=91d605d5">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8091,7 +8094,7 @@ for steps 4 and 5.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b9d76e7e">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=fc411f40">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8114,7 +8117,7 @@ analytic subset.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=2390f369">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c21ebfda">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8149,7 +8152,7 @@ lonely-PSU strata (warning condition): 0
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=73ebeb7b">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c0b8a1fd">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8171,7 +8174,7 @@ would be too small by ~5–10%.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=89035978">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c8b2dd12">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8214,7 +8217,7 @@ would be too small by ~5–10%.</li>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=2e7a7b02">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f5b71b2c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8241,7 +8244,7 @@ every categorical Table-1 variable.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=95abea91">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f8157bf8">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8283,7 +8286,7 @@ example: Rao–Scott chi-square for 'sex': pysofra uses the first-order Kish-DEF
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=683d271f">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=e7634bdb">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8320,7 +8323,7 @@ identifies it as "Pooled MI (10 imputations) — Rubin's rules."</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=13f1c5a0">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3cfac2c4">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8383,7 +8386,7 @@ missing BMI: 78 (1.6%)
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=1a7e3f08">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=a78d0de1">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8414,7 +8417,7 @@ to R <code>survey::svyglm</code> on this same model.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=be14a739">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=9a23a83e">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8460,13 +8463,13 @@ to R <code>survey::svyglm</code> on this same model.</li>
 <div class="jp-OutputArea-child jp-OutputArea-executeResult">
 <div class="jp-OutputPrompt jp-OutputArea-prompt">Out[8]:</div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output jp-OutputArea-executeResult" data-mime-type="text/html" tabindex="0">
-<style>table.pysofra-b9901e2090{border-collapse:collapse;font-family:"Helvetica Neue", Helvetica, Arial, "Segoe UI", "Liberation Sans", sans-serif;font-size:14px;line-height:1.45;color:inherit;background:transparent;margin:0.75em 0;}.pysofra-b9901e2090 caption{caption-side:top;text-align:left;font-weight:700;padding:0.4em 0.2em;font-size:15px;color:inherit;}.pysofra-b9901e2090 th{padding:0.55em 0.85em;text-align:center;border-top:2px solid currentColor;border-bottom:1.25px solid currentColor;font-weight:700;vertical-align:bottom;color:inherit;background:transparent;}.pysofra-b9901e2090 td{padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;color:inherit;}.pysofra-b9901e2090 tr:last-child td{border-bottom:2px solid currentColor;}.pysofra-b9901e2090 tr.group-header td{font-weight:700;padding-top:0.7em;}.pysofra-b9901e2090 tfoot td{font-size:12px;color:rgba(127, 127, 127, 0.75);border-bottom:none;padding-top:0.55em;}.pysofra-b9901e2090 .pysofra-num{text-align:right;font-variant-numeric:tabular-nums;}.pysofra-b9901e2090 .pysofra-bold{font-weight:700;}.pysofra-b9901e2090 .pysofra-indent{padding-left:1.75em;}.pysofra-b9901e2090 .pysofra-spanning{border-bottom:1px solid currentColor;text-align:center;font-weight:700;padding:0.35em 0.5em;}</style><div class="pysofra-wrap pysofra-b9901e2090" style="overflow-x:auto;max-width:100%;"><table class="pysofra pysofra-b9901e2090" role="table" style="font-family:'Helvetica Neue', Helvetica, Arial, 'Segoe UI', 'Liberation Sans', sans-serif;font-size:14px;line-height:1.45;color:inherit;border-collapse:collapse"><thead><tr><th style="padding:0.55em 0.85em;border-top:2px solid currentColor;border-bottom:1.25px solid currentColor;background:transparent;text-align:center;vertical-align:bottom;text-align:left;font-weight:600">Variable</th><th style="padding:0.55em 0.85em;border-top:2px solid currentColor;border-bottom:1.25px solid currentColor;background:transparent;text-align:center;vertical-align:bottom;text-align:center;font-weight:600">OR</th><th style="padding:0.55em 0.85em;border-top:2px solid currentColor;border-bottom:1.25px solid currentColor;background:transparent;text-align:center;vertical-align:bottom;text-align:center;font-weight:600">95% CI</th><th style="padding:0.55em 0.85em;border-top:2px solid currentColor;border-bottom:1.25px solid currentColor;background:transparent;text-align:center;vertical-align:bottom;text-align:center;font-weight:600">p-value</th></tr></thead><tbody><tr><td style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:left">age</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">1.07</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">1.05, 1.08</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">&lt;0.001</td></tr><tr><td style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:left">sex_male</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">1.45</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">1.16, 1.81</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">0.001</td></tr><tr><td style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:left">bmi</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">1.10</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">1.10, 1.11</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">&lt;0.001</td></tr><tr><td style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:left">pir</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">0.99</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">0.80, 1.22</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">0.911</td></tr><tr><td style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:left">insured</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">0.91</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">0.61, 1.36</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">0.648</td></tr><tr><td style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;border-bottom:2px solid currentColor;text-align:left">race_NHW</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;border-bottom:2px solid currentColor;text-align:right">0.59</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;border-bottom:2px solid currentColor;text-align:right">0.29, 1.19</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;border-bottom:2px solid currentColor;text-align:right">0.139</td></tr></tbody><tfoot><tr><td colspan="4" style="font-size:12px;color:rgba(127, 127, 127, 0.75);padding-top:0.55em;border-bottom:none">OR = exponentiated coefficient; CI = 95% confidence interval.<br/>Model: GLMResultsWrapper (Binomial).</td></tr></tfoot></table></div>
+<style>table.pysofra-f7d313db71{border-collapse:collapse;font-family:"Helvetica Neue", Helvetica, Arial, "Segoe UI", "Liberation Sans", sans-serif;font-size:14px;line-height:1.45;color:inherit;background:transparent;margin:0.75em 0;}.pysofra-f7d313db71 caption{caption-side:top;text-align:left;font-weight:700;padding:0.4em 0.2em;font-size:15px;color:inherit;}.pysofra-f7d313db71 th{padding:0.55em 0.85em;text-align:center;border-top:2px solid currentColor;border-bottom:1.25px solid currentColor;font-weight:700;vertical-align:bottom;color:inherit;background:transparent;}.pysofra-f7d313db71 td{padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;color:inherit;}.pysofra-f7d313db71 tr:last-child td{border-bottom:2px solid currentColor;}.pysofra-f7d313db71 tr.group-header td{font-weight:700;padding-top:0.7em;}.pysofra-f7d313db71 tfoot td{font-size:12px;color:rgba(127, 127, 127, 0.75);border-bottom:none;padding-top:0.55em;}.pysofra-f7d313db71 .pysofra-num{text-align:right;font-variant-numeric:tabular-nums;}.pysofra-f7d313db71 .pysofra-bold{font-weight:700;}.pysofra-f7d313db71 .pysofra-indent{padding-left:1.75em;}.pysofra-f7d313db71 .pysofra-spanning{border-bottom:1px solid currentColor;text-align:center;font-weight:700;padding:0.35em 0.5em;}</style><div class="pysofra-wrap pysofra-f7d313db71" style="overflow-x:auto;max-width:100%;"><table class="pysofra pysofra-f7d313db71" role="table" style="font-family:'Helvetica Neue', Helvetica, Arial, 'Segoe UI', 'Liberation Sans', sans-serif;font-size:14px;line-height:1.45;color:inherit;border-collapse:collapse"><thead><tr><th style="padding:0.55em 0.85em;border-top:2px solid currentColor;border-bottom:1.25px solid currentColor;background:transparent;text-align:center;vertical-align:bottom;text-align:left;font-weight:600">Variable</th><th style="padding:0.55em 0.85em;border-top:2px solid currentColor;border-bottom:1.25px solid currentColor;background:transparent;text-align:center;vertical-align:bottom;text-align:center;font-weight:600">OR</th><th style="padding:0.55em 0.85em;border-top:2px solid currentColor;border-bottom:1.25px solid currentColor;background:transparent;text-align:center;vertical-align:bottom;text-align:center;font-weight:600">95% CI</th><th style="padding:0.55em 0.85em;border-top:2px solid currentColor;border-bottom:1.25px solid currentColor;background:transparent;text-align:center;vertical-align:bottom;text-align:center;font-weight:600">p-value</th></tr></thead><tbody><tr><td style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:left">age</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">1.07</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">1.06, 1.08</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">&lt;0.001</td></tr><tr><td style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:left">sex_male</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">1.45</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">1.00, 2.10</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">0.051</td></tr><tr><td style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:left">bmi</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">1.10</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">1.09, 1.12</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">&lt;0.001</td></tr><tr><td style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:left">pir</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">0.99</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">0.89, 1.10</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">0.803</td></tr><tr><td style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:left">insured</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">0.91</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">0.59, 1.40</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;text-align:right">0.637</td></tr><tr><td style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;border-bottom:2px solid currentColor;text-align:left">race_NHW</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;border-bottom:2px solid currentColor;text-align:right">0.59</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;border-bottom:2px solid currentColor;text-align:right">0.42, 0.82</td><td class="pysofra-num" style="padding:0.4em 0.85em;border-bottom:1px solid rgba(127, 127, 127, 0.30);vertical-align:top;border-bottom:2px solid currentColor;text-align:right">0.006</td></tr></tbody><tfoot><tr><td colspan="4" style="font-size:12px;color:rgba(127, 127, 127, 0.75);padding-top:0.55em;border-bottom:none">OR = exponentiated coefficient; CI = 95% confidence interval.<br/>Model: SurveyGLMResults (Binomial).</td></tr></tfoot></table></div>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=0c487c36">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d29fb866">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8492,7 +8495,7 @@ researcher cannot accidentally publish an OR of 5e18.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=0b8186ab">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=5428065a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8534,7 +8537,7 @@ researcher cannot accidentally publish an OR of 5e18.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9f3e6ff2">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f50cb507">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8560,7 +8563,7 @@ appear.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=22d1c5e5">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=88808491">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8602,7 +8605,7 @@ appear.</li>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=3c473f1e">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=eed17e39">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8623,7 +8626,7 @@ PPTX, …) emit it inline.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b751298b">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3fe3d081">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -9976,7 +9979,7 @@ L 72.78125 214.380312
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=8f5945d6">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=66f1d30f">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10000,7 +10003,7 @@ same table.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f61605af">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=49b9b425">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10081,7 +10084,7 @@ All seven backends are bytewise-identical across processes.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=97c43f99">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=1d758c1a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10108,7 +10111,7 @@ with R <code>svyglm(..., quasibinomial)</code> ORs to ≥ 2 decimals.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1f25a4b2">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=794c3801">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10261,7 +10264,7 @@ with R <code>svyglm(..., quasibinomial)</code> ORs to ≥ 2 decimals.</li>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=e8567362">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=932a0d83">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10281,7 +10284,7 @@ this and asserts the footnote contains the literal "TR".</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=30f1883d">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=04ac96b0">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10329,7 +10332,7 @@ ASSERTION OK — Weibull AFT labelled TR (Time Ratio), not HR.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=0ecef1b2">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9190f398">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10350,7 +10353,7 @@ m2; <code>+ insured + race_NHW</code> in m3).</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=7a55620d">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b851b14a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10413,7 +10416,7 @@ ASSERTION OK — 3-model side-by-side regression table rendered.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ef4bbd6f">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ae1bd1bc">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10432,7 +10435,7 @@ in the rendered HTML.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=71ff9821">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=019df86c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10489,7 +10492,7 @@ ASSERTION OK — tbl_stack composed both sub-tables; both group labels present i
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=dd51df24">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=58aa6567">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10507,7 +10510,7 @@ p-values' sort order (BH property).</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=7d01824a">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=2f8e8c64">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10583,7 +10586,7 @@ ASSERTION OK — q-value column added, BH monotonicity holds.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f4f6ec5f">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f3ce6388">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10603,7 +10606,7 @@ jointly testing all 5 race contrasts (a5/a6 path).</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=901b2367">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=10e758eb">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10668,7 +10671,7 @@ ASSERTION OK — joint Wald-F under design produced a valid global p for race.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=36952af3">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=8e423902">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10690,7 +10693,7 @@ renders. If any backend disagrees, the assertion fails.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c75fb11d">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a2d4b13a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10755,13 +10758,7 @@ renders. If any backend disagrees, the assertion fails.</p>
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
 <pre>  representative weighted N token: N = 194,715,019.3
-</pre>
-</div>
-</div>
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>
+
   searching for digit prefix '19471' in each backend:
     html : OK
     md   : OK
@@ -10775,7 +10772,7 @@ ASSERTION OK — same weighted N appears in HTML, MD, LaTeX, and DOCX renders.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=98542f17">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=8312ab08">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10793,7 +10790,7 @@ implements Rubin's rules?", these are the answers.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=660fa09e">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=86543003">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10822,7 +10819,7 @@ hand-derived values to ≥ 1e-10.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=93a5c9ee">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=ec1accb6">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10914,7 +10911,7 @@ ASSERTION OK — pool() reproduces Rubin (1987) equation 3.1.6 to ≤ 1e-10.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=3b15c740">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=6809c509">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10939,7 +10936,7 @@ silently cascades.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=6fb198f7">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=0bef6f37">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11001,7 +10998,7 @@ ASSERTION OK — Wilson CI matches Newcombe (1998), statsmodels, and the textboo
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=0ed48da1">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b62ac16a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11020,7 +11017,7 @@ display text rounds to one decimal percent. Equality must hold on
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=863c9eb8">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=70ee97d9">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11078,7 +11075,7 @@ ASSERTION OK — KM survival at t ∈ {10,30,50} matches lifelines reference to 
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ac460bed">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=55750d0c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11098,7 +11095,7 @@ versions.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=898604d5">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=10776d7e">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11150,7 +11147,7 @@ versions.</p>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
 <pre>Environment manifest (pin this if reproducing later):
   python         = 3.11.15
-  pysofra        = 0.1.0a13
+  pysofra        = 0.1.0a14
   numpy          = 2.4.6
   pandas         = 2.3.3
   scipy          = 1.17.1
@@ -11158,7 +11155,7 @@ versions.</p>
   lifelines      = 0.30.3
   sklearn        = 1.8.0
   matplotlib     = 3.10.9
-  git_commit     = 7ffda305e5b6
+  git_commit     = 829dfbaf90ac
 
 ASSERTION OK — running on PySofra ≥ 0.1.0a9.
 </pre>
@@ -11167,7 +11164,7 @@ ASSERTION OK — running on PySofra ≥ 0.1.0a9.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=884e6726">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=4579b340">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11184,7 +11181,7 @@ upstream libraries the published numbers depend on.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=250f4e5f">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=e9dc77ca">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11256,7 +11253,7 @@ ASSERTION OK — same seed → identical pooled output bytes.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=179e7c1f">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=001fe325">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11284,7 +11281,7 @@ docstring would fail this assertion.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=768dfe3d">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a9a5f3cf">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11356,7 +11353,7 @@ ASSERTION OK — lonely-PSU warning fired; mean matches R to 1e-6; SE within 5% 
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ef90cb7b">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=82cfd39e">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11371,7 +11368,7 @@ KM, and the foundational t-test degrees of freedom.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=2e0bb02d">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=cb5bc994">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11386,7 +11383,7 @@ differently than pandas, this assertion fails.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=681b5b35">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=4b2cb0e4">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11438,7 +11435,7 @@ differently than pandas, this assertion fails.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=2a622df1">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=2da850dc">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11458,7 +11455,7 @@ of magnitude more.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f2ef0897">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=4a67679c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11525,7 +11522,7 @@ ASSERTION OK — relative error of PySofra weighted mean: 0.00e+00  (≤ 1e-12).
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=613c475d">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=a9e16db5">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11541,7 +11538,7 @@ Step 10 (unweighted) does not exercise.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3960fd57">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=fca82bf2">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11629,7 +11626,7 @@ ASSERTION OK — weighted KM matches lifelines reference to ≤ 1e-12 at t ∈ {
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=cfdf0a6c">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=091d002c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11648,7 +11645,7 @@ solid foundation.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a303b027">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=5b3ac83a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11718,7 +11715,7 @@ ASSERTION OK — Welch t-stat agrees PS↔scipy to 1e-12; Satterthwaite df match
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=65af41c7">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=63b76013">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11732,7 +11729,7 @@ analysis sensitive to row order or floating-point quirks?", and (c)
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=6a7758c8">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=8208211a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11752,7 +11749,7 @@ implementation is sound.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b6ce7973">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1f51ff83">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11815,7 +11812,7 @@ ASSERTION OK — Lumley (2010) apistrat example reproduced to ≥ 3 decimals.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=e67bcdd4">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c0736530">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11833,7 +11830,7 @@ deterministic 4,971-row input.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1f7e4e86">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=aeb86caf">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11894,7 +11891,7 @@ ASSERTION OK — design-based mean and variance are invariant to row permutation
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=a828395e">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=81001bee">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11913,7 +11910,7 @@ produces a complete output.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=7d67e863">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=490a04ba">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11971,7 +11968,7 @@ ASSERTION OK — full modifier chain produced 6+ columns with no spurious rebuil
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f1a86443">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=2dfa1055">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11988,7 +11985,7 @@ JSS reviewer will absolutely test these inputs, so we test them too.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=9646465e">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=fdcffb93">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12056,7 +12053,7 @@ ASSERTION OK — empty, single-row, and all-NaN inputs each produced either a cl
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9bdcc21b">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=8213aa67">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12071,7 +12068,7 @@ the JSS paper's "comparison with existing software" section.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b03e1040">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=3d7d0950">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12094,7 +12091,7 @@ diff showing what changed.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=53a70366">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=dbac3180">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12177,7 +12174,7 @@ ASSERTION OK — snapshot lock detects substantive content drift while ignoring 
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c72ca062">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=50af7faa">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12197,7 +12194,7 @@ if any.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=6aa5a775">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=38eaaa1d">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12268,7 +12265,7 @@ ASSERTION OK — extreme/sparse/missing patterns detected on adversarial input; 
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=44716dc1">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=01b10d96">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12287,7 +12284,7 @@ captions, so the table can be <code>{{&lt; include &gt;}}</code>-d directly into
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=8a05076c">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=31224351">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12349,7 +12346,7 @@ ASSERTION OK — Quarto pass-through blocks emitted with cross-reference label a
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f20b60fb">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=255325a1">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12369,7 +12366,7 @@ ready to <code>#include</code> in a <code>.typ</code> source or compile directly
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=bc9aabc0">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3e99b6d4">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12422,7 +12419,7 @@ ASSERTION OK — Typst markup emitted and written to disk.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=8235d6e9">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=6062da92">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12441,7 +12438,7 @@ to plug into shell-based CI pipelines and Makefiles.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=8a28e619">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a096200c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12513,7 +12510,7 @@ to plug into shell-based CI pipelines and Makefiles.</p>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>  $ pysofra version → 0.1.0a13
+<pre>  $ pysofra version → 0.1.0a14
 </pre>
 </div>
 </div>
@@ -12550,7 +12547,7 @@ ASSERTION OK — `pysofra` CLI handles version, table, and check sub-commands wi
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b6291162">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=564a68ec">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12566,7 +12563,7 @@ all Table-1 continuous variables (not just age + BMI).</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=767e7bc7">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ce03c937">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12590,7 +12587,7 @@ bounded," not "the gap is zero."</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=7fc85c1d">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3b166222">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12731,7 +12728,7 @@ DOCUMENTATION OK — first-order Rao-Scott vs full R svychisq gap quantified per
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=1749a14a">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9402745b">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12739,37 +12736,28 @@ DOCUMENTATION OK — first-order Rao-Scott vs full R svychisq gap quantified per
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h2 id="Step-39-%E2%80%94-Full-svyglm-parity:-%CE%B2-AND-SE-AND-CI-AND-p">Step 39 — Full <code>svyglm</code> parity: β AND SE AND CI AND p<a class="anchor-link" href="#Step-39-%E2%80%94-Full-svyglm-parity:-%CE%B2-AND-SE-AND-CI-AND-p">¶</a></h2><p>Step 12 verified that PySofra's design-refit logistic regression
 agrees with R <code>svyglm</code> on the β coefficients to machine precision.
-Reviewer #2 pointed out (correctly) that for inference, what
-publishers actually report — SE, 95% CI, p-value — was not validated.</p>
-<p><strong>This step delivers a difficult finding.</strong> β agreement holds to
-machine precision, but the <strong>SE gap is large</strong> (~50–100 % on this
-dataset). The reason: PySofra's <code>tbl_regression(design=)</code> uses
-statsmodels <code>var_weights</code>, which computes SEs as if the weights were
-inverse-variance weights on a frequency-weighted likelihood — <em>not</em>
-the cluster-robust Taylor-linearised sandwich estimator R
-<code>survey::svyglm</code> uses.</p>
-<p>For the JSS paper, this must be documented as <strong>the</strong> outstanding
-limitation of PySofra's regression-under-design surface:</p>
-<blockquote>
-<p><em>"For design-adjusted regression coefficient estimates, PySofra's
-point estimates (β, OR) agree with R <code>survey::svyglm</code> to machine
-precision. For design-adjusted standard errors, confidence
-intervals, and p-values, PySofra's <code>var_weights</code>-based SEs can
-differ from R's cluster-robust sandwich SEs by 50 % or more on
-stratified clustered designs. Users requiring publication-grade
-design-adjusted inference on regression coefficients should fit
-the model in R <code>svyglm</code> and use PySofra only for the table
-presentation."</em></p>
-</blockquote>
+A reviewer pointed out (correctly) that for inference, what
+publishers actually report — SE, 95 % CI, p-value — must <em>also</em> be
+validated.</p>
+<p><strong>This was the package's outstanding limitation through 0.1.0a13</strong>,
+where <code>tbl_regression(design=)</code> used statsmodels <code>var_weights</code> SEs
+that differed from R's cluster-robust sandwich by ~50–100 %.
+<strong>Version 0.1.0a14 closes it.</strong> PySofra now computes the full
+Taylor-linearisation sandwich</p>
+<pre><code>V = A⁻¹ · B · A⁻¹</code></pre>
+<p>(<code>pysofra.summary.design.survey_glm_vcov</code>) with PSU-within-stratum
+nesting and the R <code>svyglm</code> residual df of <code>(n_PSU − n_strata) − k + 1</code>.
+The result matches R <code>survey::svyglm</code> on <strong>β AND SE AND p-value</strong> to
+numerical precision.</p>
 <h3 id="AUDIT-note-(Step-39)">AUDIT note (Step 39)<a class="anchor-link" href="#AUDIT-note-(Step-39)">¶</a></h3><ul>
-<li>β to ≤ 5e-3 — <strong>asserted</strong>.</li>
-<li>SE / CI / p gap — <strong>quantified and documented</strong>, not asserted to a
-bound. The contract is honest disclosure, not numerical agreement.</li>
+<li>β to ≤ 5e-3 — <strong>asserted</strong> (re-asserts Step 12).</li>
+<li><strong>SE to ≤ 1 % relative — now asserted</strong> (was a documented gap).</li>
+<li><strong>p-value to ≤ 2 % relative — now asserted</strong> (df = n_PSU−n_strata−k+1).</li>
 </ul>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=78dfd868">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1fc25fe0">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12778,74 +12766,69 @@ bound. The contract is honest disclosure, not numerical agreement.</li>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_sps</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pysofra.models.regression</span><span class="w"> </span><span class="kn">import</span> <span class="n">_refit_with_design</span>
 
 <span class="k">if</span> <span class="ow">not</span> <span class="n">ref_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">"  (skipped — R_reference.json not present)"</span><span class="p">)</span>
 <span class="k">else</span><span class="p">:</span>
     <span class="n">R_glm</span> <span class="o">=</span> <span class="n">R</span><span class="p">[</span><span class="s2">"svyglm"</span><span class="p">]</span>
-    <span class="c1"># Match PySofra's Step-7 unweighted-then-design-refit chain by</span>
-    <span class="c1"># fitting a parallel weighted GLM, same way Step 12 did.</span>
-    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">)</span>
-        <span class="n">glm_w</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">GLM</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">family</span><span class="o">=</span><span class="n">sm</span><span class="o">.</span><span class="n">families</span><span class="o">.</span><span class="n">Binomial</span><span class="p">(),</span>
-                       <span class="n">var_weights</span><span class="o">=</span><span class="n">work_cc</span><span class="p">[</span><span class="s2">"WTMEC2YR"</span><span class="p">]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">())</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
-    <span class="n">py_b</span> <span class="o">=</span> <span class="n">glm_w</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-    <span class="n">py_se</span> <span class="o">=</span> <span class="n">glm_w</span><span class="o">.</span><span class="n">bse</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
-    <span class="c1"># Construct 95% CIs from the t / z distribution (statsmodels uses z</span>
-    <span class="c1"># on a GLM with var_weights; svyglm uses a t with df = n_PSU − strata)</span>
+    <span class="c1"># Route through PySofra's ACTUAL design refit (the same code path a</span>
+    <span class="c1"># user hits via tbl_regression(design=, data=)). This now returns a</span>
+    <span class="c1"># SurveyGLMResults carrying the Taylor-linearisation sandwich vcov.</span>
+    <span class="n">glm_unweighted</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">GLM</span><span class="p">(</span>
+        <span class="n">y</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">family</span><span class="o">=</span><span class="n">sm</span><span class="o">.</span><span class="n">families</span><span class="o">.</span><span class="n">Binomial</span><span class="p">(),</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+    <span class="n">refit</span> <span class="o">=</span> <span class="n">_refit_with_design</span><span class="p">(</span><span class="n">glm_unweighted</span><span class="p">,</span> <span class="n">design</span><span class="p">,</span> <span class="n">work_cc</span><span class="p">)</span>
+
     <span class="n">py_term_for</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">"RIDAGEYR"</span><span class="p">:</span> <span class="s2">"age"</span><span class="p">,</span> <span class="s2">"sex_male"</span><span class="p">:</span> <span class="s2">"sex_male"</span><span class="p">,</span> <span class="s2">"bmi"</span><span class="p">:</span> <span class="s2">"bmi"</span><span class="p">,</span>
         <span class="s2">"pir"</span><span class="p">:</span> <span class="s2">"pir"</span><span class="p">,</span> <span class="s2">"insured"</span><span class="p">:</span> <span class="s2">"insured"</span><span class="p">,</span> <span class="s2">"race_NHW"</span><span class="p">:</span> <span class="s2">"race_NHW"</span><span class="p">,</span>
     <span class="p">}</span>
+    <span class="n">col_order</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"age"</span><span class="p">,</span> <span class="s2">"sex_male"</span><span class="p">,</span> <span class="s2">"bmi"</span><span class="p">,</span> <span class="s2">"pir"</span><span class="p">,</span> <span class="s2">"insured"</span><span class="p">,</span> <span class="s2">"race_NHW"</span><span class="p">]</span>
+    <span class="c1"># SurveyGLMResults indexes params by exog column position; build a</span>
+    <span class="c1"># name→position map from the design matrix columns.</span>
+    <span class="n">exog_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">X</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span>
 
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  df_resid = </span><span class="si">{</span><span class="n">refit</span><span class="o">.</span><span class="n">df_resid</span><span class="si">:</span><span class="s2">.0f</span><span class="si">}</span><span class="s2">  "</span>
+          <span class="sa">f</span><span class="s2">"(R svyglm uses (n_PSU−n_strata)−k+1 = 15−7+1 = 9)"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="s1">'Term'</span><span class="si">:</span><span class="s2">&lt;10</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'PS β'</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'R β'</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2"> "</span>
-          <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">'PS SE'</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'R SE'</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'PS p'</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'R p'</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2"> "</span>
-          <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">'|β diff|'</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'|SE rel|'</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+          <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">'PS SE'</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'R SE'</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'PS p'</span><span class="si">:</span><span class="s2">&gt;11</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'R p'</span><span class="si">:</span><span class="s2">&gt;11</span><span class="si">}</span><span class="s2"> "</span>
+          <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">'|SE rel|'</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'|p rel|'</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="s1">'-'</span><span class="o">*</span><span class="mi">10</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'-'</span><span class="o">*</span><span class="mi">10</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'-'</span><span class="o">*</span><span class="mi">10</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2"> "</span>
-          <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">'-'</span><span class="o">*</span><span class="mi">9</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'-'</span><span class="o">*</span><span class="mi">9</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'-'</span><span class="o">*</span><span class="mi">10</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'-'</span><span class="o">*</span><span class="mi">10</span><span class="si">:</span><span class="s2">&gt;10</span><span class="si">}</span><span class="s2"> "</span>
+          <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">'-'</span><span class="o">*</span><span class="mi">9</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'-'</span><span class="o">*</span><span class="mi">9</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'-'</span><span class="o">*</span><span class="mi">11</span><span class="si">:</span><span class="s2">&gt;11</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'-'</span><span class="o">*</span><span class="mi">11</span><span class="si">:</span><span class="s2">&gt;11</span><span class="si">}</span><span class="s2"> "</span>
           <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">'-'</span><span class="o">*</span><span class="mi">9</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'-'</span><span class="o">*</span><span class="mi">9</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-    <span class="n">max_se_rel</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="n">max_b</span><span class="p">,</span> <span class="n">max_se</span><span class="p">,</span> <span class="n">max_p</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span>
+    <span class="n">pvals</span> <span class="o">=</span> <span class="n">refit</span><span class="o">.</span><span class="n">pvalues</span>
     <span class="k">for</span> <span class="n">r_term</span><span class="p">,</span> <span class="n">py_term</span> <span class="ow">in</span> <span class="n">py_term_for</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">exog_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">py_term</span><span class="p">)</span>
         <span class="n">idx</span> <span class="o">=</span> <span class="n">R_glm</span><span class="p">[</span><span class="s2">"variable"</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">r_term</span><span class="p">)</span>
-        <span class="n">r_b</span> <span class="o">=</span> <span class="n">R_glm</span><span class="p">[</span><span class="s2">"estimate"</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span>
-        <span class="n">r_s</span> <span class="o">=</span> <span class="n">R_glm</span><span class="p">[</span><span class="s2">"std_error"</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span>
-        <span class="n">r_p</span> <span class="o">=</span> <span class="n">R_glm</span><span class="p">[</span><span class="s2">"p_value"</span><span class="p">][</span><span class="n">idx</span><span class="p">]</span>
-        <span class="n">p_b</span> <span class="o">=</span> <span class="n">py_b</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">py_term</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">))</span>
-        <span class="n">p_s</span> <span class="o">=</span> <span class="n">py_se</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">py_term</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">))</span>
-        <span class="n">p_p</span> <span class="o">=</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">_sps</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">sf</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">p_b</span> <span class="o">/</span> <span class="n">p_s</span><span class="p">)))</span> <span class="k">if</span> <span class="n">p_s</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="nb">float</span><span class="p">(</span><span class="s2">"nan"</span><span class="p">)</span>
+        <span class="n">p_b</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">refit</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">pos</span><span class="p">])</span>
+        <span class="n">p_s</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">refit</span><span class="o">.</span><span class="n">bse</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">pos</span><span class="p">])</span>
+        <span class="n">p_p</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">pvals</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">pos</span><span class="p">])</span>
+        <span class="n">r_b</span><span class="p">,</span> <span class="n">r_s</span><span class="p">,</span> <span class="n">r_p</span> <span class="o">=</span> <span class="p">(</span><span class="n">R_glm</span><span class="p">[</span><span class="s2">"estimate"</span><span class="p">][</span><span class="n">idx</span><span class="p">],</span> <span class="n">R_glm</span><span class="p">[</span><span class="s2">"std_error"</span><span class="p">][</span><span class="n">idx</span><span class="p">],</span>
+                         <span class="n">R_glm</span><span class="p">[</span><span class="s2">"p_value"</span><span class="p">][</span><span class="n">idx</span><span class="p">])</span>
         <span class="n">b_diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">p_b</span> <span class="o">-</span> <span class="n">r_b</span><span class="p">)</span>
-        <span class="n">se_rel</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">p_s</span> <span class="o">-</span> <span class="n">r_s</span><span class="p">)</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">r_s</span><span class="p">),</span> <span class="mf">1e-12</span><span class="p">)</span>
-        <span class="n">max_se_rel</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_se_rel</span><span class="p">,</span> <span class="n">se_rel</span><span class="p">)</span>
+        <span class="n">se_rel</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">p_s</span> <span class="o">-</span> <span class="n">r_s</span><span class="p">)</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">r_s</span><span class="p">)</span>
+        <span class="n">p_rel</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">p_p</span> <span class="o">-</span> <span class="n">r_p</span><span class="p">)</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">r_p</span><span class="p">),</span> <span class="mf">1e-300</span><span class="p">)</span>
+        <span class="n">max_b</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_b</span><span class="p">,</span> <span class="n">b_diff</span><span class="p">);</span> <span class="n">max_se</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_se</span><span class="p">,</span> <span class="n">se_rel</span><span class="p">)</span>
+        <span class="n">max_p</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">max_p</span><span class="p">,</span> <span class="n">p_rel</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">r_term</span><span class="si">:</span><span class="s2">&lt;10</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">p_b</span><span class="si">:</span><span class="s2">&gt;10.5f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">r_b</span><span class="si">:</span><span class="s2">&gt;10.5f</span><span class="si">}</span><span class="s2"> "</span>
-              <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">p_s</span><span class="si">:</span><span class="s2">&gt;9.5f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">r_s</span><span class="si">:</span><span class="s2">&gt;9.5f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">p_p</span><span class="si">:</span><span class="s2">&gt;10.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">r_p</span><span class="si">:</span><span class="s2">&gt;10.4f</span><span class="si">}</span><span class="s2"> "</span>
-              <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">b_diff</span><span class="si">:</span><span class="s2">&gt;9.1e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">se_rel</span><span class="si">:</span><span class="s2">&gt;9.2%</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+              <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">p_s</span><span class="si">:</span><span class="s2">&gt;9.5f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">r_s</span><span class="si">:</span><span class="s2">&gt;9.5f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">p_p</span><span class="si">:</span><span class="s2">&gt;11.4g</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">r_p</span><span class="si">:</span><span class="s2">&gt;11.4g</span><span class="si">}</span><span class="s2"> "</span>
+              <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">se_rel</span><span class="si">:</span><span class="s2">&gt;9.2%</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">p_rel</span><span class="si">:</span><span class="s2">&gt;9.2%</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="nb">print</span><span class="p">()</span>
-    <span class="n">max_b_diff</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span>
-        <span class="nb">abs</span><span class="p">(</span><span class="n">py_b</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">py_term</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">R_glm</span><span class="p">[</span><span class="s2">"estimate"</span><span class="p">][</span><span class="n">R_glm</span><span class="p">[</span><span class="s2">"variable"</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">r_term</span><span class="p">)])</span>
-        <span class="k">for</span> <span class="n">r_term</span><span class="p">,</span> <span class="n">py_term</span> <span class="ow">in</span> <span class="n">py_term_for</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-    <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  max |β| diff across 6 coefficients:        </span><span class="si">{</span><span class="n">max_b_diff</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  max |SE relative gap| (var_weights vs sandwich): </span><span class="si">{</span><span class="n">max_se_rel</span><span class="si">:</span><span class="s2">.2%</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  max |β diff|:     </span><span class="si">{</span><span class="n">max_b</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  max |SE rel gap|: </span><span class="si">{</span><span class="n">max_se</span><span class="si">:</span><span class="s2">.2%</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  max |p  rel gap|: </span><span class="si">{</span><span class="n">max_p</span><span class="si">:</span><span class="s2">.2%</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">max_b</span> <span class="o">&lt;</span> <span class="mf">5e-3</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"β agreement degraded (</span><span class="si">{</span><span class="n">max_b</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">)"</span>
+    <span class="k">assert</span> <span class="n">max_se</span> <span class="o">&lt;</span> <span class="mf">0.01</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"SE no longer matches R svyglm (</span><span class="si">{</span><span class="n">max_se</span><span class="si">:</span><span class="s2">.2%</span><span class="si">}</span><span class="s2">)"</span>
+    <span class="k">assert</span> <span class="n">max_p</span> <span class="o">&lt;</span> <span class="mf">0.02</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"p-value no longer matches R svyglm (</span><span class="si">{</span><span class="n">max_p</span><span class="si">:</span><span class="s2">.2%</span><span class="si">}</span><span class="s2">)"</span>
     <span class="nb">print</span><span class="p">()</span>
-    <span class="c1"># β agreement is a HARD contract (re-asserts Step 12 on this exact spec)</span>
-    <span class="k">assert</span> <span class="n">max_b_diff</span> <span class="o">&lt;</span> <span class="mf">5e-3</span><span class="p">,</span> <span class="p">(</span>
-        <span class="sa">f</span><span class="s2">"svyglm β agreement degraded (</span><span class="si">{</span><span class="n">max_b_diff</span><span class="si">:</span><span class="s2">.2e</span><span class="si">}</span><span class="s2">); this WAS "</span>
-        <span class="sa">f</span><span class="s2">"machine-precision in Step 12, regression detected."</span>
-    <span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"  ASSERTION OK — β agree to ≤ 5e-3 (re-asserts Step 12)."</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">"  DOCUMENTATION (no assertion on SE):"</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"    PySofra's tbl_regression(design=) SE convention is "</span>
-          <span class="sa">f</span><span class="s2">"statsmodels var_weights;"</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"    R survey::svyglm uses the full sandwich estimator."</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"    Observed relative SE gap on this NHANES design: "</span>
-          <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">max_se_rel</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">."</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"    -&gt; For publication-grade design-adjusted CIs/p-values, "</span>
-          <span class="sa">f</span><span class="s2">"fit the model in R svyglm."</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"    -&gt; PySofra's role is then the table presentation around "</span>
-          <span class="sa">f</span><span class="s2">"the R-computed numbers."</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"  ASSERTION OK — PySofra tbl_regression(design=) now matches "</span>
+          <span class="s2">"R survey::svyglm on β (≤5e-3), SE (≤1%), AND p-value (≤2%). "</span>
+          <span class="s2">"The 0.1.0a13 var_weights-SE limitation is CLOSED (0.1.0a14)."</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -12858,33 +12841,29 @@ bound. The contract is honest disclosure, not numerical agreement.</li>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>  Term             PS β        R β     PS SE      R SE       PS p        R p  |β diff|  |SE rel|
-  ---------- ---------- ---------- --------- --------- ---------- ---------- --------- ---------
-  RIDAGEYR      0.06445    0.06445   0.00002   0.00458     0.0000     0.0000   5.7e-10    99.64%
-  sex_male      0.37037    0.37037   0.00045   0.16498     0.0000     0.0514   2.9e-09    99.73%
-  bmi           0.09859    0.09859   0.00003   0.00641     0.0000     0.0000   6.8e-10    99.52%
-  pir          -0.01204   -0.01204   0.00015   0.04676     0.0000     0.8026   1.0e-09    99.68%
-  insured      -0.09252   -0.09252   0.00080   0.18970     0.0000     0.6374   2.9e-09    99.58%
-  race_NHW     -0.52899   -0.52899   0.00049   0.14760     0.0000     0.0059   3.9e-09    99.67%
+<pre>  df_resid = 9  (R svyglm uses (n_PSU−n_strata)−k+1 = 15−7+1 = 9)
 
-  max |β| diff across 6 coefficients:        3.93e-09
-  max |SE relative gap| (var_weights vs sandwich): 99.73%
+  Term             PS β        R β     PS SE      R SE        PS p         R p  |SE rel|   |p rel|
+  ---------- ---------- ---------- --------- --------- ----------- ----------- --------- ---------
+  RIDAGEYR      0.06445    0.06445   0.00458   0.00458   1.947e-07   1.947e-07     0.00%     0.01%
+  sex_male      0.37037    0.37037   0.16498   0.16498     0.05142     0.05143     0.00%     0.01%
+  bmi           0.09859    0.09859   0.00641   0.00641   9.066e-08   9.062e-08     0.00%     0.04%
+  pir          -0.01204   -0.01204   0.04676   0.04676      0.8026      0.8026     0.00%     0.00%
+  insured      -0.09252   -0.09252   0.18970   0.18970      0.6374      0.6374     0.00%     0.00%
+  race_NHW     -0.52899   -0.52899   0.14759   0.14760    0.005893    0.005894     0.00%     0.02%
 
-  ASSERTION OK — β agree to ≤ 5e-3 (re-asserts Step 12).
+  max |β diff|:     3.93e-09
+  max |SE rel gap|: 0.00%
+  max |p  rel gap|: 0.04%
 
-  DOCUMENTATION (no assertion on SE):
-    PySofra's tbl_regression(design=) SE convention is statsmodels var_weights;
-    R survey::svyglm uses the full sandwich estimator.
-    Observed relative SE gap on this NHANES design: 99.7%.
-    -&gt; For publication-grade design-adjusted CIs/p-values, fit the model in R svyglm.
-    -&gt; PySofra's role is then the table presentation around the R-computed numbers.
+  ASSERTION OK — PySofra tbl_regression(design=) now matches R survey::svyglm on β (≤5e-3), SE (≤1%), AND p-value (≤2%). The 0.1.0a13 var_weights-SE limitation is CLOSED (0.1.0a14).
 </pre>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d1bb10c1">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ae889bd7">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12905,7 +12884,7 @@ with R to ≥ 1e-9.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=7c3dfcb1">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c7b3d893">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13015,7 +12994,7 @@ ASSERTION OK — svymean (5 vars) AND svyttest (3 vars) agree with R survey to �
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ef517ab8">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=6e06beff">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13030,7 +13009,7 @@ fed deliberately-wrong inputs.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=3d9bffb8">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=bff10cba">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13050,7 +13029,7 @@ to detect the difference — it's a visible regression target).</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=8588d06b">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=44fd0f17">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13105,7 +13084,7 @@ ASSERTION OK — different weight columns produce visibly different estimates (g
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9b31ceb6">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=e2ceacb7">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13128,7 +13107,7 @@ test is the negative-control evidence the fix is in.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=4021b0ad">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=9675b501">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13186,7 +13165,7 @@ ASSERTION OK — freq_weights inflates df_resid by 47224× over var_weights. PyS
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ac8e2577">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=770da178">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13205,7 +13184,7 @@ must differ by more than 1 % relative error.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1db3b021">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=2ef9294e">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13262,7 +13241,7 @@ ASSERTION OK — wrong strata produced an SE that is 70.8% different from the co
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=332420b5">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=708e534a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13279,7 +13258,7 @@ of how a real analyst would stress-test the demonstration analysis.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=8685234d">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=e3b400cb">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13300,7 +13279,7 @@ noise relative to m=50, m=20 should be within ~5 %.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=137b926d">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=ffc21f4d">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13411,7 +13390,7 @@ DOCUMENTATION OK — m-sensitivity quantified. m=5 SE is within 2% of m=50; user
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=4a433c30">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=22865bb5">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13442,7 +13421,7 @@ assert they're "small."</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=994a5c4e">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=d2931319">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13500,7 +13479,7 @@ DOCUMENTATION OK — CC and MI estimates displayed side-by-side. Differences ref
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=828e9e71">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=fe2caaf8">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13535,7 +13514,7 @@ not <code>WTMEC2YR</code> — the correct-weight audit.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=4973aa27">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=d2f9c6cd">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13652,28 +13631,27 @@ not <code>WTMEC2YR</code> — the correct-weight audit.</li>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=08a6431c">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5c27f342">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="Section-IX-%E2%80%94-Inferential-validity-(Monte-Carlo-coverage)">Section IX — Inferential validity (Monte Carlo coverage)<a class="anchor-link" href="#Section-IX-%E2%80%94-Inferential-validity-(Monte-Carlo-coverage)">¶</a></h1><p>Section VI (Step 39) documented that PySofra's <code>tbl_regression(design=)</code>
-SE differs from R <code>survey::svyglm</code>'s cluster-robust sandwich SE by
-~50–100 % on stratified clustered designs. <strong>An external reviewer
-correctly observed that "the numbers agree" and "the inference is
-valid" are different claims.</strong> A simulation study with known truth
-quantifies the inferential consequence: at what rate does PySofra's
-nominal-95 % CI actually contain the true coefficient?</p>
-<p>Per-cell runtime ≈ 2.5 ms on the prototype machine, so 500 replicates
-is ~1.5 s. A full coverage characterisation across many DGPs is a
-separate study; this single simulation tests one representative
-design.</p>
+<h1 id="Section-IX-%E2%80%94-Inferential-validity-(Monte-Carlo-coverage)">Section IX — Inferential validity (Monte Carlo coverage)<a class="anchor-link" href="#Section-IX-%E2%80%94-Inferential-validity-(Monte-Carlo-coverage)">¶</a></h1><p>Section VI (Step 39) verifies PySofra's <code>tbl_regression(design=)</code> SE
+now matches R <code>survey::svyglm</code>'s cluster-robust sandwich. <strong>An
+external reviewer correctly observed that "the numbers agree" and
+"the inference is valid" are different claims.</strong> A simulation study
+with known truth confirms the inferential consequence: with the
+design-based sandwich (0.1.0a14), the nominal-95 % CI should now
+attain ~95 % empirical coverage — up from the ~84–86 % the
+<code>var_weights</code> SE produced through 0.1.0a13.</p>
+<p>A full coverage characterisation across many DGPs is a separate
+study; this single simulation tests one representative design.</p>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=72b756bf">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=0b39e770">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13687,21 +13665,20 @@ continuous x1, binary x2) and stratum-dependent sampling weights.</p>
 <code>statsmodels.GLM(Binomial)</code>; pass the fitted model through
 <code>tbl_regression(model, design=design, data=df)</code>; extract the 95 %
 CI on the OR scale; record whether the true OR lies in the CI.</p>
-<p><strong>Expected finding (given Step 39 SE gap).</strong> Empirical coverage
-should be <em>below</em> nominal 95 %; the size of the gap quantifies how
-much the <code>var_weights</code>-vs-sandwich SE discrepancy matters
-inferentially.</p>
+<p><strong>Expected finding (0.1.0a14, design-based sandwich).</strong> Empirical
+coverage should now be at nominal ~95 % — the design-based SE makes
+the CI correctly calibrated. (Through 0.1.0a13 the <code>var_weights</code> SE
+produced ~84–86 % under-coverage; the sandwich fix closes it.)</p>
 <h3 id="AUDIT-note-(Step-47)">AUDIT note (Step 47)<a class="anchor-link" href="#AUDIT-note-(Step-47)">¶</a></h3><ul>
-<li>No assertion on the coverage value (this is a <em>quantification</em>
-step, not a parity step).</li>
-<li>The contract is honest disclosure of empirical coverage so users
-can decide whether <code>tbl_regression(design=)</code> is acceptable for
-their use case or whether they should compute CIs in R <code>svyglm</code>.</li>
+<li><strong>Coverage is now asserted</strong> to be in [0.92, 0.97] for both
+coefficients — the inferential pay-off of the design-based SE.</li>
+<li>This is the end-to-end proof that the Step-39 SE fix produces
+<em>valid inference</em>, not merely matching point SEs.</li>
 </ul>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=e200858b">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=355713fb">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13786,22 +13763,22 @@ their use case or whether they should compute CIs in R <code>svyglm</code>.</li>
           <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">widths</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="si">:</span><span class="s2">&gt;17.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
 <span class="nb">print</span><span class="p">()</span>
+<span class="n">covs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">covered</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">/</span> <span class="n">n_rep</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"x1"</span><span class="p">,</span> <span class="s2">"x2"</span><span class="p">)}</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">"  INTERPRETATION:"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"  Coverage below nominal 95% means the CI is TOO NARROW for"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"  the design — i.e., PySofra's tbl_regression(design=) SE"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"  (statsmodels var_weights) is smaller than the cluster-robust"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"  sandwich SE R survey::svyglm would compute. The gap reported"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"  in Step 39 (~100</span><span class="si">% r</span><span class="s2">elative SE difference) has a measurable"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"  inferential consequence: roughly 10 percentage points of"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"  under-coverage at nominal 95</span><span class="si">% o</span><span class="s2">n this design."</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  With the design-based Taylor-linearisation sandwich SE"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  (0.1.0a14), the nominal-95% CI is now correctly calibrated:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  empirical coverage x1=</span><span class="si">{</span><span class="n">covs</span><span class="p">[</span><span class="s1">'x1'</span><span class="p">]</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">, x2=</span><span class="si">{</span><span class="n">covs</span><span class="p">[</span><span class="s1">'x2'</span><span class="p">]</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  — up from the ~84–86% the var_weights SE produced through"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  0.1.0a13. The Step-39 SE fix delivers VALID inference, not"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  merely matching point SEs."</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"x1"</span><span class="p">,</span> <span class="s2">"x2"</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="mf">0.92</span> <span class="o">&lt;=</span> <span class="n">covs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mf">0.97</span><span class="p">,</span> <span class="p">(</span>
+        <span class="sa">f</span><span class="s2">"coverage for </span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2"> is </span><span class="si">{</span><span class="n">covs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="si">:</span><span class="s2">.1%</span><span class="si">}</span><span class="s2">, outside [92%, 97%] — "</span>
+        <span class="sa">f</span><span class="s2">"the design-based CI is no longer correctly calibrated"</span>
+    <span class="p">)</span>
 <span class="nb">print</span><span class="p">()</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"  RECOMMENDATION:"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"  For publication-grade design-adjusted CIs, fit the model in"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"  R `survey::svyglm` and use PySofra only for the table"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"  presentation around the R-computed numbers. Use PySofra's"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"  tbl_regression(design=) when the SE convention's documented"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"  limitation is acceptable (preliminary analyses, internal"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"  reports, EDA, where the point estimate is the focus)."</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  ASSERTION OK — empirical 95% CI coverage in [92%, 97%] for "</span>
+      <span class="s2">"both coefficients. tbl_regression(design=) is now design-grade."</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -13814,7 +13791,7 @@ their use case or whether they should compute CIs in R <code>svyglm</code>.</li>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>  500 simulated datasets in 1.3 s (2.5 ms / rep)
+<pre>  500 simulated datasets in 1.3 s (2.6 ms / rep)
   True data-generating process: logit(P) = 0.30 + 0.50·x1 + -0.40·x2
   True OR(x1) = 1.6487
   True OR(x2) = 0.6703
@@ -13822,32 +13799,25 @@ their use case or whether they should compute CIs in R <code>svyglm</code>.</li>
   Empirical coverage of `tbl_regression(design=)` 95 % CI:
   Coefficient    Nominal  Observed   CI width (mean)
   ------------ --------- --------- -----------------
-  x1               95.0%    85.8%            1.0855
-  x2               95.0%    84.0%            0.8957
+  x1               95.0%    95.6%            1.2739
+  x2               95.0%    95.4%            1.0714
 
   INTERPRETATION:
-  Coverage below nominal 95% means the CI is TOO NARROW for
-  the design — i.e., PySofra's tbl_regression(design=) SE
-  (statsmodels var_weights) is smaller than the cluster-robust
-  sandwich SE R survey::svyglm would compute. The gap reported
-  in Step 39 (~100% relative SE difference) has a measurable
-  inferential consequence: roughly 10 percentage points of
-  under-coverage at nominal 95% on this design.
+  With the design-based Taylor-linearisation sandwich SE
+  (0.1.0a14), the nominal-95% CI is now correctly calibrated:
+  empirical coverage x1=95.6%, x2=95.4%
+  — up from the ~84–86% the var_weights SE produced through
+  0.1.0a13. The Step-39 SE fix delivers VALID inference, not
+  merely matching point SEs.
 
-  RECOMMENDATION:
-  For publication-grade design-adjusted CIs, fit the model in
-  R `survey::svyglm` and use PySofra only for the table
-  presentation around the R-computed numbers. Use PySofra's
-  tbl_regression(design=) when the SE convention's documented
-  limitation is acceptable (preliminary analyses, internal
-  reports, EDA, where the point estimate is the focus).
+  ASSERTION OK — empirical 95% CI coverage in [92%, 97%] for both coefficients. tbl_regression(design=) is now design-grade.
 </pre>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9ec4d66a">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f16660da">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13868,7 +13838,7 @@ symmetric interval on the OR scale.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=fef0f447">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=7b0d4e2c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13958,7 +13928,7 @@ ASSERTION OK — exponentiated CI is asymmetric (hi gap 3.2× larger than lo gap
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5ad81a3b">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=38340161">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -14072,9 +14042,9 @@ here — both categories have value, but they shouldn't be conflated.</p>
 </tr>
 <tr>
 <td><strong>39</strong></td>
-<td><strong>R <code>svyglm</code> SE — DOCUMENTED LIMITATION, not asserted bound</strong></td>
-<td>quantified ~50–100 % var_weights-vs-sandwich gap</td>
-<td>—</td>
+<td><strong>R <code>svyglm</code> SE + p-value — design-based sandwich (0.1.0a14)</strong></td>
+<td>SE ≤ 1 % rel, p ≤ 2 % rel vs R (was ~50–100 % gap)</td>
+<td>✔</td>
 </tr>
 <tr>
 <td><strong>40</strong></td>
@@ -14109,8 +14079,8 @@ here — both categories have value, but they shouldn't be conflated.</p>
 <tr>
 <td><strong>47</strong></td>
 <td><strong>Monte Carlo coverage of <code>tbl_regression(design=)</code> 95 % CI</strong></td>
-<td>quantified — under-coverage at ~85–86 % vs nominal 95 % (DOCUMENTED)</td>
-<td>—</td>
+<td>now in [92 %, 97 %] (design-based sandwich, 0.1.0a14; was ~85 %)</td>
+<td>✔</td>
 </tr>
 <tr>
 <td><strong>48</strong></td>

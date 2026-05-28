@@ -250,6 +250,152 @@ def design_mean_var(
 
 
 # ----------------------------------------------------------------------
+# Design-based (Taylor-linearised) GLM covariance — svyglm sandwich
+# ----------------------------------------------------------------------
+
+# Map a statsmodels family class name → the GLM variance function
+# V(μ) = dμ/dη for the *canonical* link. For canonical links the
+# estimating-function score simplifies to  u_i = w_i (y_i − μ_i) x_i
+# and the bread is  A = Xᵀ diag(w_i · V(μ_i)) X. These three families
+# cover every design= path PySofra supports.
+_CANONICAL_VARFUNC = {
+    "Binomial": lambda mu: mu * (1.0 - mu),   # logit link
+    "Poisson":  lambda mu: mu,                # log link
+    "Gaussian": lambda mu: np.ones_like(mu),  # identity link
+}
+
+
+def survey_glm_vcov(
+    fitted_glm: object,
+    weights: np.ndarray,
+    *,
+    strata: np.ndarray | None = None,
+    cluster: np.ndarray | None = None,
+    fpc: np.ndarray | None = None,
+) -> tuple[np.ndarray, float]:
+    """Design-based (Taylor-linearised) covariance for a survey GLM.
+
+    Reproduces R ``survey::svyglm`` to numerical precision for the
+    canonical-link Binomial / Poisson / Gaussian families. The
+    estimator is the standard linearisation sandwich
+
+        V = A⁻¹ · B · A⁻¹
+
+    where the *bread* ``A = Xᵀ diag(wᵢ V(μᵢ)) X`` is the weighted GLM
+    information matrix and the *meat* ``B`` is the design-based
+    variance of the per-observation score totals
+    ``uᵢ = wᵢ (yᵢ − μᵢ) xᵢ``, aggregated to PSU level and summed across
+    strata exactly as :func:`design_mean_var` does for a scalar mean.
+
+    Parameters
+    ----------
+    fitted_glm
+        A fitted ``statsmodels`` GLM results object (must expose
+        ``.model.exog``, ``.model.endog``, ``.fittedvalues``,
+        ``.params`` and ``.model.family``).
+    weights
+        Sampling-weight vector, aligned to the model rows.
+    strata, cluster, fpc
+        Design columns aligned to the model rows. ``cluster`` is the
+        PSU id; ``strata`` the stratum id; ``fpc`` the per-stratum
+        finite-population size.
+
+    Returns
+    -------
+    (vcov, df_design)
+        ``vcov`` is the k×k design-based covariance matrix (coefficient
+        order matches ``fitted_glm.params``). ``df_design`` is the
+        survey design degrees of freedom ``n_PSU − n_strata`` used for
+        t-based CIs (R ``svyglm`` convention); ``float('inf')`` when
+        no cluster structure is present.
+
+    Raises
+    ------
+    NotImplementedError
+        If the GLM family is not one of the supported canonical-link
+        families (Binomial, Poisson, Gaussian).
+    """
+    family_name = type(fitted_glm.model.family).__name__
+    varfunc = _CANONICAL_VARFUNC.get(family_name)
+    if varfunc is None:
+        raise NotImplementedError(
+            f"survey_glm_vcov supports canonical-link Binomial / Poisson "
+            f"/ Gaussian only; got family {family_name!r}. For other "
+            f"families compute the design SE in R survey::svyglm."
+        )
+
+    X = np.asarray(fitted_glm.model.exog, dtype=float)
+    y = np.asarray(fitted_glm.model.endog, dtype=float)
+    mu = np.asarray(fitted_glm.fittedvalues, dtype=float)
+    w = np.asarray(weights, dtype=float)
+    n, k = X.shape
+
+    # Bread: A = Xᵀ diag(w · V(μ)) X
+    d = w * varfunc(mu)
+    A = X.T @ (X * d[:, None])
+    A_inv = np.linalg.pinv(A)
+
+    # Per-observation score: uᵢ = wᵢ (yᵢ − μᵢ) xᵢ
+    resid = w * (y - mu)
+    U = X * resid[:, None]          # n × k
+
+    # Meat: design-based variance of the score totals, nested PSU-within-
+    # stratum exactly like design_mean_var. With no strata/cluster this
+    # reduces to the with-replacement HC0-style Σ uᵢ uᵢᵀ scaled n/(n−1).
+    B = np.zeros((k, k))
+    n_psu_total = 0
+    n_strata_total = 0
+
+    def _stratum_meat(U_h: np.ndarray, clust_h: np.ndarray | None,
+                       fpc_h: float | None) -> tuple[np.ndarray, int]:
+        if clust_h is not None:
+            # Sum scores to PSU totals, then between-PSU SSCP
+            uniq = pd.unique(clust_h)
+            psu_tot = np.vstack([
+                U_h[clust_h == c].sum(axis=0) for c in uniq
+            ])
+            m = psu_tot.shape[0]
+        else:
+            psu_tot = U_h
+            m = psu_tot.shape[0]
+        if m < 2:
+            return np.zeros((k, k)), m
+        dev = psu_tot - psu_tot.mean(axis=0)
+        contrib = (m / (m - 1.0)) * (dev.T @ dev)
+        if fpc_h is not None and fpc_h > 0:
+            f_h = min(1.0, m / fpc_h)
+            contrib *= 1.0 - f_h
+        return contrib, m
+
+    if strata is None and cluster is None:
+        dev = U - U.mean(axis=0)
+        B = (n / (n - 1.0)) * (dev.T @ dev)
+        n_psu_total, n_strata_total = n, 0
+    elif strata is None:
+        contrib, m = _stratum_meat(U, np.asarray(cluster), None)
+        B += contrib
+        n_psu_total, n_strata_total = m, 1
+    else:
+        s_arr = np.asarray(strata)
+        for s in pd.unique(s_arr):
+            sel = s_arr == s
+            U_h = U[sel]
+            clust_h = (np.asarray(cluster)[sel]
+                       if cluster is not None else None)
+            fpc_h = (float(np.asarray(fpc)[sel][0])
+                     if fpc is not None else None)
+            contrib, m = _stratum_meat(U_h, clust_h, fpc_h)
+            B += contrib
+            n_psu_total += m
+            n_strata_total += 1
+
+    vcov = A_inv @ B @ A_inv
+    df_design = (float(n_psu_total - n_strata_total)
+                 if cluster is not None else float("inf"))
+    return vcov, df_design
+
+
+# ----------------------------------------------------------------------
 # Replicate-weight variance
 # ----------------------------------------------------------------------
 

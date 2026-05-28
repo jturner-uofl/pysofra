@@ -435,13 +435,13 @@ class TestStep38RaoScottGap:
 
 
 class TestStep39SvyglmFullParity:
-    def test_beta_agrees_se_documented(self, executed_notebook):
-        cell = _cell_with(executed_notebook, "import scipy.stats as _sps")
+    def test_se_and_p_now_match_R(self, executed_notebook):
+        cell = _cell_with(executed_notebook, "_refit_with_design(glm_unweighted")
         text = _stream_text(cell)
-        assert "β agree to ≤ 5e-3 (re-asserts Step 12)" in text
-        # SE limitation must be clearly documented
-        assert "var_weights" in text and "sandwich" in text
-        assert "publication-grade design-adjusted CIs/p-values" in text
+        # 0.1.0a14: SE + p now MATCH R svyglm (was a documented gap)
+        assert "matches R survey::svyglm on β" in text
+        assert "SE (≤1%)" in text and "p-value (≤2%)" in text
+        assert "CLOSED (0.1.0a14)" in text
 
 
 class TestStep40Battery:
@@ -511,8 +511,8 @@ class TestStep47MCCoverage:
         assert "simulated datasets" in text
         assert "Empirical coverage" in text
         assert "Nominal" in text and "Observed" in text
-        assert "INTERPRETATION" in text and "RECOMMENDATION" in text
-        # Both coefficients reported
+        # 0.1.0a14: coverage now asserted in [92%, 97%] (design sandwich)
+        assert "tbl_regression(design=) is now design-grade" in text
         assert "x1" in text and "x2" in text
 
 

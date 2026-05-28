@@ -418,7 +418,12 @@ def _default_estimate_label(family_label: str, exponentiate: bool) -> str:
         if "poisson" in fl or "negativebinomial" in fl:
             return "IRR"
         return "exp(β)"
-    if "ols" in fl or "linear" in fl or "gls" in fl or "wls" in fl:
+    # Gaussian-family GLM with identity link *is* a linear model, so its
+    # coefficient is a β (this also keeps the OLS-under-design= refit,
+    # which routes through a Gaussian GLM, labelled consistently with the
+    # un-refit OLS fit).
+    if ("ols" in fl or "linear" in fl or "gls" in fl or "wls" in fl
+            or "gaussian" in fl):
         return "β"
     return "Estimate"
 
@@ -426,6 +431,70 @@ def _default_estimate_label(family_label: str, exponentiate: bool) -> str:
 # ----------------------------------------------------------------------
 # Design-aware refit (svyglm parity, first-order)
 # ----------------------------------------------------------------------
+
+class SurveyGLMResults:
+    """Design-adjusted GLM results exposing a Taylor-linearised vcov.
+
+    A lightweight read-only results wrapper that carries the
+    point estimates from a weighted GLM fit but replaces its standard
+    errors / CIs / p-values with the design-based sandwich covariance
+    computed by :func:`pysofra.summary.design.survey_glm_vcov`. It
+    exposes exactly the surface :func:`pysofra.models.extract.extract`
+    reads (``params``, ``bse``, ``pvalues``, ``conf_int``, ``df_resid``,
+    ``family``, ``model``), so a ``tbl_regression(design=)`` call routes
+    its SE / CI / p through the design estimator while keeping the
+    weighted point estimates.
+
+    Inference uses a *t* distribution with the survey design degrees of
+    freedom ``df = n_PSU − n_strata`` (R ``survey::svyglm`` convention)
+    when a cluster structure is present; otherwise a normal pivot.
+    """
+
+    def __init__(self, weighted_fit: Any, vcov: Any, df_design: float):
+        import numpy as np
+        import pandas as pd
+        self._fit = weighted_fit
+        self.model = weighted_fit.model
+        self.family = getattr(weighted_fit, "family",
+                              getattr(weighted_fit.model, "family", None))
+        idx = pd.Series(weighted_fit.params).index
+        self.params = pd.Series(weighted_fit.params, index=idx).astype(float)
+        self._vcov = np.asarray(vcov, dtype=float)
+        # R survey::svyglm uses residual df = (n_PSU − n_strata) − k + 1
+        # for its t-based CIs / p-values, where k is the number of fitted
+        # coefficients (intercept included). ``df_design`` carries the
+        # raw design df (n_PSU − n_strata); subtract (k − 1) to match.
+        k = len(self.params)
+        if np.isfinite(df_design):
+            self.df_resid = float(df_design) - (k - 1)
+        else:
+            self.df_resid = float("inf")
+        self.bse = pd.Series(np.sqrt(np.diag(self._vcov)), index=idx)
+
+    def conf_int(self, alpha: float = 0.05) -> Any:
+        import numpy as np
+        import pandas as pd
+        from scipy import stats as _sps
+        if np.isfinite(self.df_resid):
+            crit = float(_sps.t.ppf(1.0 - alpha / 2.0, self.df_resid))
+        else:
+            crit = float(_sps.norm.ppf(1.0 - alpha / 2.0))
+        lo = self.params - crit * self.bse
+        hi = self.params + crit * self.bse
+        return pd.DataFrame({0: lo, 1: hi}, index=self.params.index)
+
+    @property
+    def pvalues(self) -> Any:
+        import numpy as np
+        import pandas as pd
+        from scipy import stats as _sps
+        tval = self.params / self.bse
+        if np.isfinite(self.df_resid):
+            p = 2.0 * _sps.t.sf(np.abs(tval), self.df_resid)
+        else:
+            p = 2.0 * _sps.norm.sf(np.abs(tval))
+        return pd.Series(p, index=self.params.index)
+
 
 def _refit_with_design(model: Any, design: Any, data: Any) -> Any:
     """Re-fit a statsmodels model using design-aware point estimates + SEs.
@@ -520,6 +589,15 @@ def _refit_with_design(model: Any, design: Any, data: Any) -> Any:
             )
         cluster_arr = clust
 
+    # Strata + FPC for the design-based sandwich (Taylor linearisation).
+    strata_arr = None
+    if getattr(design, "strata", None) is not None and data is not None:
+        strata_arr = data[design.strata].to_numpy()
+    fpc_arr = None
+    if getattr(design, "fpc", None) is not None and data is not None:
+        fpc_arr = pd.to_numeric(data[design.fpc], errors="coerce").to_numpy(
+            dtype=float)
+
     # ------------------------------------------------------------------
     # Re-fit point estimates with weights when applicable. We dispatch
     # by the original model class so the user's choice of OLS / Logit /
@@ -563,29 +641,60 @@ def _refit_with_design(model: Any, design: Any, data: Any) -> Any:
     except ImportError:  # pragma: no cover
         SpecificationWarning = Warning
 
-    def _fit(refit: Any) -> Any:
+    def _fit_legacy(refit: Any) -> Any:
+        """Fallback: statsmodels' own cluster / HC1 variance (used only
+        when the design-based sandwich can't be applied, e.g. a
+        non-canonical-link family)."""
         with _w.catch_warnings():
             _w.simplefilter("ignore", SpecificationWarning)
             return refit.fit(cov_type=cov_type, cov_kwds=cov_kwds)
 
+    # Pick the GLM family for the weighted refit. OLS routes through a
+    # Gaussian GLM so the same Taylor-linearisation sandwich applies
+    # uniformly (WLS and GLM-Gaussian give identical point estimates).
     if inner_name == "OLS":
-        return _fit(sm.WLS(endog, exog, weights=weights_arr))
+        fam = sm.families.Gaussian()
+    elif inner_name == "GLM":
+        fam = inner.family
+    elif inner_name == "Logit":
+        fam = sm.families.Binomial()
+    elif inner_name == "Poisson":
+        fam = sm.families.Poisson()
+    else:
+        raise NotImplementedError(  # pragma: no cover — exotic statsmodels model
+            f"design= with weights does not yet support {inner_name!r}. "
+            f"Supported model classes are OLS, GLM, Logit, Poisson. "
+            f"For other models, either drop the weights from the design or "
+            f"open an issue describing your model."
+        )
 
-    if inner_name == "GLM":
-        return _fit(sm.GLM(endog, exog, family=inner.family,
-                           var_weights=weights_arr))
+    with _w.catch_warnings():
+        _w.simplefilter("ignore", SpecificationWarning)
+        weighted = sm.GLM(endog, exog, family=fam,
+                          var_weights=weights_arr).fit()
 
-    if inner_name == "Logit":
-        return _fit(sm.GLM(endog, exog, family=sm.families.Binomial(),
-                           var_weights=weights_arr))
+    # Design-based Taylor-linearisation sandwich → matches R survey::svyglm
+    # to numerical precision for canonical-link Binomial / Poisson /
+    # Gaussian. Falls back to the statsmodels cluster / HC1 estimator if
+    # the family is unsupported.
+    from ..summary.design import survey_glm_vcov
+    try:
+        vcov, df_design = survey_glm_vcov(
+            weighted, weights_arr,
+            strata=strata_arr, cluster=cluster_arr, fpc=fpc_arr,
+        )
+    except NotImplementedError:
+        _w.warn(
+            "Design-based sandwich SEs are only implemented for "
+            "canonical-link Binomial / Poisson / Gaussian families; "
+            "falling back to statsmodels' cluster/HC1 estimator, which "
+            "does not match R survey::svyglm. For design-grade SEs on "
+            "this family, use R survey::svyglm.",
+            UserWarning, stacklevel=2,
+        )
+        if inner_name == "OLS":
+            return _fit_legacy(sm.WLS(endog, exog, weights=weights_arr))
+        return _fit_legacy(sm.GLM(endog, exog, family=fam,
+                                  var_weights=weights_arr))
 
-    if inner_name == "Poisson":
-        return _fit(sm.GLM(endog, exog, family=sm.families.Poisson(),
-                           var_weights=weights_arr))
-
-    raise NotImplementedError(  # pragma: no cover — exotic statsmodels model
-        f"design= with weights does not yet support {inner_name!r}. "
-        f"Supported model classes are OLS, GLM, Logit, Poisson. "
-        f"For other models, either drop the weights from the design or "
-        f"open an issue describing your model."
-    )
+    return SurveyGLMResults(weighted, vcov, df_design)

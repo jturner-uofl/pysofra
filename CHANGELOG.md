@@ -5,6 +5,58 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a14] — 2026-05-28
+
+### Fixed — design-based regression standard errors (closes the
+### package's biggest documented limitation)
+- **`tbl_regression(design=)` now computes the full Taylor-
+  linearisation cluster-robust sandwich covariance**, matching R
+  `survey::svyglm` on β, SE, **and p-value** to numerical precision.
+  Through 0.1.0a13 the design refit used statsmodels `var_weights`
+  SEs that differed from R's sandwich by ~50–100 % on stratified
+  clustered designs (documented in 0.1.0a11–a13 as the outstanding
+  limitation). It is now closed.
+  - New `pysofra.summary.design.survey_glm_vcov(fit, weights, strata=,
+    cluster=, fpc=)` implements `V = A⁻¹ B A⁻¹` with PSU-within-
+    stratum nesting (the same machinery `design_mean_var` uses for a
+    scalar mean, generalised to the GLM score vector). Supports the
+    canonical-link Binomial / Poisson / Gaussian families; raises
+    `NotImplementedError` for other families (rather than silently
+    returning a wrong SE).
+  - New `pysofra.models.regression.SurveyGLMResults` results wrapper
+    routes the sandwich SE / CI / p through `tbl_regression(design=)`.
+    Inference uses a *t* distribution with the R `svyglm` residual df
+    `(n_PSU − n_strata) − k + 1`.
+  - Verified on NHANES 2017-2018: PySofra vs R `svyglm` agree to
+    **0.0 % on SE** and **≤ 0.04 % on p-value** across all six
+    coefficients (jss_case_study Step 39).
+  - **Monte Carlo CI coverage** for `tbl_regression(design=)` rises
+    from ~84–86 % (var_weights) to a correctly-calibrated ~95 %
+    (jss_case_study Step 47, now asserted in [92 %, 97 %]).
+- **Gaussian-family GLM coefficients are now labelled β** (not
+  "Estimate") — a Gaussian/identity GLM is a linear model. Keeps the
+  OLS-under-`design=` refit (which routes through a Gaussian GLM)
+  labelled consistently with the un-refit OLS fit.
+
+### Added
+- `tests/test_survey_glm_vcov.py` (8 tests): structural properties
+  (symmetric / PSD / finite), df = n_PSU − n_strata, no-design ≈
+  statsmodels HC1, all three families run, unsupported family raises,
+  and an end-to-end check that `tbl_regression(design=)` SEs differ
+  from the naive model-based SEs.
+
+### Notebook
+- Step 39 flips from "documented ~50–100 % SE gap" to **asserting**
+  SE ≤ 1 % and p ≤ 2 % vs R `svyglm`.
+- Step 47 flips from "documented ~85 % under-coverage" to
+  **asserting** ~95 % empirical coverage.
+- Top-of-notebook limitations box updated: the svyglm-SE item moves
+  to "Resolved in 0.1.0a14"; only the first-order Rao–Scott
+  chi-square (Step 38) remains an open documented approximation.
+
+### Tests
+- Full pytest suite: 1019 passing (was 1011).
+
 ## [0.1.0a13] — 2026-05-28
 
 ### Fixed — rendering hygiene (external-reviewer-reported)

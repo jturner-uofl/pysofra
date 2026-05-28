@@ -5,6 +5,26 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a14] — 2026-05-28
+
+### Fixed — design-based regression SEs (biggest limitation closed)
+- `tbl_regression(design=)` now uses a full Taylor-linearisation
+  cluster-robust sandwich (`survey_glm_vcov`) and matches R
+  `survey::svyglm` on β, SE, and p-value to numerical precision
+  (NHANES: 0.0 % SE gap, ≤ 0.04 % p gap). Monte-Carlo CI coverage
+  rises from ~85 % (var_weights) to ~95 %.
+- New `survey_glm_vcov()` + `SurveyGLMResults` wrapper; t-df =
+  (n_PSU − n_strata) − k + 1, matching R svyglm.
+- Gaussian-family GLM coefficients now labelled β (linear model).
+
+### Added
+- `tests/test_survey_glm_vcov.py` (8 tests). Suite: 1019 passing.
+
+### Notebook
+- Step 39 now asserts SE ≤ 1 % / p ≤ 2 % vs R svyglm; Step 47 asserts
+  ~95 % CI coverage. Only the first-order Rao–Scott chi-square (Step
+  38) remains an open documented approximation.
+
 ## [0.1.0a13] — 2026-05-28
 
 ### Fixed — rendering hygiene
