@@ -6,7 +6,7 @@
     "analytic_n": 4971,
     "analytic_n_mod": 4261,
     "cache_dir": "/Users/jasonturner/Projects/pysofra/examples/jss_case_study/_nhanes_cache",
-    "timestamp_utc": "2026-05-27T17:41:32Z"
+    "timestamp_utc": "2026-05-28T01:36:43Z"
   },
   "svymean": {
     "age_mean": 48.6824114715359,
@@ -45,5 +45,66 @@
     "n": 200,
     "csv_path": "/Users/jasonturner/Projects/pysofra/examples/jss_case_study/apistrat.csv",
     "citation": "Lumley T. (2010) Complex Surveys: A Guide to Analysis Using R. Wiley. Chapter 2."
+  },
+  "svychisq_battery": {
+    "RIAGENDR": {
+      "statistic": 3.75049626399922,
+      "p": 0.269430461381914,
+      "df": 1
+    },
+    "RIDRETH3": {
+      "statistic": 8.1348547107518,
+      "p": 0.0226495285647649,
+      "df": 5
+    },
+    "DMDEDUC2": {
+      "statistic": 44.3531556191164,
+      "p": 5.14540940309805e-05,
+      "df": 6
+    },
+    "HIQ011": {
+      "statistic": 13.0047478554301,
+      "p": 3.63017359043142e-05,
+      "df": 3
+    }
+  },
+  "svymean_battery": {
+    "RIDAGEYR": {
+      "mean": 48.6824114715359,
+      "se": 0.595623824378721
+    },
+    "BMXBMI": {
+      "mean": 29.8236265246769,
+      "se": 0.262775141300307
+    },
+    "BPXSY1": {
+      "mean": 123.348708425631,
+      "se": 0.431190093332989
+    },
+    "LBXGH": {
+      "mean": 5.69404505015629,
+      "se": 0.0168545182772745
+    },
+    "INDFMPIR": {
+      "mean": 3.08533461401913,
+      "se": 0.061676211476752
+    }
+  },
+  "svyttest_battery": {
+    "BMXBMI": {
+      "t": 10.5149736706431,
+      "p": 4.99768495453959e-08,
+      "df": 14
+    },
+    "BPXSY1": {
+      "t": 12.1290898689203,
+      "p": 8.15199958920339e-09,
+      "df": 14
+    },
+    "INDFMPIR": {
+      "t": -0.73819732836585,
+      "p": 0.472588363168482,
+      "df": 14
+    }
   }
 }

@@ -357,12 +357,16 @@ def rao_scott_chisq(
     (Rao & Scott, 1981, 1984); R ``survey::svychisq`` implements that
     version. On non-trivial weighted designs (stratified, clustered, or
     even simple weighted with non-uniform weights), the Kish
-    approximation here typically disagrees with R ``svychisq`` by
-    **10–15%** in the statistic and a similar amount in the p-value.
-    The approximation is adequate for descriptive Table 1 contexts
-    where the χ² is a guide rather than a publication-grade test
-    statistic; for design-grade chi-square inference, call
-    ``survey::svychisq`` in R directly.
+    approximation here can disagree with R ``svychisq`` substantially.
+    Direct measurement on the NHANES 2017-2018 paired-PSU design (see
+    ``examples/jss_case_study/jss_case_study.ipynb`` Step 38) shows
+    **median 57 %, max 69 %** relative-error gap in the test
+    statistic across four typical Table-1 categorical variables (sex,
+    race, education, insurance). The p-value gap follows. The
+    approximation is adequate for descriptive Table 1 contexts where
+    the χ² is a guide rather than a publication-grade test statistic;
+    **for design-grade chi-square inference, call ``survey::svychisq``
+    in R directly.**
 
     References
     ----------

@@ -5,6 +5,26 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a11] — 2026-05-27
+
+### Documentation honesty (external-audit response)
+- Rao–Scott docstring corrected: NHANES measurement shows 57 %
+  median, 69 % max gap with R `svychisq` (was claimed as 10–15 %).
+- `tbl_regression(design=)` SE documented as ~50–100 % different
+  from R `svyglm` sandwich estimator (β still matches to machine
+  precision).
+
+### Notebook — three new sections, 9 new contracts
+- Section VI (Steps 38–40): full inferential parity with R survey
+  (β/SE/CI/p, multi-var batteries, quantified Rao-Scott gap).
+- Section VII (Steps 41–43): negative-control tests (wrong weights,
+  freq_weights, wrong strata).
+- Section VIII (Steps 44–46): MI m-sensitivity, CC-vs-MI estimands,
+  alternate outcome definitions.
+- Scope statement + documented-limitations box added to intro.
+- Summary table reorganised: numerical-correctness vs
+  structural/interface contracts now clearly distinguished.
+
 ## [0.1.0a10] — 2026-05-27
 
 ### Added — Capabilities beyond R / gtsummary

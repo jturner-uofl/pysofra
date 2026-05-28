@@ -5,6 +5,62 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a11] — 2026-05-27
+
+### Documentation honesty (in response to external audit)
+- **Rao–Scott docstring corrected**: previously claimed "10–15 %"
+  disagreement with R `survey::svychisq`; direct measurement on
+  NHANES 2017-2018 shows **median 57 %, max 69 %** relative-error
+  gap on the test statistic (see jss_case_study Step 38). The
+  docstring now reports this directly and recommends R for
+  publication-grade categorical inference.
+- **`tbl_regression(design=)` SE limitation documented**: the
+  `var_weights` convention used internally produces standard errors
+  that can differ from R `survey::svyglm`'s cluster-robust sandwich
+  estimator by ~50–100 % on stratified clustered designs (the β
+  estimates remain in machine-precision agreement). Users requiring
+  publication-grade design-adjusted CIs/p-values should fit the
+  model in R `svyglm` and use PySofra only for table presentation.
+  Documented in jss_case_study Step 39.
+
+### Narrative-audit notebook — three new sections (Steps 38-46)
+- **Section VI — Full inferential parity with R `survey`**
+  - Step 38: Quantified Rao-Scott vs `svychisq` gap per variable.
+  - Step 39: Full svyglm β AND SE AND CI AND p comparison;
+    documents the var_weights-vs-sandwich gap.
+  - Step 40: `svymean` battery (5 vars) + `svyttest` battery
+    (3 vars) — all agree to ≤ 1e-9 relative error.
+- **Section VII — Negative-control tests**
+  - Step 41: Wrong weight column → visibly different estimate.
+  - Step 42: `freq_weights` inflates `df_resid` by ~47,000×.
+  - Step 43: Wrong strata → 70 % SE gap (wiring responsive).
+- **Section VIII — Sensitivity analyses within scope**
+  - Step 44: `pool()` SE convergence (m=5 vs m=20 vs m=50) —
+    PySofra MI is well-converged even at m=5 (max gap 1.79 %).
+  - Step 45: Complete-case vs MI estimates side-by-side, with
+    explicit "different estimands" framing.
+  - Step 46: Three diabetes-outcome definitions (ADA primary,
+    lab-only, self-report-only) compared in weighted prevalence.
+
+### Notebook reframing
+- New **scope statement** at the top: explicit in-scope vs out-of-
+  scope table. PySofra validates the software; it does not validate
+  the epidemiological design.
+- New **documented limitations** box: Rao-Scott approximation,
+  survey-weighted MI (unsupported), age standardisation (not a
+  feature), cluster-robust regression SEs.
+- Step 5 / Step 6 / Step 7 prose updated to forward-reference
+  Section VI quantifications and resolve the "which estimand?"
+  ambiguity Reviewer #2 flagged.
+- Summary table reorganised: **numerical-correctness contracts**
+  (load-bearing) separated from **structural/interface contracts**
+  (regression guards). Both have value; conflating them was a
+  fair reviewer critique.
+
+### Tests
+- 9 new pytest acceptance tests for Steps 38-46.
+- Total acceptance tests: 40 (was 31). Full pytest: 998 passing.
+
 ## [0.1.0a10] — 2026-05-27
 
 ### Added — Capabilities beyond R / gtsummary

@@ -223,6 +223,66 @@ if (requireNamespace("survey", quietly = TRUE)) {
 }
 
 # ----------------------------------------------------------------------
+# 9.  svychisq battery — full second-order Rao-Scott for every
+#     categorical Table-1 variable. Lets the notebook quantify the
+#     PySofra (first-order Kish-DEFF) vs R (full design) gap on the
+#     actual analytic data, not a generic "10-15%" claim.
+# ----------------------------------------------------------------------
+chi_battery <- list()
+for (var in c("RIAGENDR", "RIDRETH3", "DMDEDUC2", "HIQ011")) {
+  if (!var %in% names(df)) next
+  formula_chi <- as.formula(paste0("~diabetes + ", var))
+  tryCatch({
+    res <- svychisq(formula_chi, des, statistic = "Chisq")
+    chi_battery[[var]] <- list(
+      statistic = as.numeric(res$statistic),
+      p         = as.numeric(res$p.value),
+      df        = as.numeric(res$parameter[1])
+    )
+  }, error = function(e) {
+    chi_battery[[var]] <<- list(statistic = NA, p = NA, df = NA,
+                                 error = conditionMessage(e))
+  })
+}
+
+# ----------------------------------------------------------------------
+# 10. svymean / svyttest battery — agreement across multiple variables.
+# ----------------------------------------------------------------------
+mean_battery <- list()
+for (var in c("RIDAGEYR", "BMXBMI", "BPXSY1", "LBXGH", "INDFMPIR")) {
+  if (!var %in% names(df)) next
+  formula_m <- as.formula(paste0("~", var))
+  tryCatch({
+    mm <- svymean(formula_m, des, na.rm = TRUE)
+    mean_battery[[var]] <- list(
+      mean = as.numeric(coef(mm)),
+      se   = as.numeric(SE(mm))
+    )
+  }, error = function(e) {
+    mean_battery[[var]] <<- list(mean = NA, se = NA,
+                                  error = conditionMessage(e))
+  })
+}
+
+ttest_battery <- list()
+for (var in c("BMXBMI", "BPXSY1", "INDFMPIR")) {
+  if (!var %in% names(df)) next
+  formula_t <- as.formula(paste0(var, " ~ diabetes"))
+  des_sub <- subset(des, !is.na(df[[var]]))
+  tryCatch({
+    tt <- svyttest(formula_t, des_sub)
+    ttest_battery[[var]] <- list(
+      t  = as.numeric(tt$statistic),
+      p  = as.numeric(tt$p.value),
+      df = as.numeric(tt$parameter)
+    )
+  }, error = function(e) {
+    ttest_battery[[var]] <<- list(t = NA, p = NA, df = NA,
+                                   error = conditionMessage(e))
+  })
+}
+
+# ----------------------------------------------------------------------
 # Assemble + write the JSON.
 # ----------------------------------------------------------------------
 out <- list(
@@ -260,7 +320,10 @@ out <- list(
     n          = if (exists("apistrat")) nrow(apistrat) else NA,
     csv_path   = apistrat_path,
     citation   = "Lumley T. (2010) Complex Surveys: A Guide to Analysis Using R. Wiley. Chapter 2."
-  )
+  ),
+  svychisq_battery = chi_battery,
+  svymean_battery  = mean_battery,
+  svyttest_battery = ttest_battery
 )
 
 writeLines(toJSON(out, pretty = TRUE, auto_unbox = TRUE, digits = NA),
