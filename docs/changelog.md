@@ -5,6 +5,25 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a13] — 2026-05-28
+
+### Fixed — rendering hygiene
+- Removed CSS `color-mix()` from HTML output (GitHub's .ipynb
+  renderer mangled it, leaking raw CSS into cells); now uses
+  `rgba()` greys that render everywhere.
+- LaTeX now escapes `<` / `>` → `\textless` / `\textgreater`.
+
+### Added
+- `tests/test_render_no_css_leak.py` (11 tests) — CI guard against
+  renderer-hostile CSS and stray markup in HTML/LaTeX, all themes.
+- Step 38 links rendered Table-1 p-values to first-order Rao-Scott
+  (1e-9) and documents the 57–69 % gap vs R `svychisq` (race p
+  flips 0.62 → 0.023). Step 45 gains an explicit MI≠survey-design
+  warning. Step 46 expands to 5 outcome definitions + a fasting-
+  subsample-weight (`WTSAF2YR`) audit.
+
+Full pytest suite: 1011 passing.
+
 ## [0.1.0a12] — 2026-05-27
 
 ### Notebook — Section IX (inferential validity)

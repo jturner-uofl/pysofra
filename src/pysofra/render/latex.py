@@ -35,6 +35,12 @@ _LATEX_ESCAPES = {
     "}": r"\}",
     "~": r"\textasciitilde{}",
     "^": r"\textasciicircum{}",
+    # ``<`` and ``>`` render as ¡ / ¿ under the default OT1 font
+    # encoding (only correct under T1); escape to the encoding-robust
+    # text commands so category labels like "<HS" / ">=College"
+    # typeset correctly regardless of the document's fontenc setup.
+    "<": r"\textless{}",
+    ">": r"\textgreater{}",
 }
 
 

@@ -5,6 +5,50 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a13] — 2026-05-28
+
+### Fixed — rendering hygiene (external-reviewer-reported)
+- **CSS `color-mix()` removed from rendered HTML.** Borders and faded
+  text previously used `color-mix(in srgb, currentColor 25%,
+  transparent)` — readable in interactive notebook frontends but the
+  GitHub.com .ipynb renderer's HTML sanitiser mangles it mid-attribute,
+  leaking raw CSS text into table cells (the "CSS leaking into
+  education labels" a reviewer observed). Replaced with fixed neutral
+  `rgba(127,127,127,·)` greys that every renderer (including GitHub)
+  handles. Trade-off: borders no longer follow the light/dark text
+  colour; numbers and structure are unchanged.
+- **LaTeX `<` / `>` now escaped** to `\textless{}` / `\textgreater{}`.
+  Category labels like `<HS` previously emitted a bare `<`, which
+  renders as ¡ under the default OT1 font encoding (correct only under
+  T1). Now encoding-robust.
+
+### Added — tests + audit depth
+- **`tests/test_render_no_css_leak.py`** (11 tests): regression guard
+  that no rendered HTML/LaTeX contains `color-mix()`, no `<style>`
+  leaks into `<td>`, no CSS tokens bleed into cell text, LaTeX body
+  rows carry no stray markup, and renders are deterministic. Every
+  built-in theme is checked.
+- **Step 38 now links the rendered Table-1 p-values** to the
+  first-order Rao-Scott engine (asserted equal to 1e-9) and to R
+  `survey::svychisq` (documented 57–69 % gap). This makes explicit
+  that the p-values a user *publishes* from a survey-design Table 1
+  are the first-order values — and can flip significance vs R (race:
+  PySofra p=0.62 vs R p=0.023). Addresses the reviewer's "Table-1
+  p-values, not just regression" concern.
+- **Step 45 gains a prominent "NOT A SINGLE INFERENTIAL ANALYSIS"
+  warning box** clarifying that the MI (Step 6) and survey-design
+  (Step 7) demos are independent feature demonstrations, not two
+  routes to one estimand.
+- **Step 46 expanded to five outcome definitions** (+ medication use,
+  + ADA fasting-glucose FPG≥126) with an explicit **subsample-weight
+  audit**: the FPG arm correctly switches to `WTSAF2YR` (fasting
+  subsample weight), not `WTMEC2YR`; the audit asserts the two weights
+  genuinely differ (mean 129 % on the fasting subsample). NHANES
+  `GLU_J` added to the notebook's download set.
+
+### Tests
+- Full pytest suite: 1011 passing (was 1000).
+
 ## [0.1.0a12] — 2026-05-27
 
 ### Notebook — Section IX added (inferential validity)

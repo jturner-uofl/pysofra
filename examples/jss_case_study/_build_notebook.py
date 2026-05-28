@@ -140,7 +140,8 @@ HERE   = Path.cwd() if Path.cwd().name == "jss_case_study" else Path("examples/j
 CACHE  = HERE / "_nhanes_cache";  CACHE.mkdir(exist_ok=True)
 OUT    = HERE / "_outputs";       OUT.mkdir(exist_ok=True)
 NHANES = "https://wwwn.cdc.gov/Nchs/Data/Nhanes/Public/2017/DataFiles"
-FILES  = ["DEMO_J", "BMX_J", "BPX_J", "DIQ_J", "GHB_J", "INQ_J", "HIQ_J"]
+FILES  = ["DEMO_J", "BMX_J", "BPX_J", "DIQ_J", "GHB_J", "INQ_J", "HIQ_J",
+          "GLU_J"]  # GLU_J = fasting plasma glucose (Step 46 FPG arm)
 
 def fetch(name: str) -> pd.DataFrame:
     local = CACHE / f"{name}.XPT"
@@ -2208,10 +2209,56 @@ else:
     print()
     print(f"  median relative gap (statistic): {np.median(gaps):.2%}")
     print(f"  max    relative gap (statistic): {np.max(gaps):.2%}")
-    # Document — do not assert any specific bound. The contract is
-    # honest quantification, not zero error.
-    print("\nDOCUMENTATION OK — first-order Rao-Scott vs full R svychisq "
-          "gap quantified per-variable. For design-grade categorical "
+    print()
+
+    # --- Link the gap to the ACTUAL rendered Table-1 p-values --------
+    # Reviewer concern: it's the p-values that appear in the published
+    # Table 1 that matter, not a fresh recomputation. We pull the
+    # rendered p-value from t_inf (Step 5 design-weighted table) for
+    # each categorical variable and confirm (a) it equals the
+    # standalone rao_scott_chisq call (same engine), and therefore
+    # (b) it inherits the same documented gap vs R svychisq.
+    label_for = {"race": "Race/ethnicity", "education": "Education",
+                 "sex": "Sex", "insured": "Insured (1=yes)"}
+    def _table1_pvalue(table, var_label):
+        for r in table.rows:
+            if r.cells[0].text.strip() == var_label:
+                for c in r.cells:
+                    if c.kind == "p_value" and isinstance(
+                        c.value, (int, float)):
+                        return float(c.value)
+        return None
+    print("  Rendered Table-1 p-value vs standalone Rao-Scott vs R svychisq:")
+    print(f"  {'Variable':<16} {'Table-1 p':>11} {'rao_scott p':>12} "
+          f"{'R svychisq p':>13}")
+    print(f"  {'-'*16} {'-'*11:>11} {'-'*12:>12} {'-'*13:>13}")
+    for py_var, lab in label_for.items():
+        t1_p = _table1_pvalue(t_inf, lab)
+        if t1_p is None:
+            continue
+        sub = df.dropna(subset=[py_var]).copy()
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", UserWarning)
+            standalone = rao_scott_chisq(
+                sub[py_var], sub["diabetes"], sub["WTMEC2YR"]).p_value
+        r_var = {v: k for k, v in cat_vars.items()}[py_var]
+        r_p = R_chi[r_var]["p"] if r_var in R_chi else float("nan")
+        # The rendered Table-1 p MUST equal the standalone engine call
+        assert abs(t1_p - standalone) < 1e-9, (
+            f"Table-1 p for {lab} ({t1_p}) != rao_scott_chisq "
+            f"({standalone}) — the table is not using the documented engine"
+        )
+        print(f"  {lab:<16} {t1_p:>11.4f} {standalone:>12.4f} {r_p:>13.4f}")
+    print()
+    print("  ASSERTION OK — the p-values PRINTED in the Step-5 Table 1 are")
+    print("  exactly the first-order Rao-Scott values (matched to 1e-9),")
+    print("  and therefore inherit the documented gap vs R svychisq above.")
+    print()
+    # Document — do not assert any specific bound on the R gap. The
+    # contract is honest quantification, not zero error.
+    print("DOCUMENTATION OK — first-order Rao-Scott vs full R svychisq "
+          "gap quantified per-variable; the rendered Table-1 p-values are "
+          "the same first-order values. For design-grade categorical "
           "inference on this dataset, use R survey::svychisq.")
 """)
 
@@ -2667,10 +2714,22 @@ print(f"\nDOCUMENTATION OK — m-sensitivity quantified. m=5 SE is within "
 md(r"""
 ## Step 45 — Complete-case vs MI estimates side-by-side
 
+> ⚠️ **NOT A SINGLE INFERENTIAL ANALYSIS.** Step 6 and Step 7 are
+> two independent *software-feature demonstrations*, not two routes
+> to one published estimand. Step 6 demonstrates `ps.pool()` (MI,
+> **un**weighted); Step 7 demonstrates `tbl_regression(design=)`
+> (complete-case, **survey-weighted**). They answer different
+> statistical questions on different subsamples with different
+> uncertainty models. **Neither is offered as "the" diabetes-risk
+> model for publication** — a real analysis would commit to one
+> estimand (and, ideally, do survey-weighted MI, which PySofra does
+> not currently support — see the Documented-limitations box at the
+> top). This step exists to make the *difference* explicit so a
+> reader never mistakes the two demos for a coherent sensitivity
+> analysis.
+
 Step 6 (MI, unweighted) and Step 7 (CC, weighted) target *different*
-estimands. A real analyst presented with this choice needs to see
-both side-by-side and understand the trade-off. We display the
-two estimate sets in one table.
+estimands. We display both side-by-side and document the gap.
 
 ### AUDIT note (Step 45)
 
@@ -2703,67 +2762,113 @@ print("\nDOCUMENTATION OK — CC and MI estimates displayed side-by-side. "
 
 # =====================================================================
 md(r"""
-## Step 46 — Alternative outcome definitions
+## Step 46 — Outcome-definition sensitivity + subsample-weight audit
 
 A robust analytic finding survives moderate redefinitions of the
 outcome. We re-tabulate the design-weighted diabetes prevalence under
-three plausible definitions:
+five plausible definitions, **and** demonstrate the
+subsample-weight audit a reviewer (correctly) asked for: the ADA
+fasting-plasma-glucose criterion is only measured on the *fasting
+subsample*, which carries its **own** weight (`WTSAF2YR`), not the
+MEC exam weight (`WTMEC2YR`). Using the wrong weight on the FPG
+definition is a classic NHANES error; we use the correct one and
+flag the distinction.
 
 1. **Primary** (used throughout): HbA1c ≥ 6.5 % OR self-reported
-   physician diagnosis (`DIQ010 == 1`).
-2. **Lab-only**: HbA1c ≥ 6.5 % only — captures undiagnosed diabetes
-   uniformly but misses self-report-only cases.
-3. **Self-report only**: `DIQ010 == 1` only — captures diagnosed
-   diabetes only.
-
-A reader can judge whether the headline number is sensitive to the
-definition.
+   physician diagnosis (`DIQ010 == 1`). Weight: `WTMEC2YR`.
+2. **Lab-only**: HbA1c ≥ 6.5 % only. Weight: `WTMEC2YR`.
+3. **Self-report only**: `DIQ010 == 1` only. Weight: `WTMEC2YR`.
+4. **+ medication use**: primary OR taking insulin (`DIQ050==1`) OR
+   diabetic pills (`DIQ070==1`) — captures treated diabetics whose
+   HbA1c is controlled below 6.5. Weight: `WTMEC2YR`.
+5. **Fasting-glucose (ADA FPG ≥ 126 mg/dL)**: measured only on the
+   fasting subsample → **weight switches to `WTSAF2YR`**.
 
 ### AUDIT note (Step 46)
 
-* Three weighted prevalences printed side-by-side; the contract is
+* Five weighted prevalences printed side-by-side; the contract is
   honest disclosure, not a specific sensitivity threshold.
+* The FPG definition asserts the subsample weight is `WTSAF2YR`,
+  not `WTMEC2YR` — the correct-weight audit.
 """)
 
 code(r"""
 def weighted_prev(outcome_ser: pd.Series, w: pd.Series) -> float:
-    mask = outcome_ser.notna() & w.notna()
+    mask = outcome_ser.notna() & w.notna() & (w > 0)
     return float((outcome_ser[mask] * w[mask]).sum() / w[mask].sum())
 
-# Need the raw DIQ010 and LBXGH to redefine — re-merge
+# Re-merge raw files including medication (DIQ) and fasting glucose (GLU)
 raw = pd.read_sas(CACHE / "DEMO_J.XPT", format="xport").merge(
     pd.read_sas(CACHE / "DIQ_J.XPT", format="xport"), on="SEQN", how="left",
 ).merge(
     pd.read_sas(CACHE / "GHB_J.XPT", format="xport"), on="SEQN", how="left",
+).merge(
+    pd.read_sas(CACHE / "GLU_J.XPT", format="xport"), on="SEQN", how="left",
 )
 raw = raw[(raw["RIDAGEYR"] >= 20) & (raw["LBXGH"].notna())]
 if "RIDEXPRG" in raw.columns:
     raw = raw[raw["RIDEXPRG"] != 1]
 
-defs = {
+# Definitions 1-4 use the MEC exam weight (HbA1c + questionnaire are
+# both measured on the full MEC sample).
+mec_defs = {
     "Primary (HbA1c≥6.5 OR self-report)":
         ((raw["LBXGH"] >= 6.5) | (raw["DIQ010"] == 1)).astype(int),
     "Lab-only (HbA1c≥6.5)":
         (raw["LBXGH"] >= 6.5).astype(int),
     "Self-report only (DIQ010==1)":
         (raw["DIQ010"] == 1).astype(int),
+    "+ medication (insulin/pills)":
+        ((raw["LBXGH"] >= 6.5) | (raw["DIQ010"] == 1)
+         | (raw["DIQ050"] == 1) | (raw["DIQ070"] == 1)).astype(int),
 }
-w_ser = raw["WTMEC2YR"]
-print(f"  {'Definition':<40} {'Weighted prevalence':>20}")
-print(f"  {'-'*40} {'-'*20:>20}")
+w_mec = raw["WTMEC2YR"]
+
+print(f"  {'Definition':<40} {'Weight':<10} {'Weighted prev':>14}")
+print(f"  {'-'*40} {'-'*10:<10} {'-'*14:>14}")
 prevs = []
-for label, out_ser in defs.items():
-    p = weighted_prev(out_ser, w_ser)
+for label, out_ser in mec_defs.items():
+    p = weighted_prev(out_ser, w_mec)
     prevs.append(p)
-    print(f"  {label:<40} {p:>19.1%}")
+    print(f"  {label:<40} {'WTMEC2YR':<10} {p:>13.1%}")
+
+# Definition 5: ADA FPG criterion — measured only on the fasting
+# subsample → MUST use WTSAF2YR. This is the subsample-weight audit.
+fpg_sub = raw[raw["LBXGLU"].notna() & (raw["WTSAF2YR"] > 0)].copy()
+fpg_outcome = (fpg_sub["LBXGLU"] >= 126).astype(int)
+p_fpg = weighted_prev(fpg_outcome, fpg_sub["WTSAF2YR"])
+print(f"  {'Fasting glucose (FPG≥126 mg/dL)':<40} {'WTSAF2YR':<10} "
+      f"{p_fpg:>13.1%}")
+prevs.append(p_fpg)
+
+# AUDIT: confirm WTSAF2YR != WTMEC2YR on the fasting subsample (proving
+# we are using the correct, distinct subsample weight)
+saf = fpg_sub["WTSAF2YR"].to_numpy()
+mec = fpg_sub["WTMEC2YR"].to_numpy()
+frac_diff = float(np.mean(np.abs(saf - mec) / np.maximum(mec, 1)))
+print()
+print(f"  subsample-weight audit: mean |WTSAF2YR − WTMEC2YR| / WTMEC2YR "
+      f"on the fasting subsample = {frac_diff:.1%}")
+assert frac_diff > 0.05, (
+    "WTSAF2YR is indistinguishable from WTMEC2YR — the fasting "
+    "subsample weight audit is not exercising a real distinction"
+)
+# What the WRONG weight would have given (the classic error):
+p_fpg_wrong = weighted_prev(fpg_outcome, fpg_sub["WTMEC2YR"])
+print(f"  FPG prevalence with CORRECT weight (WTSAF2YR): {p_fpg:.1%}")
+print(f"  FPG prevalence with WRONG weight  (WTMEC2YR): {p_fpg_wrong:.1%}  "
+      f"← do not do this")
 print()
 spread = max(prevs) - min(prevs)
-print(f"  Spread (max − min):                          {spread:>19.1%}")
+print(f"  Prevalence range across 5 definitions: "
+      f"{min(prevs):.1%} – {max(prevs):.1%} (spread {spread:.1%})")
 print()
-print("  Reading: the 'primary' definition lands between the two "
-      "extremes, as expected; spread is small (≤ ~5 percentage points), "
-      "indicating the headline finding is not knife-edge-sensitive to "
-      "outcome definition for this software demonstration.")
+print("  Reading: the 'primary' definition sits mid-range; the spread "
+      "reflects genuine definitional differences (lab-only misses "
+      "treated-and-controlled diabetics; FPG uses a different assay "
+      "and subsample). The audit point is that the FPG arm correctly "
+      "switches to WTSAF2YR — using WTMEC2YR there would be a "
+      "subsample-weight error.")
 """)
 
 # =====================================================================
@@ -3013,7 +3118,7 @@ here — both categories have value, but they shouldn't be conflated.
 | 28 | scipy `ttest_ind` Satterthwaite df | ≤ 1e-9 abs | ✔ |
 | 29 | Lumley (2010) `apistrat` `svymean` | ≤ 1e-3 abs (mean), ≤ 1e-2 (SE) | ✔ |
 | 30 | Permutation invariance | ≤ 1e-12 rel | ✔ |
-| **38** | **R `svychisq` (full Rao-Scott) — DOCUMENTED GAP, not asserted bound** | quantified per variable | — |
+| **38** | **R `svychisq` (full Rao-Scott) — DOCUMENTED GAP**; rendered Table-1 p-values = first-order Rao-Scott (asserted 1e-9), inherit 57–69 % gap vs R | quantified + Table-1 linkage asserted | ✔/— |
 | **39** | **R `svyglm` β (re-asserted from Step 12)** | ≤ 5e-3 abs | ✔ |
 | **39** | **R `svyglm` SE — DOCUMENTED LIMITATION, not asserted bound** | quantified ~50–100 % var_weights-vs-sandwich gap | — |
 | **40** | **R `svymean` battery (5 vars)** | ≤ 1e-9 rel | ✔ |

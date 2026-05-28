@@ -37,12 +37,18 @@ _BASE_FONT = (
     '"Liberation Sans", sans-serif'
 )
 
-# Faded variant of the surrounding text colour, used for separator borders
-# and footnotes. ``color-mix`` is supported by every notebook frontend we
-# target (Chrome ≥ 111, Safari ≥ 16.2, Firefox ≥ 113) and degrades to the
-# raw currentColor on older engines — readable in both cases.
-_FADED_25 = "color-mix(in srgb, currentColor 25%, transparent)"
-_FADED_70 = "color-mix(in srgb, currentColor 70%, transparent)"
+# Faded variant for separator borders and footnotes. Previously used CSS
+# ``color-mix(in srgb, currentColor 25%, transparent)`` — readable in every
+# *interactive* notebook frontend (Chrome ≥ 111, Safari ≥ 16.2,
+# Firefox ≥ 113) but the GitHub.com .ipynb renderer's HTML sanitiser
+# strips the parenthesised arguments mid-attribute, leaking raw CSS text
+# into the rendered cell content. Since GitHub is the primary
+# "browse the notebook without running it" surface for JSS reviewers,
+# we use a fixed neutral grey (rgba 50 %) instead. Tradeoff: borders no
+# longer follow the surrounding light/dark text colour, but the grey is
+# legible on both. The numerical result is unchanged.
+_FADED_25 = "rgba(127, 127, 127, 0.30)"
+_FADED_70 = "rgba(127, 127, 127, 0.75)"
 
 _DEFAULT = Theme(
     name="default",
