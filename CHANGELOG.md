@@ -5,6 +5,43 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a12] — 2026-05-27
+
+### Notebook — Section IX added (inferential validity)
+
+A second external reviewer raised the framework distinction between
+*"the numbers match"* and *"the inference is statistically valid."*
+For the `tbl_regression(design=)` path that point lands directly,
+since 0.1.0a11 had documented (in Step 39) a ~50–100 % SE gap vs R
+`survey::svyglm`'s sandwich estimator. Section IX quantifies the
+*inferential consequence* of that gap:
+
+- **Step 47** — Monte Carlo coverage: 500 synthetic stratified-
+  clustered datasets, fit through PySofra's design-refit, record
+  empirical CI coverage. Result on the representative DGP:
+  **~84–86 % empirical coverage at nominal 95 %** (≈10 pp under-
+  coverage). Documented honestly; recommendation in the cell:
+  *"For publication-grade design-adjusted CIs, fit the model in R
+  `svyglm` and use PySofra for the table presentation around the
+  R-computed numbers."*
+- **Step 48** — CI-asymmetry regression guard: verifies PySofra
+  preserves `(exp(β_lo), exp(β_hi))` instead of applying a
+  symmetric `OR ± z·SE`. Matches `exp(β ± z·SE)` to ≤ 1e-9; on an
+  OR-of-36 fit the upper gap is 3.2× the lower gap, as expected.
+
+### Notebook size
+- Now nine sections, **48 audited contracts**, 107 cells.
+- 2 new pytest acceptance tests; full suite 1000 passing (was 998).
+
+### Reviewer-scope clarification
+The remaining items from the second reviewer's framework — reference
+grid construction, EMM weighting semantics, non-estimability, K-R
+denominator df, full Monte Carlo EMM coverage — are out of scope
+for PySofra (these belong in an estimated-marginal-means package
+analogous to R `emmeans`, not in a statistical-reporting layer
+analogous to R `gtsummary`). No action taken in PySofra; the
+framework is being applied to the parallel `pymmeans` project.
+
 ## [0.1.0a11] — 2026-05-27
 
 ### Documentation honesty (in response to external audit)

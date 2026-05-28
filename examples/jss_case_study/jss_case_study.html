@@ -7796,7 +7796,7 @@ a.anchor-link {
 <!-- End of mermaid configuration --></head>
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
 <main>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9cee92e3">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=6809bb7a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7840,7 +7840,7 @@ as the scaffolding for that audit, but the artifact's purpose is to
 epidemiological design of the analyses it tabulates. The user is
 responsible for the analytic decisions; PySofra is responsible for
 the resulting numbers and their faithful rendering.</p>
-<p>The notebook has <strong>eight sections</strong> containing <strong>46 audited contracts</strong>:</p>
+<p>The notebook has <strong>nine sections</strong> containing <strong>48 audited contracts</strong>:</p>
 <ol>
 <li><strong>Section I (Steps 1–18)</strong> — End-to-end narrative analysis of the demonstration.</li>
 <li><strong>Section II (Steps 19–24)</strong> — Mathematical foundations vs textbook formulas.</li>
@@ -7850,6 +7850,7 @@ the resulting numbers and their faithful rendering.</p>
 <li><strong>Section VI (Steps 38–40)</strong> — <em>Full inferential parity with R <code>survey</code></em> (β AND SE AND CI AND p, plus a quantified Rao-Scott vs <code>svychisq</code> gap).</li>
 <li><strong>Section VII (Steps 41–43)</strong> — <em>Negative-control tests</em> — wrong inputs produce visibly wrong outputs.</li>
 <li><strong>Section VIII (Steps 44–46)</strong> — <em>Sensitivity analyses within scope</em> — MI convergence, CC-vs-MI, alternative outcome definitions.</li>
+<li><strong>Section IX (Steps 47–48)</strong> — <em>Inferential validity</em> — Monte Carlo coverage of <code>tbl_regression(design=)</code> CIs; exponentiated-CI asymmetry guard.</li>
 </ol>
 <p>Every contract is asserted in-notebook; a regression in any one fails
 <code>jupyter nbconvert --execute</code> and trips CI before merge.</p>
@@ -7880,7 +7881,7 @@ Section-VI cross-validation: <code>survey</code> ≥ 4.4, <code>gtsummary</code>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=236aca40">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=7a1b3f3e">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7911,14 +7912,14 @@ Section-VI cross-validation: <code>survey</code> ≥ 4.4, <code>gtsummary</code>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>PySofra version: 0.1.0a10
+<pre>PySofra version: 0.1.0a11
 </pre>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=a73b7cdf">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=88ebffbb">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7945,7 +7946,7 @@ must produce exactly the kinds shown in the printed table.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=317cf8a0">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=8ec57d33">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8035,7 +8036,7 @@ Variable-kind inference:
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=69403615">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=bf142297">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8052,7 +8053,7 @@ for steps 4 and 5.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=005945b6">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=84bde5ed">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8089,7 +8090,7 @@ for steps 4 and 5.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=31a30206">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=758d982b">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8112,7 +8113,7 @@ analytic subset.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=537ea465">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=9b4add1f">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8147,7 +8148,7 @@ lonely-PSU strata (warning condition): 0
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=526fce60">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=da45c772">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8169,7 +8170,7 @@ would be too small by ~5–10%.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=845eef6a">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=ea50d587">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8212,7 +8213,7 @@ would be too small by ~5–10%.</li>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=938764b3">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=813f9839">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8239,7 +8240,7 @@ every categorical Table-1 variable.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=96b3d57a">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=ad4d062b">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8281,7 +8282,7 @@ example: Rao–Scott chi-square for 'sex': pysofra uses the first-order Kish-DEF
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=3319da6d">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=2cc3e1cf">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8318,7 +8319,7 @@ identifies it as "Pooled MI (10 imputations) — Rubin's rules."</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=fea42045">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=dea33c37">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8381,7 +8382,7 @@ missing BMI: 78 (1.6%)
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=6de483c9">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=e0648589">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8412,7 +8413,7 @@ to R <code>survey::svyglm</code> on this same model.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=9f4a2838">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=8bf499ef">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8464,7 +8465,7 @@ to R <code>survey::svyglm</code> on this same model.</li>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=88e8fe9d">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=1f6476ca">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8490,7 +8491,7 @@ researcher cannot accidentally publish an OR of 5e18.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b2f1f187">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=21801c18">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8532,7 +8533,7 @@ researcher cannot accidentally publish an OR of 5e18.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=03f43ce8">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9f256cb6">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8558,7 +8559,7 @@ appear.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=785ebe5f">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=41921f5a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8600,7 +8601,7 @@ appear.</li>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d76bf476">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c75a01d6">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8621,7 +8622,7 @@ PPTX, …) emit it inline.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=2d55029a">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a59f12ce">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -9974,7 +9975,7 @@ L 72.78125 214.380312
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b92fd01d">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=2e6698b9">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -9998,7 +9999,7 @@ same table.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=2b689afd">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=186ff3bf">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10049,7 +10050,13 @@ same table.</li>
 <pre>  html     21.2 KB  sha256=9cc9f729a1405da1  MATCH
   md        1.8 KB  sha256=fbe03d8d96a6d762  MATCH
   tex       2.2 KB  sha256=0dbd3f9e7c9062f5  MATCH
-  docx     37.2 KB  sha256=0f9c5ca6b49c6fb8  MATCH
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>  docx     37.2 KB  sha256=0f9c5ca6b49c6fb8  MATCH
 </pre>
 </div>
 </div>
@@ -10073,7 +10080,7 @@ All seven backends are bytewise-identical across processes.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=23d85e0c">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=80165824">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10100,7 +10107,7 @@ with R <code>svyglm(..., quasibinomial)</code> ORs to ≥ 2 decimals.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1388b542">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=dedad990">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10253,7 +10260,7 @@ with R <code>svyglm(..., quasibinomial)</code> ORs to ≥ 2 decimals.</li>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9eea98ee">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=11b5ad80">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10273,7 +10280,7 @@ this and asserts the footnote contains the literal "TR".</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3d5dbcfc">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=bc63daa0">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10321,7 +10328,7 @@ ASSERTION OK — Weibull AFT labelled TR (Time Ratio), not HR.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=766d71ab">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=358dc8a5">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10342,7 +10349,7 @@ m2; <code>+ insured + race_NHW</code> in m3).</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=d3935e90">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=36ddb52b">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10405,7 +10412,7 @@ ASSERTION OK — 3-model side-by-side regression table rendered.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=a9e288ed">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5b86bb61">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10424,7 +10431,7 @@ in the rendered HTML.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c3af2461">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f7531b7b">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10481,7 +10488,7 @@ ASSERTION OK — tbl_stack composed both sub-tables; both group labels present i
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=4e1853cf">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=e27001a5">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10499,7 +10506,7 @@ p-values' sort order (BH property).</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=8ca9066b">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=889ce063">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10575,7 +10582,7 @@ ASSERTION OK — q-value column added, BH monotonicity holds.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=6810beb1">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=04171d73">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10595,7 +10602,7 @@ jointly testing all 5 race contrasts (a5/a6 path).</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=ca59327f">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=de631589">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10660,7 +10667,7 @@ ASSERTION OK — joint Wald-F under design produced a valid global p for race.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=0a153756">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=30bb84d7">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10682,7 +10689,7 @@ renders. If any backend disagrees, the assertion fails.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a3358cfe">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b415ce7d">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10767,7 +10774,7 @@ ASSERTION OK — same weighted N appears in HTML, MD, LaTeX, and DOCX renders.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=311dfdb6">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=698e0554">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10785,7 +10792,7 @@ implements Rubin's rules?", these are the answers.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=729ba561">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=bec2d3b4">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10814,7 +10821,7 @@ hand-derived values to ≥ 1e-10.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=8fbdb282">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=495d9919">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10906,7 +10913,7 @@ ASSERTION OK — pool() reproduces Rubin (1987) equation 3.1.6 to ≤ 1e-10.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=7c848f2b">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=e649265a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10931,7 +10938,7 @@ silently cascades.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=96f52ecf">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3b1cefd2">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10993,7 +11000,7 @@ ASSERTION OK — Wilson CI matches Newcombe (1998), statsmodels, and the textboo
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ac5ca372">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=cdcba2e8">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11012,7 +11019,7 @@ display text rounds to one decimal percent. Equality must hold on
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=097a229e">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=be0de924">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11070,7 +11077,7 @@ ASSERTION OK — KM survival at t ∈ {10,30,50} matches lifelines reference to 
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=08dc0b3b">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b0370a0e">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11090,7 +11097,7 @@ versions.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=322752b4">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c992e1e4">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11140,9 +11147,15 @@ versions.</p>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Environment manifest (pin this if reproducing later):
+<pre>Environment manifest (pin this if reproducing later):</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>
   python         = 3.11.15
-  pysofra        = 0.1.0a10
+  pysofra        = 0.1.0a11
   numpy          = 2.4.6
   pandas         = 2.3.3
   scipy          = 1.17.1
@@ -11150,7 +11163,7 @@ versions.</p>
   lifelines      = 0.30.3
   sklearn        = 1.8.0
   matplotlib     = 3.10.9
-  git_commit     = 95f412405ad5
+  git_commit     = 13d66feed902
 
 ASSERTION OK — running on PySofra ≥ 0.1.0a9.
 </pre>
@@ -11159,7 +11172,7 @@ ASSERTION OK — running on PySofra ≥ 0.1.0a9.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=3b2f6e5a">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b51cb67f">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11176,7 +11189,7 @@ upstream libraries the published numbers depend on.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=329ad651">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=efb60670">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11248,7 +11261,7 @@ ASSERTION OK — same seed → identical pooled output bytes.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=8654ddc6">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9001f80c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11276,7 +11289,7 @@ docstring would fail this assertion.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=555a4f16">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b7b76e65">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11348,7 +11361,7 @@ ASSERTION OK — lonely-PSU warning fired; mean matches R to 1e-6; SE within 5% 
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=0445421c">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b1bdb96f">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11363,7 +11376,7 @@ KM, and the foundational t-test degrees of freedom.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=a9549af9">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=37d92b33">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11378,7 +11391,7 @@ differently than pandas, this assertion fails.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=24b33014">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=8b2a5557">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11430,7 +11443,7 @@ differently than pandas, this assertion fails.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=6fa93a83">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=cfdbbfbd">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11450,7 +11463,7 @@ of magnitude more.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=4d5624a9">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f00e13d8">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11517,7 +11530,7 @@ ASSERTION OK — relative error of PySofra weighted mean: 0.00e+00  (≤ 1e-12).
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=abb3663b">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=4748189c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11533,7 +11546,7 @@ Step 10 (unweighted) does not exercise.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=7b3c4521">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b6a86be3">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11621,7 +11634,7 @@ ASSERTION OK — weighted KM matches lifelines reference to ≤ 1e-12 at t ∈ {
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ef4ffc51">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=15c74d10">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11640,7 +11653,7 @@ solid foundation.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f2ac380f">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=6bbcc3ce">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11710,7 +11723,7 @@ ASSERTION OK — Welch t-stat agrees PS↔scipy to 1e-12; Satterthwaite df match
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=7685aecc">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=dea96c01">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11724,7 +11737,7 @@ analysis sensitive to row order or floating-point quirks?", and (c)
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c1adb7bc">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=aeac5662">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11744,7 +11757,7 @@ implementation is sound.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=cbdd4b74">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=5421d197">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11807,7 +11820,7 @@ ASSERTION OK — Lumley (2010) apistrat example reproduced to ≥ 3 decimals.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=da282a66">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5c8b792d">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11825,7 +11838,7 @@ deterministic 4,971-row input.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=837b5fef">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c898b342">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11886,7 +11899,7 @@ ASSERTION OK — design-based mean and variance are invariant to row permutation
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d5db8791">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5854a4df">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11905,7 +11918,7 @@ produces a complete output.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=43a18225">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=319a27bd">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11963,7 +11976,7 @@ ASSERTION OK — full modifier chain produced 6+ columns with no spurious rebuil
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=2a79fff3">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=8e95dbcc">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11980,7 +11993,7 @@ JSS reviewer will absolutely test these inputs, so we test them too.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=5effc0ce">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=cbc03428">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12048,7 +12061,7 @@ ASSERTION OK — empty, single-row, and all-NaN inputs each produced either a cl
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=fa25bd80">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f68da715">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12063,7 +12076,7 @@ the JSS paper's "comparison with existing software" section.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d23d7674">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=2671d9de">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12086,7 +12099,7 @@ diff showing what changed.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=ee2a6938">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=83605b72">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12169,7 +12182,7 @@ ASSERTION OK — snapshot lock detects substantive content drift while ignoring 
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=a0d8049c">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=97fed1aa">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12189,7 +12202,7 @@ if any.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=6dedc27c">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=4c80d496">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12260,7 +12273,7 @@ ASSERTION OK — extreme/sparse/missing patterns detected on adversarial input; 
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=036929b8">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=59a380ec">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12279,7 +12292,7 @@ captions, so the table can be <code>{{&lt; include &gt;}}</code>-d directly into
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=af9897cd">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=0d62a4d0">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12341,7 +12354,7 @@ ASSERTION OK — Quarto pass-through blocks emitted with cross-reference label a
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=fe194e10">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9ffba411">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12361,7 +12374,7 @@ ready to <code>#include</code> in a <code>.typ</code> source or compile directly
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=77010b05">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f18e5443">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12414,7 +12427,7 @@ ASSERTION OK — Typst markup emitted and written to disk.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ccb47c5a">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b3af4ae0">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12433,7 +12446,7 @@ to plug into shell-based CI pipelines and Makefiles.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=ecbe639c">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=cb21edce">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12505,7 +12518,7 @@ to plug into shell-based CI pipelines and Makefiles.</p>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>  $ pysofra version → 0.1.0a10
+<pre>  $ pysofra version → 0.1.0a11
 </pre>
 </div>
 </div>
@@ -12542,7 +12555,7 @@ ASSERTION OK — `pysofra` CLI handles version, table, and check sub-commands wi
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b5d83cc2">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=8cdacb82">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12558,7 +12571,7 @@ all Table-1 continuous variables (not just age + BMI).</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=917ab262">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=3a4f6ee8">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12582,7 +12595,7 @@ bounded," not "the gap is zero."</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=588089a0">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1e9a1f8b">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12667,7 +12680,7 @@ DOCUMENTATION OK — first-order Rao-Scott vs full R svychisq gap quantified per
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=29d97f22">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=0953462b">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12705,7 +12718,7 @@ bound. The contract is honest disclosure, not numerical agreement.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f664602a">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=6630bd82">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12820,7 +12833,7 @@ bound. The contract is honest disclosure, not numerical agreement.</li>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=bd9ee24f">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=bddd5b09">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12841,7 +12854,7 @@ with R to ≥ 1e-9.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=16d97b13">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=17706060">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12951,7 +12964,7 @@ ASSERTION OK — svymean (5 vars) AND svyttest (3 vars) agree with R survey to �
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ad47e64e">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ee5b944c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12966,7 +12979,7 @@ fed deliberately-wrong inputs.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=45ce7615">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=53d46829">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12986,7 +12999,7 @@ to detect the difference — it's a visible regression target).</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a5f5e80d">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=0719b5cc">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13041,7 +13054,7 @@ ASSERTION OK — different weight columns produce visibly different estimates (g
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=de83d680">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=bf502b28">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13064,7 +13077,7 @@ test is the negative-control evidence the fix is in.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=7fd872cc">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a7077de7">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13122,7 +13135,7 @@ ASSERTION OK — freq_weights inflates df_resid by 47224× over var_weights. PyS
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9eec4bdb">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=776478e4">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13141,7 +13154,7 @@ must differ by more than 1 % relative error.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=53ab4180">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a6d84854">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13198,7 +13211,7 @@ ASSERTION OK — wrong strata produced an SE that is 70.8% different from the co
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=abd18844">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=4c96cd9a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13215,7 +13228,7 @@ of how a real analyst would stress-test the demonstration analysis.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=e3b442cf">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c6720925">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13236,7 +13249,7 @@ noise relative to m=50, m=20 should be within ~5 %.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=25e991a3">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=80883230">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13347,7 +13360,7 @@ DOCUMENTATION OK — m-sensitivity quantified. m=5 SE is within 2% of m=50; user
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=dd3b2543">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c61148f4">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13365,7 +13378,7 @@ assert they're "small."</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c54a3b6c">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=61d4f63d">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13423,7 +13436,7 @@ DOCUMENTATION OK — CC and MI estimates displayed side-by-side. Differences ref
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b92f527d">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=6e188030">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13449,7 +13462,7 @@ honest disclosure, not a specific sensitivity threshold.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=d4e57bc1">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=0e2bcbf1">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13522,7 +13535,313 @@ honest disclosure, not a specific sensitivity threshold.</li>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=11a1006d">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9c69b222">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h1 id="Section-IX-%E2%80%94-Inferential-validity-(Monte-Carlo-coverage)">Section IX — Inferential validity (Monte Carlo coverage)<a class="anchor-link" href="#Section-IX-%E2%80%94-Inferential-validity-(Monte-Carlo-coverage)">¶</a></h1><p>Section VI (Step 39) documented that PySofra's <code>tbl_regression(design=)</code>
+SE differs from R <code>survey::svyglm</code>'s cluster-robust sandwich SE by
+~50–100 % on stratified clustered designs. <strong>An external reviewer
+correctly observed that "the numbers agree" and "the inference is
+valid" are different claims.</strong> A simulation study with known truth
+quantifies the inferential consequence: at what rate does PySofra's
+nominal-95 % CI actually contain the true coefficient?</p>
+<p>Per-cell runtime ≈ 2.5 ms on the prototype machine, so 500 replicates
+is ~1.5 s. A full coverage characterisation across many DGPs is a
+separate study; this single simulation tests one representative
+design.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=244e9663">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="Step-47-%E2%80%94-Monte-Carlo-coverage-of-tbl_regression(design=)-CIs">Step 47 — Monte Carlo coverage of <code>tbl_regression(design=)</code> CIs<a class="anchor-link" href="#Step-47-%E2%80%94-Monte-Carlo-coverage-of-tbl_regression(design=)-CIs">¶</a></h2><p><strong>Design.</strong> 500 synthetic stratified-clustered datasets, each with
+4 strata × 4 PSUs × 12 observations = 192 rows. True data-generating
+process is a logistic regression with three coefficients (intercept,
+continuous x1, binary x2) and stratum-dependent sampling weights.</p>
+<p><strong>Procedure.</strong> For each replicate: simulate data; fit a standard
+<code>statsmodels.GLM(Binomial)</code>; pass the fitted model through
+<code>tbl_regression(model, design=design, data=df)</code>; extract the 95 %
+CI on the OR scale; record whether the true OR lies in the CI.</p>
+<p><strong>Expected finding (given Step 39 SE gap).</strong> Empirical coverage
+should be <em>below</em> nominal 95 %; the size of the gap quantifies how
+much the <code>var_weights</code>-vs-sandwich SE discrepancy matters
+inferentially.</p>
+<h3 id="AUDIT-note-(Step-47)">AUDIT note (Step 47)<a class="anchor-link" href="#AUDIT-note-(Step-47)">¶</a></h3><ul>
+<li>No assertion on the coverage value (this is a <em>quantification</em>
+step, not a parity step).</li>
+<li>The contract is honest disclosure of empirical coverage so users
+can decide whether <code>tbl_regression(design=)</code> is acceptable for
+their use case or whether they should compute CIs in R <code>svyglm</code>.</li>
+</ul>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=d4b1a822">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [48]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">statsmodels.api</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sm</span>
+
+<span class="c1"># Known true coefficients on the log-odds scale</span>
+<span class="n">TRUE_BETA</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.30</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.40</span><span class="p">])</span>     <span class="c1"># intercept, x1, x2</span>
+<span class="n">TRUE_OR</span>   <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">TRUE_BETA</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>             <span class="c1"># OR for x1, x2</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_simulate_dataset</span><span class="p">(</span><span class="n">seed</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">rows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>                <span class="c1"># 4 strata</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>            <span class="c1"># 4 PSUs per stratum</span>
+            <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">12</span><span class="p">):</span>       <span class="c1"># 12 obs per PSU</span>
+                <span class="n">x1</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">normal</span><span class="p">()</span>
+                <span class="n">x2</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">)</span>
+                <span class="n">eta</span> <span class="o">=</span> <span class="p">(</span><span class="n">TRUE_BETA</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                       <span class="o">+</span> <span class="n">TRUE_BETA</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">x1</span>
+                       <span class="o">+</span> <span class="n">TRUE_BETA</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">*</span> <span class="n">x2</span><span class="p">)</span>
+                <span class="n">y</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">binomial</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">eta</span><span class="p">)))</span>
+                <span class="n">w</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">s</span>    <span class="c1"># stratum-dependent weight</span>
+                <span class="n">rows</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">s</span><span class="p">,</span> <span class="n">p</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="n">rows</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"stratum"</span><span class="p">,</span> <span class="s2">"psu"</span><span class="p">,</span> <span class="s2">"x1"</span><span class="p">,</span> <span class="s2">"x2"</span><span class="p">,</span> <span class="s2">"y"</span><span class="p">,</span> <span class="s2">"w"</span><span class="p">],</span>
+    <span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_fit_and_extract</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="n">Xmat</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">add_constant</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s2">"x1"</span><span class="p">,</span> <span class="s2">"x2"</span><span class="p">]])</span>
+    <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">)</span>
+        <span class="n">glm_fit</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">GLM</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s2">"y"</span><span class="p">],</span> <span class="n">Xmat</span><span class="p">,</span>
+                         <span class="n">family</span><span class="o">=</span><span class="n">sm</span><span class="o">.</span><span class="n">families</span><span class="o">.</span><span class="n">Binomial</span><span class="p">())</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+    <span class="n">sim_design</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">SurveyDesign</span><span class="p">(</span><span class="n">weights</span><span class="o">=</span><span class="s2">"w"</span><span class="p">,</span> <span class="n">strata</span><span class="o">=</span><span class="s2">"stratum"</span><span class="p">,</span>
+                                  <span class="n">cluster</span><span class="o">=</span><span class="s2">"psu"</span><span class="p">)</span>
+    <span class="n">tbl</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">tbl_regression</span><span class="p">(</span><span class="n">glm_fit</span><span class="p">,</span> <span class="n">design</span><span class="o">=</span><span class="n">sim_design</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span>
+                            <span class="n">conf_level</span><span class="o">=</span><span class="mf">0.95</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">tbl</span><span class="o">.</span><span class="n">rows</span><span class="p">:</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">cells</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">label</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"x1"</span><span class="p">,</span> <span class="s2">"x2"</span><span class="p">):</span>
+            <span class="c1"># cell values are on the OR scale; ci_val is (lo, hi)</span>
+            <span class="n">out</span><span class="p">[</span><span class="n">label</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">cells</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+    <span class="k">return</span> <span class="n">out</span>
+
+<span class="n">n_rep</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">t_start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+<span class="n">covered</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"x1"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">"x2"</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+<span class="n">widths</span>  <span class="o">=</span> <span class="p">{</span><span class="s2">"x1"</span><span class="p">:</span> <span class="p">[],</span> <span class="s2">"x2"</span><span class="p">:</span> <span class="p">[]}</span>
+<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_rep</span><span class="p">):</span>
+        <span class="n">sim_df</span> <span class="o">=</span> <span class="n">_simulate_dataset</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">cis</span> <span class="o">=</span> <span class="n">_fit_and_extract</span><span class="p">(</span><span class="n">sim_df</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">true_or</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">((</span><span class="s2">"x1"</span><span class="p">,</span> <span class="s2">"x2"</span><span class="p">),</span> <span class="n">TRUE_OR</span><span class="p">):</span>
+            <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="n">cis</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">lo</span> <span class="o">&lt;=</span> <span class="n">true_or</span> <span class="o">&lt;=</span> <span class="n">hi</span><span class="p">:</span>
+                <span class="n">covered</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">widths</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">hi</span> <span class="o">-</span> <span class="n">lo</span><span class="p">)</span>
+
+<span class="n">elapsed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t_start</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">n_rep</span><span class="si">}</span><span class="s2"> simulated datasets in </span><span class="si">{</span><span class="n">elapsed</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> s "</span>
+      <span class="sa">f</span><span class="s2">"(</span><span class="si">{</span><span class="n">elapsed</span><span class="o">/</span><span class="n">n_rep</span><span class="o">*</span><span class="mi">1000</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2"> ms / rep)"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  True data-generating process: logit(P) = "</span>
+      <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">TRUE_BETA</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2"> + </span><span class="si">{</span><span class="n">TRUE_BETA</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">·x1 + "</span>
+      <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">TRUE_BETA</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">·x2"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  True OR(x1) = </span><span class="si">{</span><span class="n">TRUE_OR</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  True OR(x2) = </span><span class="si">{</span><span class="n">TRUE_OR</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  Empirical coverage of `tbl_regression(design=)` 95 % CI:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="s1">'Coefficient'</span><span class="si">:</span><span class="s2">&lt;12</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'Nominal'</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'Observed'</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> "</span>
+      <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="s1">'CI width (mean)'</span><span class="si">:</span><span class="s2">&gt;17</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="s1">'-'</span><span class="o">*</span><span class="mi">12</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'-'</span><span class="o">*</span><span class="mi">9</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'-'</span><span class="o">*</span><span class="mi">9</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'-'</span><span class="o">*</span><span class="mi">17</span><span class="si">:</span><span class="s2">&gt;17</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">"x1"</span><span class="p">,</span> <span class="s2">"x2"</span><span class="p">):</span>
+    <span class="n">cov</span> <span class="o">=</span> <span class="n">covered</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">/</span> <span class="n">n_rep</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  </span><span class="si">{</span><span class="n">k</span><span class="si">:</span><span class="s2">&lt;12</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">'95.0%'</span><span class="si">:</span><span class="s2">&gt;9</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">cov</span><span class="si">:</span><span class="s2">&gt;8.1%</span><span class="si">}</span><span class="s2"> "</span>
+          <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">widths</span><span class="p">[</span><span class="n">k</span><span class="p">])</span><span class="si">:</span><span class="s2">&gt;17.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  INTERPRETATION:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  Coverage below nominal 95% means the CI is TOO NARROW for"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  the design — i.e., PySofra's tbl_regression(design=) SE"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  (statsmodels var_weights) is smaller than the cluster-robust"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  sandwich SE R survey::svyglm would compute. The gap reported"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  in Step 39 (~100</span><span class="si">% r</span><span class="s2">elative SE difference) has a measurable"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  inferential consequence: roughly 10 percentage points of"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  under-coverage at nominal 95</span><span class="si">% o</span><span class="s2">n this design."</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  RECOMMENDATION:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  For publication-grade design-adjusted CIs, fit the model in"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  R `survey::svyglm` and use PySofra only for the table"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  presentation around the R-computed numbers. Use PySofra's"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  tbl_regression(design=) when the SE convention's documented"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  limitation is acceptable (preliminary analyses, internal"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  reports, EDA, where the point estimate is the focus)."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>  500 simulated datasets in 1.2 s (2.5 ms / rep)
+  True data-generating process: logit(P) = 0.30 + 0.50·x1 + -0.40·x2
+  True OR(x1) = 1.6487
+  True OR(x2) = 0.6703
+
+  Empirical coverage of `tbl_regression(design=)` 95 % CI:
+  Coefficient    Nominal  Observed   CI width (mean)
+  ------------ --------- --------- -----------------
+  x1               95.0%    85.8%            1.0855
+  x2               95.0%    84.0%            0.8957
+
+  INTERPRETATION:
+  Coverage below nominal 95% means the CI is TOO NARROW for
+  the design — i.e., PySofra's tbl_regression(design=) SE
+  (statsmodels var_weights) is smaller than the cluster-robust
+  sandwich SE R survey::svyglm would compute. The gap reported
+  in Step 39 (~100% relative SE difference) has a measurable
+  inferential consequence: roughly 10 percentage points of
+  under-coverage at nominal 95% on this design.
+
+  RECOMMENDATION:
+  For publication-grade design-adjusted CIs, fit the model in
+  R `survey::svyglm` and use PySofra only for the table
+  presentation around the R-computed numbers. Use PySofra's
+  tbl_regression(design=) when the SE convention's documented
+  limitation is acceptable (preliminary analyses, internal
+  reports, EDA, where the point estimate is the focus).
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=7f747432">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="Step-48-%E2%80%94-Asymmetry-of-exponentiated-coefficient-CIs">Step 48 — Asymmetry of exponentiated-coefficient CIs<a class="anchor-link" href="#Step-48-%E2%80%94-Asymmetry-of-exponentiated-coefficient-CIs">¶</a></h2><p>A common implementation error: report <code>OR ± z·SE</code> instead of
+<code>(exp(β_lo), exp(β_hi))</code>. The first is wrong because the OR's
+sampling distribution is asymmetric (the log-OR is approximately
+normal, the OR is approximately log-normal). We verify PySofra
+correctly transforms the CI endpoints rather than applying a
+symmetric interval on the OR scale.</p>
+<h3 id="AUDIT-note-(Step-48)">AUDIT note (Step 48)<a class="anchor-link" href="#AUDIT-note-(Step-48)">¶</a></h3><ul>
+<li>For a logistic fit with non-zero β, the CI on the OR scale must be
+<strong>asymmetric</strong> — specifically, <code>OR − ci_lo ≠ ci_hi − OR</code>.</li>
+<li>The lower bound must equal <code>exp(coef - z·se)</code>, the upper must equal
+<code>exp(coef + z·se)</code>.</li>
+</ul>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=56987795">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [49]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="c1"># Fit a logistic regression on a deliberately-imbalanced design so</span>
+<span class="c1"># the OR is far from 1 and the asymmetry is visually obvious.</span>
+<span class="n">sim</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+    <span class="s2">"x"</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">50</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">50</span><span class="p">,</span>
+    <span class="s2">"y"</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">40</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">10</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">45</span><span class="p">,</span>  <span class="c1"># OR(x) &gt;&gt; 1</span>
+<span class="p">})</span>
+<span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="s2">"ignore"</span><span class="p">)</span>
+    <span class="n">fit</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">Logit</span><span class="p">(</span><span class="n">sim</span><span class="p">[</span><span class="s2">"y"</span><span class="p">],</span> <span class="n">sm</span><span class="o">.</span><span class="n">add_constant</span><span class="p">(</span><span class="n">sim</span><span class="p">[[</span><span class="s2">"x"</span><span class="p">]]))</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">disp</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">tbl_asym</span> <span class="o">=</span> <span class="n">ps</span><span class="o">.</span><span class="n">tbl_regression</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span> <span class="n">exponentiate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Extract the OR and CI for x</span>
+<span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">tbl_asym</span><span class="o">.</span><span class="n">rows</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">r</span><span class="o">.</span><span class="n">cells</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="o">==</span> <span class="s2">"x"</span><span class="p">:</span>
+        <span class="n">or_val</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">cells</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+        <span class="n">ci_lo</span><span class="p">,</span> <span class="n">ci_hi</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">cells</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">break</span>
+
+<span class="c1"># Manual reference: exp of statsmodels CI</span>
+<span class="n">beta_x</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s2">"x"</span><span class="p">])</span>
+<span class="n">se_x</span>   <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">fit</span><span class="o">.</span><span class="n">bse</span><span class="p">[</span><span class="s2">"x"</span><span class="p">])</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_ss</span>
+<span class="n">z</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">_ss</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mf">0.975</span><span class="p">))</span>
+<span class="n">manual_lo</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">beta_x</span> <span class="o">-</span> <span class="n">z</span> <span class="o">*</span> <span class="n">se_x</span><span class="p">))</span>
+<span class="n">manual_hi</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">beta_x</span> <span class="o">+</span> <span class="n">z</span> <span class="o">*</span> <span class="n">se_x</span><span class="p">))</span>
+<span class="n">manual_or</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">beta_x</span><span class="p">))</span>
+
+<span class="c1"># Asymmetry diagnostic</span>
+<span class="n">delta_lo</span> <span class="o">=</span> <span class="n">or_val</span> <span class="o">-</span> <span class="n">ci_lo</span>
+<span class="n">delta_hi</span> <span class="o">=</span> <span class="n">ci_hi</span> <span class="o">-</span> <span class="n">or_val</span>
+<span class="n">asym_ratio</span> <span class="o">=</span> <span class="n">delta_hi</span> <span class="o">/</span> <span class="n">delta_lo</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  fit: logit(y) = </span><span class="si">{</span><span class="n">fit</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s1">'const'</span><span class="p">]</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> + "</span>
+      <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">beta_x</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">·x ;  SE(β_x) = </span><span class="si">{</span><span class="n">se_x</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  OR(x)               = </span><span class="si">{</span><span class="n">or_val</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">   (manual </span><span class="si">{</span><span class="n">manual_or</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  CI                  = (</span><span class="si">{</span><span class="n">ci_lo</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">ci_hi</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  manual exp(β±z·SE)  = (</span><span class="si">{</span><span class="n">manual_lo</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">manual_hi</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  OR − ci_lo          = </span><span class="si">{</span><span class="n">delta_lo</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  ci_hi − OR          = </span><span class="si">{</span><span class="n">delta_hi</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"  asymmetry ratio (hi/lo gap) = </span><span class="si">{</span><span class="n">asym_ratio</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="c1"># Match manual to high precision</span>
+<span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ci_lo</span> <span class="o">-</span> <span class="n">manual_lo</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-9</span><span class="p">,</span> \
+    <span class="sa">f</span><span class="s2">"lower CI </span><span class="si">{</span><span class="n">ci_lo</span><span class="si">}</span><span class="s2"> != exp(β−z·SE) </span><span class="si">{</span><span class="n">manual_lo</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ci_hi</span> <span class="o">-</span> <span class="n">manual_hi</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-9</span><span class="p">,</span> \
+    <span class="sa">f</span><span class="s2">"upper CI </span><span class="si">{</span><span class="n">ci_hi</span><span class="si">}</span><span class="s2"> != exp(β+z·SE) </span><span class="si">{</span><span class="n">manual_hi</span><span class="si">}</span><span class="s2">"</span>
+<span class="c1"># Asymmetry must be substantial (would be 1.0 if symmetric was used)</span>
+<span class="k">assert</span> <span class="n">asym_ratio</span> <span class="o">&gt;</span> <span class="mf">1.10</span><span class="p">,</span> <span class="p">(</span>
+    <span class="sa">f</span><span class="s2">"CI looks symmetric on the OR scale (asym ratio </span><span class="si">{</span><span class="n">asym_ratio</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">) — "</span>
+    <span class="sa">f</span><span class="s2">"likely OR ± z·SE was applied incorrectly"</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"ASSERTION OK — exponentiated CI is asymmetric (hi gap "</span>
+      <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">asym_ratio</span><span class="si">:</span><span class="s2">.1f</span><span class="si">}</span><span class="s2">× larger than lo gap) and matches "</span>
+      <span class="sa">f</span><span class="s2">"exp(β ± z·SE) to ≤ 1e-9. PySofra correctly transforms "</span>
+      <span class="sa">f</span><span class="s2">"endpoints rather than applying a symmetric interval."</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>  fit: logit(y) = -1.386 + 3.584·x ;  SE(β_x) = 0.589
+  OR(x)               = 36.0000   (manual 36.0000)
+  CI                  = (11.3430, 114.2557)
+  manual exp(β±z·SE)  = (11.3430, 114.2557)
+  OR − ci_lo          = 24.6570
+  ci_hi − OR          = 78.2557
+  asymmetry ratio (hi/lo gap) = 3.174
+
+ASSERTION OK — exponentiated CI is asymmetric (hi gap 3.2× larger than lo gap) and matches exp(β ± z·SE) to ≤ 1e-9. PySofra correctly transforms endpoints rather than applying a symmetric interval.
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=cde4588e">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13668,6 +13987,18 @@ here — both categories have value, but they shouldn't be conflated.</p>
 <td><strong>43</strong></td>
 <td><strong>Strata responsiveness</strong> (negative control)</td>
 <td>&gt; 1 % SE gap</td>
+<td>✔</td>
+</tr>
+<tr>
+<td><strong>47</strong></td>
+<td><strong>Monte Carlo coverage of <code>tbl_regression(design=)</code> 95 % CI</strong></td>
+<td>quantified — under-coverage at ~85–86 % vs nominal 95 % (DOCUMENTED)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>48</strong></td>
+<td><strong>Exponentiated CI asymmetry</strong> (preserves <code>(exp(β_lo), exp(β_hi))</code>)</td>
+<td>matches <code>exp(β ± z·SE)</code> to ≤ 1e-9; asymmetric</td>
 <td>✔</td>
 </tr>
 </tbody>
