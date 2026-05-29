@@ -162,6 +162,7 @@ def tbl_survival(
     # Validate weights column (consistent with tbl_one's policy:
     # negative or all-zero weights raise loudly rather than warn-and-
     # drop).
+    non_integer_weights = False
     if weights is not None:
         if weights not in data.columns:
             raise KeyError(f"weights column {weights!r} not in data")
@@ -175,6 +176,35 @@ def tbl_survival(
             raise ValueError(
                 f"weights column {weights!r} has non-positive total weight."
             )
+        # Detect non-integer (sampling / propensity / IPTW) weights. For
+        # these, the *point* estimates of the Kaplan-Meier survival curve
+        # are unbiased, but the Greenwood-formula variance lifelines uses
+        # for the confidence interval is NOT — it treats each weighted
+        # observation as carrying that many independent events, so the CI
+        # is too narrow. lifelines emits its own StatisticalWarning about
+        # this; we replace it with a single, clearer pysofra warning and
+        # add a footnote so the limitation travels with the rendered
+        # table. (Integer frequency weights are fine — there the
+        # Greenwood variance is exact.)
+        wv = w_full.dropna().to_numpy(dtype=float)
+        non_integer_weights = bool(wv.size) and not bool(
+            np.all(np.isclose(wv, np.round(wv)))
+        )
+        if non_integer_weights:
+            import warnings as _w
+            _w.warn(
+                f"tbl_survival(weights={weights!r}) received non-integer "
+                "weights (sampling / propensity / IPTW). The Kaplan-Meier "
+                "point estimates (survival probabilities, median) are "
+                "unbiased, but the reported confidence intervals use the "
+                "Greenwood variance, which is biased (too narrow) for "
+                "non-integer weights. For design-grade weighted-survival "
+                "CIs use a bootstrap (resample, refit, recompute) or a "
+                "Monte-Carlo / influence-function variance. The point "
+                "estimates are safe to report as-is.",
+                UserWarning,
+                stacklevel=2,
+            )
 
     for k in group_keys:
         m = group_masks[k]
@@ -184,8 +214,15 @@ def tbl_survival(
         if len(sub) > 0:
             if weights is not None:
                 w_arr = sub[weights].to_numpy(dtype=float)
-                kmf.fit(sub[time], sub[event],
-                        weights=w_arr, alpha=1 - conf_level)
+                # We surface our own (clearer) non-integer-weight warning
+                # once, above; silence lifelines' per-fit duplicate so the
+                # rendered table / notebook isn't spammed with the same
+                # advisory for every stratum.
+                import warnings as _w
+                with _w.catch_warnings():
+                    _w.simplefilter("ignore")
+                    kmf.fit(sub[time], sub[event],
+                            weights=w_arr, alpha=1 - conf_level)
                 # Report weighted N counts to match the weighted curve.
                 n_total[k] = float(w_arr.sum())
                 events_mask = sub[event].to_numpy(dtype=float) > 0
@@ -335,6 +372,14 @@ def tbl_survival(
             f"Kaplan–Meier curves are weighted by {weights!r}; N, events, "
             "and censored are reported as weighted sums."
         )
+        if non_integer_weights:
+            footnotes.append(
+                "Weights are non-integer (sampling / propensity); survival "
+                "point estimates are unbiased, but the reported confidence "
+                "intervals use the Greenwood variance, which is biased "
+                "(too narrow) under non-integer weights. Use a bootstrap "
+                "for design-grade weighted-survival CIs."
+            )
     if has_p_col and logrank_p is not None:
         if weights is not None:
             footnotes.append(

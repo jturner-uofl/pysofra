@@ -85,3 +85,38 @@ class TestTblSurvival:
         pl_df = pl.from_pandas(surv_df)
         t = ps.tbl_survival(pl_df, time="time", event="event", by="arm")
         assert len(t.rows) >= 4
+
+
+class TestWeightedKMCIBias:
+    """Non-integer (sampling/propensity) weights → KM point estimates are
+    unbiased but the Greenwood-variance CI is biased. PySofra surfaces its
+    own warning + footnote and silences lifelines' raw per-fit advisory."""
+
+    def test_noninteger_weights_warn_and_footnote(self, surv_df):
+        import warnings
+        rng = np.random.default_rng(0)
+        df = surv_df.assign(w=rng.uniform(0.5, 2.0, len(surv_df)))
+        with warnings.catch_warnings(record=True) as ws:
+            warnings.simplefilter("always")
+            t = ps.tbl_survival(df, time="time", event="event",
+                                by="arm", weights="w")
+        msgs = [str(w.message) for w in ws]
+        # Exactly the pysofra warning, not lifelines' raw StatisticalWarning
+        assert any("non-integer" in m for m in msgs), \
+            "pysofra non-integer-weight warning did not fire"
+        assert not any(w.category.__name__ == "StatisticalWarning"
+                       for w in ws), "lifelines raw warning leaked through"
+        # Footnote travels with the table
+        assert any("biased" in f and "Greenwood" in f for f in t.footnotes)
+
+    def test_integer_weights_silent(self, surv_df):
+        import warnings
+        rng = np.random.default_rng(1)
+        df = surv_df.assign(w=rng.integers(1, 4, len(surv_df)).astype(float))
+        with warnings.catch_warnings(record=True) as ws:
+            warnings.simplefilter("always")
+            t = ps.tbl_survival(df, time="time", event="event",
+                                by="arm", weights="w")
+        # Integer frequency weights → Greenwood is exact → no CI-bias flag
+        assert not any("non-integer" in str(w.message) for w in ws)
+        assert not any("Greenwood" in f for f in t.footnotes)

@@ -876,8 +876,15 @@ adjusted column.
 """)
 
 code(r"""
-# Apply BH adjustment to the inference table from Step 5
-t_q = t_inf.add_q(method="fdr_bh")
+# Apply BH adjustment to the inference table from Step 5.
+# add_q() rebuilds the table from its spec, which re-runs the
+# design-categorical chi-square and re-emits the Rao-Scott
+# design-awareness warning (demonstrated deliberately in Steps 5 and
+# 38). It's incidental here — this cell is about multiplicity, not the
+# chi-square — so we silence it to keep the output focused.
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", UserWarning)
+    t_q = t_inf.add_q(method="fdr_bh")
 q_headers = [h.text for h in t_q.headers[0].cells]
 print(f"q-adjusted headers: {q_headers}")
 assert any("q" in h.lower() for h in q_headers), \
@@ -1535,10 +1542,19 @@ compute PySofra's survival probabilities at three time points, and
 assert they match `lifelines.KaplanMeierFitter().fit(..., weights=)`
 exactly.
 
+The weights here are **non-integer** (propensity-style, in [0.5, 2.0]),
+which is the realistic survey/IPTW case. For non-integer weights the
+KM *point* estimates are unbiased (verified below to 1e-12), but the
+Greenwood-variance confidence intervals are biased (too narrow) —
+PySofra (0.1.0a15) emits its own clear `UserWarning` and a table
+footnote saying so, rather than leaking lifelines' raw advisory. We
+capture and assert that warning here, turning a once-noisy stderr
+message into a verified contract.
+
 ### AUDIT note (Step 27)
 
-This contract validates the a8 weighted-KM path that the original
-Step 10 (unweighted) does not exercise.
+* Weighted-KM point estimates match lifelines to ≤ 1e-12.
+* Non-integer weights trigger PySofra's CI-bias warning + footnote.
 """)
 
 code(r"""
@@ -1549,10 +1565,20 @@ rng_km = np.random.default_rng(0)
 w_km = rng_km.uniform(0.5, 2.0, size=len(rossi))
 rossi_w = rossi.assign(_w=w_km)
 
-t_wkm = ps.tbl_survival(
-    rossi_w, time="week", event="arrest",
-    times=[10, 30, 50], weights="_w",
-)
+# Capture PySofra's CI-bias warning (expected for non-integer weights)
+with warnings.catch_warnings(record=True) as _ws:
+    warnings.simplefilter("always")
+    t_wkm = ps.tbl_survival(
+        rossi_w, time="week", event="arrest",
+        times=[10, 30, 50], weights="_w",
+    )
+_ci_warn = [w for w in _ws if "non-integer" in str(w.message)]
+print(f"  CI-bias warning fired: {len(_ci_warn) == 1}  "
+      f"(expected for non-integer weights)")
+assert len(_ci_warn) == 1, "expected exactly one CI-bias warning"
+assert any("Greenwood" in f for f in t_wkm.footnotes), \
+    "CI-bias footnote missing from weighted-KM table"
+print()
 ps_w_survivals = {}
 for r in t_wkm.rows:
     label = r.cells[0].text
@@ -1560,10 +1586,16 @@ for r in t_wkm.rows:
         t_val = int(label.split("=")[1].rstrip(")").strip())
         ps_w_survivals[t_val] = r.cells[1].value
 
-# Lifelines weighted reference
-kmf_w = KaplanMeierFitter().fit(
-    rossi["week"], rossi["arrest"], weights=w_km,
-)
+# Lifelines weighted reference. We silence lifelines' raw per-fit
+# StatisticalWarning here: it is the *same* non-integer-weight advisory
+# PySofra already surfaced (and asserted) above — this direct fit exists
+# only to prove point-estimate equality, so re-emitting it would just be
+# duplicate stderr noise.
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore")
+    kmf_w = KaplanMeierFitter().fit(
+        rossi["week"], rossi["arrest"], weights=w_km,
+    )
 ref_w = kmf_w.predict([10, 30, 50])
 
 print(f"  {'t':>4} {'PySofra':>14} {'lifelines':>14} {'|diff|':>12}")

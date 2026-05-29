@@ -50,7 +50,7 @@ from .summary.tbl_summary import tbl_summary
 from .summary.tests import available_tests
 from .themes.registry import available_themes, register_theme
 
-__version__ = "0.1.0a14"
+__version__ = "0.1.0a15"
 
 __all__ = [
     "CellPart",

@@ -5,6 +5,21 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a15] — 2026-05-28
+
+### Fixed — honest CIs for weighted survival
+- `tbl_survival(weights=)` warns once (and adds a footnote) when given
+  non-integer weights: the KM point estimates are unbiased, but the
+  Greenwood-variance CIs are biased (too narrow) under sampling /
+  propensity / IPTW weights. Integer frequency weights stay silent
+  (Greenwood is exact). PySofra now silences lifelines' raw per-fit
+  `StatisticalWarning` and surfaces its own table-level advisory.
+
+### Notebook
+- Step 27 (weighted KM) pins the CI-bias warning + footnote as a
+  contract; Step 16 (`add_q`) suppresses an incidental Rao–Scott
+  re-advisory so the executed notebook stays warning-clean.
+
 ## [0.1.0a14] — 2026-05-28
 
 ### Fixed — design-based regression SEs (biggest limitation closed)

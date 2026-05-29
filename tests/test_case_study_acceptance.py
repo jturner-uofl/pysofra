@@ -335,6 +335,9 @@ class TestStep27WeightedKM:
         cell = _cell_with(executed_notebook, "kmf_w")
         text = _stream_text(cell)
         assert "weighted KM matches lifelines reference to" in text
+        # 0.1.0a15: non-integer weights now surface PySofra's CI-bias
+        # warning as a verified contract (not leaked lifelines noise).
+        assert "CI-bias warning fired: True" in text
 
 
 class TestStep28WelchDF:
