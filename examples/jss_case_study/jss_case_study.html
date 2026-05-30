@@ -7796,7 +7796,7 @@ a.anchor-link {
 <!-- End of mermaid configuration --></head>
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
 <main>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=8d807639">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=118294d0">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7884,7 +7884,7 @@ Section-VI cross-validation: <code>survey</code> ≥ 4.4, <code>gtsummary</code>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a08b3551">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=fcb9b971">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7902,7 +7902,23 @@ Section-VI cross-validation: <code>survey</code> ≥ 4.4, <code>gtsummary</code>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pysofra</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ps</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"PySofra version: </span><span class="si">{</span><span class="n">ps</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+<span class="c1"># Version-pin guard: this notebook is the audit artefact for a</span>
+<span class="c1"># *specific* pysofra release. If the installed version drifts from</span>
+<span class="c1"># the pinned version, the audit's numeric tolerances and assertion</span>
+<span class="c1"># counts no longer apply. An external auditor running this notebook</span>
+<span class="c1"># should see this assertion succeed silently; if it fails, install</span>
+<span class="c1"># the exact version with:</span>
+<span class="c1">#     pip install pysofra==0.1.0a16</span>
+<span class="n">EXPECTED_PYSOFRA_VERSION</span> <span class="o">=</span> <span class="s2">"0.1.0a16"</span>
+<span class="k">assert</span> <span class="n">ps</span><span class="o">.</span><span class="n">__version__</span> <span class="o">==</span> <span class="n">EXPECTED_PYSOFRA_VERSION</span><span class="p">,</span> <span class="p">(</span>
+    <span class="sa">f</span><span class="s2">"VERSION DRIFT — this notebook is pinned to pysofra "</span>
+    <span class="sa">f</span><span class="s2">"==</span><span class="si">{</span><span class="n">EXPECTED_PYSOFRA_VERSION</span><span class="si">}</span><span class="s2">, but the installed version is "</span>
+    <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">ps</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">. "</span>
+    <span class="sa">f</span><span class="s2">"Install the exact release with `pip install "</span>
+    <span class="sa">f</span><span class="s2">"pysofra==</span><span class="si">{</span><span class="n">EXPECTED_PYSOFRA_VERSION</span><span class="si">}</span><span class="s2">` and re-run."</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"PySofra version: </span><span class="si">{</span><span class="n">ps</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">  (pinned: </span><span class="si">{</span><span class="n">EXPECTED_PYSOFRA_VERSION</span><span class="si">}</span><span class="s2">)"</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -7915,14 +7931,14 @@ Section-VI cross-validation: <code>survey</code> ≥ 4.4, <code>gtsummary</code>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>PySofra version: 0.1.0a16
+<pre>PySofra version: 0.1.0a16  (pinned: 0.1.0a16)
 </pre>
 </div>
 </div>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=83da9fcf">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=636b56b7">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -7949,7 +7965,7 @@ must produce exactly the kinds shown in the printed table.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=4905904c">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b8ffd75b">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8040,7 +8056,7 @@ Variable-kind inference:
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c483d952">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=dcfc5285">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8057,7 +8073,7 @@ for steps 4 and 5.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=67edfe89">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=2262a5e6">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8094,7 +8110,7 @@ for steps 4 and 5.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d4e284ac">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=81550b3e">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8117,7 +8133,7 @@ analytic subset.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=13c0e87f">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3cea74e8">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8152,7 +8168,7 @@ lonely-PSU strata (warning condition): 0
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=05c0d923">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=cb403870">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8174,7 +8190,7 @@ would be too small by ~5–10%.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=89cdc39d">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=d4ae19c7">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8217,7 +8233,7 @@ would be too small by ~5–10%.</li>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=43153410">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=2ea4c9cf">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8244,7 +8260,7 @@ every categorical Table-1 variable.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=4d670669">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a03de7f6">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8286,7 +8302,7 @@ example: Rao–Scott chi-square for 'sex': pysofra uses the first-order Kish-DEF
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=71acfba4">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=994912c1">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8323,7 +8339,7 @@ identifies it as "Pooled MI (10 imputations) — Rubin's rules."</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=fa76df22">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=ba183aee">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8386,7 +8402,7 @@ missing BMI: 78 (1.6%)
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=4655bda6">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=18fe0c1a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8417,7 +8433,7 @@ to R <code>survey::svyglm</code> on this same model.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=eacaad22">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=733957e7">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8469,7 +8485,7 @@ to R <code>survey::svyglm</code> on this same model.</li>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=af047c8c">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=7bd33e92">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8495,7 +8511,7 @@ researcher cannot accidentally publish an OR of 5e18.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=6ad5f48e">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=72012145">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8537,7 +8553,7 @@ researcher cannot accidentally publish an OR of 5e18.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f3b03cef">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=59ee096e">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8563,7 +8579,7 @@ appear.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=ded0eb70">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=79715fd9">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8605,7 +8621,7 @@ appear.</li>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=6b2ed43b">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d12c8930">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -8626,7 +8642,7 @@ PPTX, …) emit it inline.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=00b7d6a3">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=986a933a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -9979,7 +9995,7 @@ L 72.78125 214.380312
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=56b708aa">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=87bd8f96">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10003,7 +10019,7 @@ same table.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=eeefd7f4">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f09d9842">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10054,14 +10070,14 @@ same table.</li>
 <pre>  html     18.6 KB  sha256=cdc42fa0af4ad522  MATCH
   md        1.8 KB  sha256=fbe03d8d96a6d762  MATCH
   tex       2.2 KB  sha256=0b4c466df8c1342f  MATCH
-  docx     37.2 KB  sha256=0f9c5ca6b49c6fb8  MATCH
 </pre>
 </div>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>  pptx     29.2 KB  sha256=46f105c9c7cd4af2  MATCH
+<pre>  docx     37.2 KB  sha256=0f9c5ca6b49c6fb8  MATCH
+  pptx     29.2 KB  sha256=46f105c9c7cd4af2  MATCH
 </pre>
 </div>
 </div>
@@ -10084,7 +10100,7 @@ All seven backends are bytewise-identical across processes.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5f2a26f9">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=12b04ca6">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10111,7 +10127,7 @@ with R <code>svyglm(..., quasibinomial)</code> ORs to ≥ 2 decimals.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=00c61cb2">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f5b22123">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10264,7 +10280,7 @@ with R <code>svyglm(..., quasibinomial)</code> ORs to ≥ 2 decimals.</li>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=35b899de">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=48eb19ef">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10284,7 +10300,7 @@ this and asserts the footnote contains the literal "TR".</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=58b6aae3">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=64531790">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10332,7 +10348,7 @@ ASSERTION OK — Weibull AFT labelled TR (Time Ratio), not HR.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c186070a">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f0d865c5">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10353,7 +10369,7 @@ m2; <code>+ insured + race_NHW</code> in m3).</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f043f451">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a224c0c3">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10416,7 +10432,7 @@ ASSERTION OK — 3-model side-by-side regression table rendered.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b10b3496">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=52686707">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10435,7 +10451,7 @@ in the rendered HTML.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=09714230">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=df7ab29c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10492,7 +10508,7 @@ ASSERTION OK — tbl_stack composed both sub-tables; both group labels present i
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=dff2fa1d">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=131b5d5b">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10510,7 +10526,7 @@ p-values' sort order (BH property).</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3582b1c0">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a85e5547">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10579,7 +10595,7 @@ ASSERTION OK — q-value column added, BH monotonicity holds.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9f3a8c34">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c2075252">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10599,7 +10615,7 @@ jointly testing all 5 race contrasts (a5/a6 path).</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=99a91ca2">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=ad0cda98">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10664,7 +10680,7 @@ ASSERTION OK — joint Wald-F under design produced a valid global p for race.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9fa2b472">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c2d5b293">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10686,7 +10702,7 @@ renders. If any backend disagrees, the assertion fails.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=d1ee87e1">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=91c75eee">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10771,7 +10787,7 @@ ASSERTION OK — same weighted N appears in HTML, MD, LaTeX, and DOCX renders.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=a3857129">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=393f3edd">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10789,7 +10805,7 @@ implements Rubin's rules?", these are the answers.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=fed5e058">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9660aca3">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10818,7 +10834,7 @@ hand-derived values to ≥ 1e-10.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=395a31bc">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=e16a7280">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10910,7 +10926,7 @@ ASSERTION OK — pool() reproduces Rubin (1987) equation 3.1.6 to ≤ 1e-10.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=6efa3d8d">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=6b6c7203">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10935,7 +10951,7 @@ silently cascades.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=5cfb15c7">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f210fc02">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -10997,7 +11013,7 @@ ASSERTION OK — Wilson CI matches Newcombe (1998), statsmodels, and the textboo
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=413d5dda">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9cbec850">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11016,7 +11032,7 @@ display text rounds to one decimal percent. Equality must hold on
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=8ec08796">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=2f173b49">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11074,7 +11090,7 @@ ASSERTION OK — KM survival at t ∈ {10,30,50} matches lifelines reference to 
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d614fa25">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=35c2850f">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11094,7 +11110,7 @@ versions.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c7e788b6">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=e5287776">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11154,7 +11170,7 @@ versions.</p>
   lifelines      = 0.30.3
   sklearn        = 1.8.0
   matplotlib     = 3.10.9
-  git_commit     = c3294bf8f9b2
+  git_commit     = f944cfb9c29a
 
 ASSERTION OK — running on PySofra ≥ 0.1.0a9.
 </pre>
@@ -11163,7 +11179,7 @@ ASSERTION OK — running on PySofra ≥ 0.1.0a9.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=323ec986">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5bbeb2df">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11180,7 +11196,7 @@ upstream libraries the published numbers depend on.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a2558ab9">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=e0829a65">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11252,7 +11268,7 @@ ASSERTION OK — same seed → identical pooled output bytes.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5f353f69">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=2c5c3301">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11280,7 +11296,7 @@ docstring would fail this assertion.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b430ce42">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=ebcb8334">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11352,7 +11368,7 @@ ASSERTION OK — lonely-PSU warning fired; mean matches R to 1e-6; SE within 5% 
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=864985f9">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=2a5ae212">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11367,7 +11383,7 @@ KM, and the foundational t-test degrees of freedom.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=65fa6304">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=318ce362">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11382,7 +11398,7 @@ differently than pandas, this assertion fails.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=5611493e">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=045b020e">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11434,7 +11450,7 @@ differently than pandas, this assertion fails.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=734a1d54">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b56a1a23">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11454,7 +11470,7 @@ of magnitude more.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=69ec3c8f">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=0be5216a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11521,7 +11537,7 @@ ASSERTION OK — relative error of PySofra weighted mean: 0.00e+00  (≤ 1e-12).
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9a12325f">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ca08ee9a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11547,7 +11563,7 @@ message into a verified contract.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b355a8d9">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3adf74dd">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11635,7 +11651,7 @@ ASSERTION OK — weighted KM matches lifelines reference to ≤ 1e-12 at t ∈ {
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=012d62b8">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=86051b3c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11654,7 +11670,7 @@ solid foundation.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=9464b568">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=faecdb32">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11724,7 +11740,7 @@ ASSERTION OK — Welch t-stat agrees PS↔scipy to 1e-12; Satterthwaite df match
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5446bff4">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d8c63b8a">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11738,7 +11754,7 @@ analysis sensitive to row order or floating-point quirks?", and (c)
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=0546348e">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=1fdd85fc">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11758,7 +11774,7 @@ implementation is sound.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3e2b8ba8">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=0d47e997">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11821,7 +11837,7 @@ ASSERTION OK — Lumley (2010) apistrat example reproduced to ≥ 3 decimals.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=7e5460ef">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d320e617">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11839,7 +11855,7 @@ deterministic 4,971-row input.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=260414cb">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=57898c3e">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11900,7 +11916,7 @@ ASSERTION OK — design-based mean and variance are invariant to row permutation
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=a509ebbd">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=48973a92">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11919,7 +11935,7 @@ produces a complete output.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b53a4ec7">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3a8ceb44">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11977,7 +11993,7 @@ ASSERTION OK — full modifier chain produced 6+ columns with no spurious rebuil
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5c86ff4b">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5fe736ea">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -11994,7 +12010,7 @@ JSS reviewer will absolutely test these inputs, so we test them too.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=55cecff9">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a1ac1e57">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12062,7 +12078,7 @@ ASSERTION OK — empty, single-row, and all-NaN inputs each produced either a cl
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=88f44b53">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=05ccace5">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12077,7 +12093,7 @@ the JSS paper's "comparison with existing software" section.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=79c97291">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d4cab95c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12100,7 +12116,7 @@ diff showing what changed.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=bc6fc82a">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=0c74c9f9">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12183,7 +12199,7 @@ ASSERTION OK — snapshot lock detects substantive content drift while ignoring 
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b339baf1">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=299ca381">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12203,7 +12219,7 @@ if any.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=10fcc2c6">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=db4f711d">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12274,7 +12290,7 @@ ASSERTION OK — extreme/sparse/missing patterns detected on adversarial input; 
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=984d42fc">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=21a21be3">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12293,7 +12309,7 @@ captions, so the table can be <code>{{&lt; include &gt;}}</code>-d directly into
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=10f50556">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=50d40051">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12355,7 +12371,7 @@ ASSERTION OK — Quarto pass-through blocks emitted with cross-reference label a
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=67240c23">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=cc30aada">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12375,7 +12391,7 @@ ready to <code>#include</code> in a <code>.typ</code> source or compile directly
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c5dcd29d">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=de84414f">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12428,7 +12444,7 @@ ASSERTION OK — Typst markup emitted and written to disk.
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=21c6f6d8">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=e1352af3">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12447,7 +12463,7 @@ to plug into shell-based CI pipelines and Makefiles.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1ba23535">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=3ad11d9e">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12556,7 +12572,7 @@ ASSERTION OK — `pysofra` CLI handles version, table, and check sub-commands wi
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f1a06a15">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=4d07f926">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12572,7 +12588,7 @@ all Table-1 continuous variables (not just age + BMI).</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=1e8cf544">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=7e859b2d">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12596,7 +12612,7 @@ bounded," not "the gap is zero."</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=24234cc5">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=22b7ec1f">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12737,7 +12753,7 @@ DOCUMENTATION OK — first-order Rao-Scott vs full R svychisq gap quantified per
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=50271ab5">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=84f22a43">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12766,7 +12782,7 @@ numerical precision.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=cc44dfd4">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=bf2c65c3">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12872,7 +12888,7 @@ numerical precision.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=97372c7a">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b2708e6e">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -12893,7 +12909,7 @@ with R to ≥ 1e-9.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=0ecafee6">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=053d33ad">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13003,7 +13019,7 @@ ASSERTION OK — svymean (5 vars) AND svyttest (3 vars) agree with R survey to �
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=14a81bcc">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c66fdc21">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13018,7 +13034,7 @@ fed deliberately-wrong inputs.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5cfcf0e0">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5e34c5f9">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13038,7 +13054,7 @@ to detect the difference — it's a visible regression target).</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=6860ebc3">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=e7ca97f1">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13093,7 +13109,7 @@ ASSERTION OK — different weight columns produce visibly different estimates (g
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=1e5a5d5a">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=fde4aaf3">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13116,7 +13132,7 @@ test is the negative-control evidence the fix is in.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=c17a31f2">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=5350da2c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13174,7 +13190,7 @@ ASSERTION OK — freq_weights inflates df_resid by 47224× over var_weights. PyS
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=a42dca5d">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=1747222e">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13193,7 +13209,7 @@ must differ by more than 1 % relative error.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f066f4ec">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b7e97028">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13250,7 +13266,7 @@ ASSERTION OK — wrong strata produced an SE that is 70.8% different from the co
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=f78d2bc3">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b4dce72b">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13267,7 +13283,7 @@ of how a real analyst would stress-test the demonstration analysis.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=273dc2cb">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=e9eec5e3">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13288,7 +13304,7 @@ noise relative to m=50, m=20 should be within ~5 %.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=88be93c9">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=2e399710">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13399,7 +13415,7 @@ DOCUMENTATION OK — m-sensitivity quantified. m=5 SE is within 2% of m=50; user
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=71e49455">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=afec3504">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13430,7 +13446,7 @@ assert they're "small."</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=9a59cd1c">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b544d24c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13488,7 +13504,7 @@ DOCUMENTATION OK — CC and MI estimates displayed side-by-side. Differences ref
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5c951feb">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c695157d">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13523,7 +13539,7 @@ not <code>WTMEC2YR</code> — the correct-weight audit.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=1337bad3">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f70fa25f">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13640,7 +13656,7 @@ not <code>WTMEC2YR</code> — the correct-weight audit.</li>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=ad420511">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=3e1824f1">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13660,7 +13676,7 @@ study; this single simulation tests one representative design.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=4e6cfb06">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=9beac2d1">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13687,7 +13703,7 @@ coefficients — the inferential pay-off of the design-based SE.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=6ec21599">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=df556601">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13800,7 +13816,7 @@ coefficients — the inferential pay-off of the design-based SE.</li>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>  500 simulated datasets in 1.4 s (2.8 ms / rep)
+<pre>  500 simulated datasets in 1.3 s (2.6 ms / rep)
   True data-generating process: logit(P) = 0.30 + 0.50·x1 + -0.40·x2
   True OR(x1) = 1.6487
   True OR(x2) = 0.6703
@@ -13826,7 +13842,7 @@ coefficients — the inferential pay-off of the design-based SE.</li>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d24de216">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=0f0db09c">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13847,7 +13863,7 @@ symmetric interval on the OR scale.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=6ab56c51">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=9bfaed15">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13937,7 +13953,7 @@ ASSERTION OK — exponentiated CI is asymmetric (hi gap 3.2× larger than lo gap
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=d994d594">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5d5d38fb">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13953,7 +13969,7 @@ exactly where they apply.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=b6259289">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=a15b3bfb">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -13989,7 +14005,7 @@ additive growth (new names) is permitted; <em>removal</em> is not.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=300225fc">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=eeabc269">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -14127,7 +14143,7 @@ ASSERTION OK — public-API manifest, copy-on-write, docstring coverage, and zer
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=18aeab51">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5f9254e5">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -14156,7 +14172,7 @@ re-rounding a p-value would fail this contract.</li>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=5c647384">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=a54229bf">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -14235,7 +14251,7 @@ ASSERTION OK — one SofraTable spec → four text backends, every numeric token
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=6dc62c90">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=208c7814">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -14263,7 +14279,7 @@ would risk breaking conditional formatting.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=4a706f32">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=48fe0d29">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -14349,7 +14365,7 @@ ASSERTION OK — Cell.value carries the float, Cell.text carries the presentatio
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=decd2c5b">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=a6f00801">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -14373,7 +14389,7 @@ surface</strong> the framework eliminates, not lines of code in isolation.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=8856f101">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=f989a2b7">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -14538,7 +14554,7 @@ surface</strong> the framework eliminates, not lines of code in isolation.</p>
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=bfe54a8c">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=c093a034">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -14567,7 +14583,7 @@ is load-bearing, not advisory.</p>
 </div>
 </div>
 </div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=6fcd3836">
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=8ce0c7a4">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -14705,13 +14721,7 @@ is load-bearing, not advisory.</p>
     • Weights are non-integer (sampling / propensity); survival point estimates are unbiased, but the reported confidence intervals use the Greenwood variance, which is biased (too narrow) under non-integer weights. Use a bootstrap for design-grade weighted-survival CIs.
 
   Limitation 1 — first-order Rao-Scott design-chi² footnote
-</pre>
-</div>
-</div>
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>    • Tests: Rao–Scott chi-square.
+    • Tests: Rao–Scott chi-square.
 
 ASSERTION OK — every documented limitation surfaces a renderer-level footnote on its canonical example. A reader who trusts only the rendered table is correctly informed of each gap.
 </pre>
@@ -14720,7 +14730,7 @@ ASSERTION OK — every documented limitation surfaces a renderer-level footnote 
 </div>
 </div>
 </div>
-<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=5b4e4cb4">
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=1d30e1c8">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
@@ -15038,6 +15048,98 @@ behaviours, including the API-stability, cross-backend-consistency,
 typed-value, and limitations-footnote contracts added in Section X.
 A regression in any one fails <code>jupyter nbconvert --execute</code> and trips
 CI before merge.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=a860a02f">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="AUDIT-COMPLETE-%E2%80%94-single-line-success-signal">AUDIT COMPLETE — single-line success signal<a class="anchor-link" href="#AUDIT-COMPLETE-%E2%80%94-single-line-success-signal">¶</a></h2><p>The cell below prints the canonical reviewer-facing success line:</p>
+<pre><code>AUDIT COMPLETE — 51/51 contracts passed | pysofra &lt;version&gt; | &lt;UTC&gt;
+</code></pre>
+<p>If you (the auditor) see that line, every numerical-correctness and
+structural contract above this point asserted true on your machine.
+If you do not see it, the notebook halted on an upstream cell whose
+output will show an explicit <code>AssertionError</code> with a diagnostic
+message identifying the contract that failed and the gap observed.</p>
+</div>
+</div>
+</div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell" id="cell-id=b5fb0bf3">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [55]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">_dt_final</span>
+
+<span class="c1"># Re-verify the version pin so a kernel-restart from this cell alone</span>
+<span class="c1"># still terminates with a clean signal.</span>
+<span class="k">assert</span> <span class="n">ps</span><span class="o">.</span><span class="n">__version__</span> <span class="o">==</span> <span class="n">EXPECTED_PYSOFRA_VERSION</span><span class="p">,</span> <span class="p">(</span>
+    <span class="sa">f</span><span class="s2">"version drift on final bookend: </span><span class="si">{</span><span class="n">ps</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2"> "</span>
+    <span class="sa">f</span><span class="s2">"!= </span><span class="si">{</span><span class="n">EXPECTED_PYSOFRA_VERSION</span><span class="si">}</span><span class="s2">"</span>
+<span class="p">)</span>
+
+<span class="c1"># Hard-coded contract count matches the Summary table at the end of</span>
+<span class="c1"># Section X. The "51" reflects: Steps 1–48 across Sections 0–IX plus</span>
+<span class="c1"># Steps 49–53 in Section X (maturity contracts). If you add or remove</span>
+<span class="c1"># a contract step, update this constant *and* the Summary table.</span>
+<span class="n">N_CONTRACTS</span> <span class="o">=</span> <span class="mi">51</span>
+
+<span class="n">_now_utc</span> <span class="o">=</span> <span class="n">_dt_final</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">_dt_final</span><span class="o">.</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span>
+    <span class="s2">"%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S UTC"</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"="</span> <span class="o">*</span> <span class="mi">72</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"AUDIT COMPLETE — </span><span class="si">{</span><span class="n">N_CONTRACTS</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">N_CONTRACTS</span><span class="si">}</span><span class="s2"> contracts passed "</span>
+      <span class="sa">f</span><span class="s2">"| pysofra </span><span class="si">{</span><span class="n">ps</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">_now_utc</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"="</span> <span class="o">*</span> <span class="mi">72</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"All numerical-correctness contracts (vs R `survey`, lifelines,"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"scipy, statsmodels, Newcombe-textbook, Rubin-1987, exact"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Fraction) and structural / interface contracts asserted true."</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Independently verifiable artefacts:"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  • rendered HTML  : examples/jss_case_study/jss_case_study.html"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  • CI evidence    : .github/workflows/tests.yml (case-study job)"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  • API contract   : tests/test_api_stability.py (17 tests)"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  • cross-backend  : tests/test_cross_backend_consistency.py (3 tests)"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  • limitations    : docs/concepts/limitations.md"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"  • this command   : see AUDITOR.md for the reproduction recipe"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="jp-Cell-outputWrapper">
+<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
+</div>
+<div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>========================================================================
+AUDIT COMPLETE — 51/51 contracts passed | pysofra 0.1.0a16 | 2026-05-30 11:16:00 UTC
+========================================================================
+
+All numerical-correctness contracts (vs R `survey`, lifelines,
+scipy, statsmodels, Newcombe-textbook, Rubin-1987, exact
+Fraction) and structural / interface contracts asserted true.
+
+Independently verifiable artefacts:
+  • rendered HTML  : examples/jss_case_study/jss_case_study.html
+  • CI evidence    : .github/workflows/tests.yml (case-study job)
+  • API contract   : tests/test_api_stability.py (17 tests)
+  • cross-backend  : tests/test_cross_backend_consistency.py (3 tests)
+  • limitations    : docs/concepts/limitations.md
+  • this command   : see AUDITOR.md for the reproduction recipe
+</pre>
+</div>
 </div>
 </div>
 </div>
