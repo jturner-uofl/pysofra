@@ -7793,7 +7793,271 @@ a.anchor-link {
     white-space: normal;
   }
 </style>
-<!-- End of mermaid configuration --></head>
+<!-- End of mermaid configuration -->
+<style>/* pysofra-case-study-polish */
+/* Pin the page to light colour scheme regardless of the OS / browser
+ * preference.  Documentation artifacts should look the same to every
+ * reader; relying on prefers-color-scheme produced dark-on-dark text
+ * in users with system-wide dark mode. */
+:root {
+  color-scheme: light;
+  --jp-ui-font-family: -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+                       Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  --jp-content-font-family: var(--jp-ui-font-family);
+  --jp-code-font-family: "JetBrains Mono", "SFMono-Regular", Consolas,
+                         "Liberation Mono", Menlo, monospace;
+  --jp-ui-font-size1: 14px;
+  --jp-content-font-size1: 15px;
+  --jp-ui-font-color0: #0f172a;
+  --jp-ui-font-color1: #1a202c;
+  --jp-ui-font-color2: #2d3748;
+  --jp-ui-font-color3: #475569;
+  --jp-content-font-color0: #0f172a;
+  --jp-content-font-color1: #1a202c;
+  --jp-cell-editor-background: #f7f8fa;
+  --jp-cell-editor-border-color: #e2e8f0;
+  --jp-layout-color0: #ffffff;
+  --jp-layout-color1: #ffffff;
+  --jp-border-color0: #e2e8f0;
+  --jp-border-color1: #e2e8f0;
+  --jp-border-color2: #cbd5e0;
+  --jp-mirror-editor-keyword-color: #5a67d8;
+  --jp-mirror-editor-string-color: #047857;
+  --jp-mirror-editor-number-color: #b91c1c;
+  --jp-mirror-editor-comment-color: #64748b;
+  --jp-mirror-editor-variable-color: #1a202c;
+  --jp-mirror-editor-operator-color: #334155;
+  --jp-mirror-editor-punctuation-color: #334155;
+}
+
+/* Force-light body so a dark-mode browser doesn't auto-darken us. */
+html, body {
+  background: #fafbfc !important;
+  color: #1a202c !important;
+  color-scheme: light;
+  font-family: var(--jp-ui-font-family);
+  font-size: var(--jp-ui-font-size1);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Constrain content width for readability. */
+#notebook-container,
+.jp-Notebook,
+.jp-notebook,
+main {
+  max-width: 960px !important;
+  margin: 2rem auto !important;
+  padding: 0 1.5rem !important;
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Markdown headers */
+h1, .jp-MarkdownOutput h1, .jp-RenderedMarkdown h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #0b1a3d !important;
+  margin: 2rem 0 1rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 3px solid #0b3d91;
+  letter-spacing: -0.02em;
+}
+h2, .jp-MarkdownOutput h2, .jp-RenderedMarkdown h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #0f172a !important;
+  margin: 2.5rem 0 1rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid #cbd5e0;
+  letter-spacing: -0.01em;
+}
+h3, .jp-MarkdownOutput h3, .jp-RenderedMarkdown h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1e293b !important;
+  margin: 1.5rem 0 0.75rem;
+}
+h4, .jp-MarkdownOutput h4, .jp-RenderedMarkdown h4 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #334155 !important;
+  margin: 1rem 0 0.5rem;
+}
+
+/* Markdown body */
+p, .jp-MarkdownOutput p, .jp-RenderedMarkdown p {
+  color: #1a202c !important;
+  margin: 0.65em 0;
+}
+
+/* Inline code */
+p code, li code, td code, th code,
+.jp-MarkdownOutput code,
+.jp-RenderedMarkdown code {
+  background: #eef1f5 !important;
+  color: #0b3d91 !important;
+  padding: 0.1em 0.4em;
+  border-radius: 4px;
+  font-family: var(--jp-code-font-family);
+  font-size: 0.92em;
+}
+
+/* Blockquotes — used for contract assertions and section callouts */
+blockquote,
+.jp-MarkdownOutput blockquote,
+.jp-RenderedMarkdown blockquote {
+  border-left: 4px solid #0b3d91 !important;
+  background: #eff4fb !important;
+  padding: 0.7em 1em;
+  margin: 1em 0;
+  color: #0b2241 !important;
+  font-style: italic;
+  border-radius: 0 4px 4px 0;
+}
+blockquote p,
+.jp-MarkdownOutput blockquote p,
+.jp-RenderedMarkdown blockquote p {
+  margin: 0.2em 0;
+  color: #0b2241 !important;
+}
+
+/* Lists */
+ul, ol,
+.jp-MarkdownOutput ul, .jp-MarkdownOutput ol,
+.jp-RenderedMarkdown ul, .jp-RenderedMarkdown ol {
+  padding-left: 1.4em;
+}
+li,
+.jp-MarkdownOutput li,
+.jp-RenderedMarkdown li {
+  margin: 0.3em 0;
+  color: #1a202c !important;
+}
+
+/* Markdown tables (scope table, contract index, summary table) */
+.jp-MarkdownOutput table,
+.jp-RenderedMarkdown table {
+  border-collapse: collapse;
+  margin: 1em 0;
+  font-size: 0.95em;
+  color: #1a202c;
+  width: 100%;
+}
+.jp-MarkdownOutput th,
+.jp-RenderedMarkdown th {
+  background: #f1f5f9 !important;
+  color: #0f172a !important;
+  border-bottom: 2px solid #cbd5e0;
+  padding: 0.5em 0.9em;
+  text-align: left;
+  font-weight: 600;
+}
+.jp-MarkdownOutput td,
+.jp-RenderedMarkdown td {
+  color: #1a202c !important;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 0.45em 0.9em;
+}
+.jp-MarkdownOutput tr:last-child td,
+.jp-RenderedMarkdown tr:last-child td {
+  border-bottom: none;
+}
+
+/* Horizontal rules — section breaks */
+.jp-MarkdownOutput hr,
+.jp-RenderedMarkdown hr {
+  border: none;
+  border-top: 2px dashed #cbd5e0;
+  margin: 2.5rem 0;
+}
+
+/* Code cells */
+.jp-CodeCell .jp-Cell-inputWrapper,
+.jp-CodeCell .jp-InputArea-editor,
+.jp-InputArea-editor,
+.highlight {
+  background: #f7f8fa !important;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.4em 0.8em;
+  margin: 0.5em 0;
+}
+
+.highlight pre {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  font-family: var(--jp-code-font-family);
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
+/* Hide cell input/output prompts for a clean publication look. */
+.jp-InputPrompt,
+.jp-OutputPrompt {
+  display: none;
+}
+
+/* Output area */
+.jp-Cell-outputWrapper,
+.jp-OutputArea-output {
+  background: transparent !important;
+  margin: 0.5em 0;
+}
+
+/* Plain-text output (ASSERTION OK / AUDIT COMPLETE lines, etc.) */
+.jp-OutputArea-output pre {
+  background: #f7f8fa;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.6em 0.9em;
+  font-family: var(--jp-code-font-family);
+  font-size: 13px;
+  line-height: 1.45;
+  color: #1a202c;
+  white-space: pre-wrap;
+}
+
+/* Highlight ASSERTION OK / AUDIT COMPLETE lines in green. */
+.jp-OutputArea-output pre {
+  color: #1a202c;
+}
+
+/* PySofra tables are self-styled; just give them breathing room. */
+table.pysofra {
+  margin: 1em 0 !important;
+}
+
+/* Image outputs (plots, KM curves, etc.) */
+.jp-OutputArea img,
+.jp-RenderedImage img {
+  display: block;
+  margin: 1em auto;
+  max-width: 100%;
+  border-radius: 4px;
+}
+
+/* Cell spacing */
+.jp-Cell {
+  margin: 0.75em 0;
+}
+
+/* Strong override: markdown text must always be high-contrast. */
+.jp-Cell .jp-RenderedMarkdown,
+.jp-Cell .jp-MarkdownOutput {
+  color: #1a202c !important;
+}
+
+/* Contract-status callout: lines containing ASSERTION OK get a
+ * subtle green tint; AUDIT COMPLETE gets a prominent green banner. */
+</style>
+<style>/* audit-callout — highlight pass/fail lines in stdout */
+/* Wrap ASSERTION OK in light-green; AUDIT COMPLETE in strong green banner.
+ * This is purely cosmetic — the semantic assertions live in the notebook. */
+</style>
+</head>
 <body class="jp-Notebook" data-jp-theme-light="true" data-jp-theme-name="JupyterLab Light">
 <main>
 <div class="jp-Cell jp-MarkdownCell jp-Notebook-cell" id="cell-id=118294d0">
