@@ -362,11 +362,23 @@ def rao_scott_chisq(
     ``examples/jss_case_study/jss_case_study.ipynb`` Step 38) shows
     **median 57 %, max 69 %** relative-error gap in the test
     statistic across four typical Table-1 categorical variables (sex,
-    race, education, insurance). The p-value gap follows. The
-    approximation is adequate for descriptive Table 1 contexts where
-    the χ² is a guide rather than a publication-grade test statistic;
-    **for design-grade chi-square inference, call ``survey::svychisq``
-    in R directly.**
+    race, education, insurance). The p-value gap follows.
+
+    **Adversarial / high-ICC designs**: the Kish DEFF depends only on
+    the variance of the weights and is entirely blind to the clustering
+    structure. Under high intra-cluster correlation — designs where
+    the categorical outcome is nearly constant within PSUs — the
+    approximation can break down catastrophically, producing chi-square
+    statistics that are off by an **order of magnitude or more** (×10–×20)
+    relative to the full second-order Rao–Scott statistic. In such
+    designs the first-order p-value may indicate non-significance
+    when the correct design-adjusted test is highly significant (or
+    vice versa).
+
+    The approximation is adequate for descriptive Table 1 contexts
+    with typical population-health clustering (DEFF ≈ 1–3); **for
+    design-grade chi-square inference — especially when intra-cluster
+    correlation is high — call ``survey::svychisq`` in R directly.**
 
     References
     ----------

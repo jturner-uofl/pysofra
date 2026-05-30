@@ -16,7 +16,7 @@ limitation should be visible on the rendered table itself.
 |---|---|
 | Where | `tbl_one(design=...)` p-values for categorical variables |
 | What | PySofra uses the first-order Rao–Scott adjustment (Kish DEFF) for design-based chi-square. R `survey::svychisq` uses the second-order (generalised-DEFF / eigen-decomposition) adjustment. |
-| Observed | On NHANES 2017-2018 the first-order p-values can differ from R svychisq by 57–69 % on individual variables, while the underlying Pearson chi-square statistic matches R exactly. |
+| Observed | On NHANES 2017-2018 (moderate clustering) the first-order p-values differ from R `svychisq` by 57–69 % on individual variables. Under **high intra-cluster correlation** — designs where the outcome is nearly constant within PSUs — the Kish DEFF approximation is blind to the clustering structure and can be off by an **order of magnitude or more** (empirically: ×10–×20 vs the second-order p-value). The underlying Pearson chi-square statistic matches R exactly in all cases. |
 | User signal | Table 1 p-values for categorical variables under `design=` carry a footnote naming the approximation. |
 | Workaround | Compute the chi-square statistic via PySofra (matches R exactly), then run `survey::svychisq()` in R for the second-order p-value if a publication requires that exact match. |
 | Audit step | jss_case_study Step 38 (quantified gap + Table-1 linkage). |

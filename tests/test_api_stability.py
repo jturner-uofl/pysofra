@@ -56,16 +56,38 @@ EXPECTED_PUBLIC_NAMES = frozenset({
 
 
 def test_public_api_surface():
-    """Every expected public name must exist on the package."""
-    for name in EXPECTED_PUBLIC_NAMES:
-        assert hasattr(ps, name), f"missing public name: {name}"
+    """Public API surface is exactly the expected set — no more, no less.
 
-    # The package should not have *removed* any of the expected names
-    # in this release — i.e. EXPECTED_PUBLIC_NAMES is a strict subset of
-    # what's currently exported.
-    actual_names = {n for n in dir(ps) if not n.startswith("_")}
+    Two-directional check:
+    * ``missing`` — a name in the expected set was removed (breakage).
+    * ``extra``   — a name was added without updating this snapshot
+      (unreviewed addition; could be an accidental private leak or a
+      new public symbol that the stability contract hasn't acknowledged).
+    Both directions must be empty for the test to pass.
+    """
+    for name in EXPECTED_PUBLIC_NAMES:
+        assert hasattr(ps, name), f"missing public name: {name!r}"
+
+    # Use __all__ as the canonical public surface — dir() includes
+    # internal sub-modules (core, summary, models, …) that are
+    # not part of the public contract.  __all__ is the authoritative
+    # list of what `from pysofra import *` would export.
+    actual_names = {n for n in ps.__all__ if not n.startswith("_")}
+
+    # Nothing in the snapshot may have been removed.
     missing = EXPECTED_PUBLIC_NAMES - actual_names
-    assert not missing, f"public names disappeared: {missing}"
+    assert not missing, (
+        f"public names disappeared from pysofra.__all__: {missing!r}. "
+        f"Either restore them or update EXPECTED_PUBLIC_NAMES."
+    )
+
+    # Nothing may be added to __all__ without updating the snapshot.
+    extra = actual_names - EXPECTED_PUBLIC_NAMES
+    assert not extra, (
+        f"unreviewed public name(s) added to pysofra.__all__: {extra!r}. "
+        f"If intentional, add them to EXPECTED_PUBLIC_NAMES and bump "
+        f"the version; if accidental, remove from __all__."
+    )
 
 
 # ----------------------------------------------------------------------
