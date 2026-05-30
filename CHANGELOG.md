@@ -5,6 +5,35 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a17] — 2026-05-30
+
+### Fixed — `tbl_one` correctness
+
+- **Rao–Scott rendered footnote now names the approximation grade.**
+  The table footnote previously read "Tests: Rao–Scott chi-square"
+  with no further qualification. A second footnote line is now
+  appended whenever the Rao–Scott test appears:
+  *"first-order Kish-DEFF approximation; may disagree with R
+  `survey::svychisq` (second-order) by 10–15 % or more under complex
+  designs with strong intra-cluster correlation."*
+  The `UserWarning` to stderr remains unchanged; the new footnote
+  makes the approximation grade visible in published HTML/PDF tables
+  without any extra user action.
+
+- **NaN weights in `tbl_one` now raise `ValueError`** (was: silently
+  coerced to 0, producing N = 0 for the affected group with no signal).
+  Behaviour now matches `tbl_regression`, which has always raised on
+  NaN weights. Error message names the column and suggests a fix.
+
+### Changed — internal comments and narrative text
+
+- Removed references to the target publication venue from all
+  public-facing source files and notebooks. "JSS" remains acceptable
+  in filenames (e.g. `jss_case_study/`); full-name occurrences and
+  "JSS reviewer / JSS paper" phrases replaced with neutral language.
+
+---
+
 ## [0.1.0a16] — 2026-05-29
 
 ### Added — API maturity contract
@@ -287,7 +316,7 @@ framework is being applied to the parallel `pymmeans` project.
   CSS class). `.lock_snapshot(path)` writes a JSON pin file;
   `.assert_snapshot(path)` raises with a unified diff if the table
   has drifted. The intended workflow is: author runs `lock_snapshot`
-  once when the paper is submitted; CI runs `assert_snapshot` on
+  once when results are locked for publication; CI runs `assert_snapshot` on
   every PR to fail loudly if any change to the upstream pipeline
   would alter the published numbers. No equivalent exists in
   gtsummary.

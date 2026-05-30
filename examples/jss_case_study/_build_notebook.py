@@ -41,7 +41,7 @@ as the scaffolding for that audit, but the artifact's purpose is to
 | --- | --- |
 | Does PySofra correctly implement the statistical procedures it claims to? (compared against R `survey`, `lifelines`, `scipy`, hand-derived formulas, textbook worked examples) | Is the demonstration analysis a defensible peer-reviewable epidemiological study? |
 | Does PySofra produce byte-deterministic publication-quality output across seven backends? | Does the diabetes-outcome definition (HbA1c ≥ 6.5 OR self-report) survive every sensitivity analysis? |
-| Do the diagnostic warnings (Rao-Scott design mismatch, Cox PH violation, logistic separation, lonely-PSU) fire at the right moments? | Is age-standardisation, fasting-glucose vs HbA1c, or medication-use sensitivity required for this paper? |
+| Do the diagnostic warnings (Rao-Scott design mismatch, Cox PH violation, logistic separation, lonely-PSU) fire at the right moments? | Is age-standardisation, fasting-glucose vs HbA1c, or medication-use sensitivity required for this analysis? |
 | Do the public-API methods behave consistently across pandas / polars input? | Should survey-weighted multiple imputation be supported? |
 
 PySofra is a **statistical-reporting package**, analogous to R's
@@ -114,8 +114,8 @@ import pysofra as ps
 # counts no longer apply. An external auditor running this notebook
 # should see this assertion succeed silently; if it fails, install
 # the exact version with:
-#     pip install pysofra==0.1.0a16
-EXPECTED_PYSOFRA_VERSION = "0.1.0a16"
+#     pip install pysofra==0.1.0a17
+EXPECTED_PYSOFRA_VERSION = "0.1.0a17"
 assert ps.__version__ == EXPECTED_PYSOFRA_VERSION, (
     f"VERSION DRIFT — this notebook is pinned to pysofra "
     f"=={EXPECTED_PYSOFRA_VERSION}, but the installed version is "
@@ -1692,9 +1692,9 @@ print(f"\nASSERTION OK — Welch t-stat agrees PS↔scipy to 1e-12; "
 
 # =====================================================================
 md(r"""
-# Section IV — Reviewer defense
+# Section IV — Adversarial audit defense
 
-A reviewer reading the paper will ask three predictable categories of
+A careful external reviewer will ask three predictable categories of
 question: (a) "does this reproduce a textbook example?", (b) "is your
 analysis sensitive to row order or floating-point quirks?", and (c)
 "what happens on degenerate input?". The next four steps preempt each.
@@ -1866,7 +1866,7 @@ loop).
 ### AUDIT note (Step 32)
 
 This is "good engineering" rather than "good statistics" — but a
-JSS reviewer will absolutely test these inputs, so we test them too.
+External auditors will absolutely test these inputs, so we test them too.
 """)
 
 code(r"""
@@ -1915,7 +1915,7 @@ The first 32 steps verify that PySofra does *correctly* what other
 packages also do. The final five steps demonstrate capabilities that
 have, to our knowledge, no equivalent in R's gtsummary / survey /
 mice ecosystem. These are the headline differentiation points for
-the JSS paper's "comparison with existing software" section.
+the capabilities-comparison section of this case study.
 """)
 
 # =====================================================================
@@ -3792,7 +3792,7 @@ here — both categories have value, but they shouldn't be conflated.
 | **53** | **Three documented limitations (Rao-Scott first-order, Greenwood weighted CI, sklearn no-inference) each emit a renderer-level footnote on its canonical example** | honest-scope contract |
 
 All fifty-one audited contracts behaved as expected on PySofra
-0.1.0a16. Numerical-correctness assertions (the load-bearing
+0.1.0a17. Numerical-correctness assertions (the load-bearing
 contracts) include nine independent references (R `survey`, R
 `survey::svychisq`, R `survey::svyglm`, lifelines, scipy, statsmodels,
 Wilson/Newcombe textbook, Rubin 1987, fractions.Fraction); structural
@@ -3808,7 +3808,7 @@ CI before merge.
 # this notebook end-to-end should see exactly one line of output at
 # the bottom:
 #
-#   AUDIT COMPLETE — 51/51 contracts passed | pysofra 0.1.0a16 | <UTC>
+#   AUDIT COMPLETE — 51/51 contracts passed | pysofra 0.1.0a17 | <UTC>
 #
 # This cell prints that line. If any earlier assertion failed, Jupyter
 # halted on that cell and this one never executes — so the presence

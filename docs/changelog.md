@@ -5,6 +5,19 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a17] — 2026-05-30
+
+### Fixed
+- `tbl_one` Rao–Scott table footnote now names the first-order
+  Kish-DEFF approximation and its known disagreement range with R
+  `survey::svychisq`. Previously the footnote only said
+  "Tests: Rao–Scott chi-square" — invisible as a limitation in
+  published output.
+- `tbl_one` now raises `ValueError` for NaN weights instead of
+  silently coercing to 0. Matches `tbl_regression` behaviour.
+
+---
+
 ## [0.1.0a16] — 2026-05-29
 
 ### Added — maturity contracts

@@ -43,7 +43,7 @@ _BASE_FONT = (
 # Firefox ≥ 113) but the GitHub.com .ipynb renderer's HTML sanitiser
 # strips the parenthesised arguments mid-attribute, leaking raw CSS text
 # into the rendered cell content. Since GitHub is the primary
-# "browse the notebook without running it" surface for JSS reviewers,
+# "browse the notebook without running it" surface for external reviewers,
 # we use a fixed neutral grey (rgba 50 %) instead. Tradeoff: borders no
 # longer follow the surrounding light/dark text colour, but the grey is
 # legible on both. The numerical result is unchanged.

@@ -1,10 +1,10 @@
 """Build gtsummary_comparison.ipynb — Python ↔ R side-by-side positioning.
 
-This is the JSS-paper "where does PySofra sit in the ecosystem" mini-
-example: we run the canonical gtsummary tutorial table (the one every
-gtsummary documentation page opens with) in both R and Python and show
-that PySofra produces a substantively-identical artifact from a
-Python-native pipeline.
+This is the "where does PySofra sit in the ecosystem" mini-example:
+we run the canonical gtsummary tutorial table (the one every gtsummary
+documentation page opens with) in both R and Python and show that
+PySofra produces a substantively-identical artifact from a Python-native
+pipeline.
 """
 from __future__ import annotations
 

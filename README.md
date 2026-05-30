@@ -189,7 +189,7 @@ pip install "pysofra[dev]"        # testing + linting (pytest, ruff, mypy, hypot
 
 ## Status
 
-PySofra is in **alpha** (`0.1.0a16`). The public API surface is pinned
+PySofra is in **alpha** (`0.1.0a17`). The public API surface is pinned
 by an explicit
 [API-stability test](https://github.com/jturner-uofl/pysofra/blob/main/tests/test_api_stability.py)
 so that any unintended rename, removal, or signature change surfaces as
@@ -230,12 +230,12 @@ The repository ships a 53-step
 that downloads NHANES 2017-2018 directly from the CDC, fits real
 models, and cross-checks every numerical claim against R `survey`,
 lifelines, scipy, statsmodels, and Newcombe-textbook references.
-The notebook hard-asserts `pysofra.__version__ == "0.1.0a16"` against
+The notebook hard-asserts `pysofra.__version__ == "0.1.0a17"` against
 the release you installed from PyPI (so PyPI ↔ GitHub drift is
 caught immediately), and terminates with a single canonical line:
 
 ```
-AUDIT COMPLETE — 51/51 contracts passed | pysofra 0.1.0a16 | <UTC>
+AUDIT COMPLETE — 51/51 contracts passed | pysofra 0.1.0a17 | <UTC>
 ```
 
 A pre-executed HTML rendering is also checked in for read-only review:

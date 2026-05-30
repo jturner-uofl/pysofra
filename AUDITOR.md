@@ -20,7 +20,7 @@ If the audit passes, you have independently verified:
 - **1032 unit / property / integration tests**, including the
   API-stability snapshot that freezes the entire public surface.
 - That PyPI and GitHub are in sync: the notebook's first executable
-  cell hard-asserts `pysofra.__version__ == "0.1.0a16"` against the
+  cell hard-asserts `pysofra.__version__ == "0.1.0a17"` against the
   release you installed from PyPI.
 
 ## TL;DR — the audit, in one command block
@@ -29,7 +29,7 @@ If the audit passes, you have independently verified:
 # 1. Get the audit artefacts (notebook + pinned environment).
 git clone https://github.com/jturner-uofl/pysofra.git
 cd pysofra
-git checkout v0.1.0a16    # the tag matching the PyPI release
+git checkout v0.1.0a17    # the tag matching the PyPI release
 
 # 2. Create an isolated environment.
 python -m venv .venv-audit
@@ -37,7 +37,7 @@ source .venv-audit/bin/activate
 
 # 3. Install the exact PyPI release + the exact CI-resolved dep set.
 pip install --upgrade pip
-pip install pysofra==0.1.0a16
+pip install pysofra==0.1.0a17
 pip install -r requirements-audit.txt
 pip install jupyter nbconvert ipykernel   # not in requirements
 
@@ -51,7 +51,7 @@ jupyter nbconvert \
 If the final command exits 0 and the notebook's last cell prints
 
 ```
-AUDIT COMPLETE — 51/51 contracts passed | pysofra 0.1.0a16 | <UTC>
+AUDIT COMPLETE — 51/51 contracts passed | pysofra 0.1.0a17 | <UTC>
 ```
 
 the audit succeeded. If any contract failed, `nbconvert` exits non-zero
@@ -118,7 +118,7 @@ tolerance, observed gap, and pass status.
 The very first executable cell of the notebook asserts:
 
 ```python
-EXPECTED_PYSOFRA_VERSION = "0.1.0a16"
+EXPECTED_PYSOFRA_VERSION = "0.1.0a17"
 assert ps.__version__ == EXPECTED_PYSOFRA_VERSION, (...)
 ```
 
@@ -128,7 +128,7 @@ this tagged commit was authored against. If you see a version-drift
 error, install the exact release:
 
 ```bash
-pip install pysofra==0.1.0a16
+pip install pysofra==0.1.0a17
 ```
 
 ## Independently inspectable evidence
@@ -160,5 +160,5 @@ release-blocking.
 To cite the audited release in academic work:
 
 > Turner, J. PySofra: statistical reporting and table preparation
-> framework for Python (Version 0.1.0a16) [Software]. 2026.
+> framework for Python (Version 0.1.0a17) [Software]. 2026.
 > https://github.com/jturner-uofl/pysofra
