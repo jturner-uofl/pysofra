@@ -50,6 +50,8 @@ nav:
       - SofraTable: concepts/sofratable.md
       - Statistical tests: concepts/tests.md
       - Validation: concepts/validation.md
+      - API stability & deprecation policy: concepts/stability.md
+      - Scope & known limitations: concepts/limitations.md
   - API Reference:
       - Builders: api/builders.md
       - Composition: api/composition.md

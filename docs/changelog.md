@@ -5,6 +5,30 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a16] — 2026-05-29
+
+### Added — maturity contracts
+- API stability test now also pins behavioural contracts: builders
+  return `SofraTable`; modifiers are copy-on-write; every public
+  symbol carries a docstring; a representative build emits zero
+  pysofra-originated `DeprecationWarning`. New written policy at
+  `docs/concepts/stability.md` (incl. post-1.0 deprecation ladder).
+- New `tests/test_cross_backend_consistency.py` pins the
+  one-spec → many-renderers numeric-payload preservation contract
+  (HTML/LaTeX/Typst/Markdown) and the typed-value-not-string
+  modifier contract.
+- `tbl_regression()` now attaches an explicit "point estimates only"
+  footnote when the source fitter is scikit-learn (new
+  `ModelSummary.inference_unavailable` field). New written
+  `docs/concepts/limitations.md` consolidates all three documented
+  approximations / gaps.
+
+### Notebook
+- New Section X (Steps 49–53) — maturity contracts pinned inside
+  the notebook itself: API surface manifest, cross-backend
+  consistency, typed-value provenance, declarative-vs-pandas
+  error-surface comparison, and disciplined limitations footnotes.
+
 ## [0.1.0a15] — 2026-05-28
 
 ### Fixed — honest CIs for weighted survival

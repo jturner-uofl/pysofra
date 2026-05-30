@@ -189,13 +189,23 @@ pip install "pysofra[dev]"        # testing + linting (pytest, ruff, mypy, hypot
 
 ## Status
 
-PySofra is in **alpha** (`0.1.0a8`). The public API surface is pinned
+PySofra is in **alpha** (`0.1.0a16`). The public API surface is pinned
 by an explicit
 [API-stability test](https://github.com/jturner-uofl/pysofra/blob/main/tests/test_api_stability.py)
 so that any unintended rename, removal, or signature change surfaces as
-a failed test. Quality bar at this release:
+a failed test. The contract covers the top-level name set, every
+builder signature, the full `SofraTable` method and attribute surface,
+and four behavioural guarantees: builders return `SofraTable`,
+modifiers are copy-on-write, every public symbol carries a docstring,
+and a representative build emits no pysofra-originated
+`DeprecationWarning`. The full policy — including the post-1.0
+soft-deprecation → hard-deprecation → removal ladder — is documented
+under
+[Concepts → API stability & deprecation policy](https://github.com/jturner-uofl/pysofra/blob/main/docs/concepts/stability.md).
 
-* **900+ tests passing**, near-100% line coverage, mypy strict, ruff clean.
+Quality bar at this release:
+
+* **1030+ tests passing**, near-100% line coverage, mypy strict, ruff clean.
 * Every numeric output is validated against `scipy`, `lifelines`,
   `statsmodels`, or a hand-computed textbook formula
   ([test_statistical_correctness.py](https://github.com/jturner-uofl/pysofra/blob/main/tests/test_statistical_correctness.py)).

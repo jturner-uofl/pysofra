@@ -998,6 +998,44 @@ class TestSklearnMulticlassRegression:
         labels = [r.cells[0].text for r in tbl.rows]
         assert labels == ["age", "bmi"], labels
 
+    def test_sklearn_table_carries_no_inference_footnote(self):
+        """A sklearn-fitted regression table must carry a footnote
+        warning the reader that CIs / p-values are not available
+        natively. Without this, blank CI cells silently become
+        "no effect" in a reader's eye — the overclaim trap."""
+        pytest.importorskip("sklearn")
+        from sklearn.linear_model import LogisticRegression
+
+        rng = np.random.default_rng(3)
+        n = 200
+        X = pd.DataFrame({
+            "age": rng.normal(60, 10, n),
+            "bmi": rng.normal(28, 5, n),
+        })
+        y = pd.Series(rng.choice([0, 1], n))
+        clf = LogisticRegression(max_iter=1000).fit(X, y)
+
+        tbl = ps.tbl_regression(clf)
+        msg = " ".join(tbl.footnotes)
+        assert "scikit-learn" in msg, (
+            f"sklearn no-inference footnote missing: {tbl.footnotes}"
+        )
+        assert "point estimates only" in msg, (
+            f"sklearn no-inference footnote missing the 'point "
+            f"estimates only' phrasing: {tbl.footnotes}"
+        )
+        # Statsmodels-fitted table must *not* carry the sklearn
+        # footnote (negative control on the same shape of model).
+        import statsmodels.api as sm
+        Xc = sm.add_constant(X)
+        sm_fit = sm.Logit(y, Xc).fit(disp=False)
+        sm_tbl = ps.tbl_regression(sm_fit)
+        sm_msg = " ".join(sm_tbl.footnotes)
+        assert "scikit-learn" not in sm_msg, (
+            f"statsmodels-fitted table picked up sklearn footnote: "
+            f"{sm_tbl.footnotes}"
+        )
+
 
         # ----------------------------------------------------------------------
         # ``weights=`` alone auto-promotes the continuous dispatch

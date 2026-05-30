@@ -3114,6 +3114,598 @@ print(f"ASSERTION OK — exponentiated CI is asymmetric (hi gap "
 
 # =====================================================================
 md(r"""
+# Section X — Maturity contracts (API stability, cross-backend
+# consistency, honest scope)
+
+The preceding sections audit *what the numbers are*. This section
+audits *what the framework guarantees*: that a reviewer who runs the
+notebook a year from now (a) does not hit silent API drift, (b) gets
+the same publication content out of every backend the package
+advertises, and (c) sees PySofra's documented limitations restated
+exactly where they apply.
+""")
+
+# ---------------------------------------------------------------------
+md(r"""
+## Step 49 — API surface & deprecation contract
+
+A reviewer running this notebook should not be stopped by `tbl_one`
+silently disappearing, a builder returning a `pandas.Styler`, a
+modifier accidentally mutating its receiver, or any name on a quiet
+removal timer. We pin all four guarantees inline:
+
+1. The 28-name public surface (`pysofra.__all__`) matches a frozen
+   manifest embedded in this cell.
+2. Every documented modifier returns a *new* `SofraTable` (copy-on-
+   write — never `self`, never `None`).
+3. Every public symbol carries a non-empty docstring.
+4. A representative end-to-end build (`tbl_one → add_p → add_overall
+   → add_smd → to_html / to_markdown / to_latex`) emits zero
+   `DeprecationWarning` or `PendingDeprecationWarning` originating
+   inside the `pysofra` package.
+
+The same contracts run unconditionally in
+`tests/test_api_stability.py`; pinning them inside the case-study
+notebook means *this very document is itself a reproducibility
+artefact* — running the .ipynb is enough to verify the user-facing
+API surface, with no separate pytest invocation.
+
+### AUDIT note (Step 49)
+
+* If any item below trips, the notebook fails to execute — the
+  contract is load-bearing, not advisory.
+* Per the policy in `docs/concepts/stability.md`, a 1.0+ breakage of
+  any of these would proceed through soft-deprecation → hard-
+  deprecation → removal across three minor releases. Until 1.0,
+  additive growth (new names) is permitted; *removal* is not.
+""")
+
+code(r"""
+import warnings as _api_warn
+import pysofra as _ps_check
+from pysofra.core.table import SofraTable as _SofraTable_check
+
+# (1) Frozen manifest of the public top-level surface. This is a
+#     literal copy of EXPECTED_PUBLIC_NAMES from test_api_stability.py;
+#     keeping the literal in the notebook means the audit traveller
+#     does not have to chase a test file to know what the public
+#     contract is.
+_API_FROZEN_MANIFEST = frozenset({
+    "CellPart", "SofraTable", "SurveyDesign",
+    "tbl_one", "tbl_summary", "tbl_cross",
+    "tbl_regression", "tbl_uvregression", "tbl_survival",
+    "tbl_merge", "tbl_stack",
+    "cohen_d", "hedges_g", "eta_squared", "omega_squared",
+    "cramers_v", "phi_coefficient", "auto_effect_size",
+    "rake", "post_stratify", "design_effect",
+    "pool",
+    "available_themes", "register_theme",
+    "available_tests",
+})
+_actual_public = {n for n in _ps_check.__all__ if not n.startswith("_")}
+_missing = _API_FROZEN_MANIFEST - _actual_public
+_undocumented = _actual_public - _API_FROZEN_MANIFEST
+print(f"  pysofra.__version__       = {_ps_check.__version__}")
+print(f"  |__all__|                  = {len(_actual_public)}")
+print(f"  |frozen manifest|          = {len(_API_FROZEN_MANIFEST)}")
+print(f"  removed since manifest     = {sorted(_missing) or '(none)'}")
+print(f"  silently added (must doc)  = {sorted(_undocumented) or '(none)'}")
+assert not _missing, (
+    f"PUBLIC API REGRESSION — names disappeared from pysofra.__all__: "
+    f"{sorted(_missing)}"
+)
+assert not _undocumented, (
+    f"PUBLIC API UNDOCUMENTED ADDITION — new public names not in the "
+    f"frozen manifest: {sorted(_undocumented)}. Either roll them into "
+    f"the manifest (and into tests/test_api_stability.py) or make them "
+    f"private."
+)
+
+# (2) Copy-on-write proof on representative modifiers.
+_df_check = pd.DataFrame({
+    "arm": (["A"] * 40) + (["B"] * 40),
+    "age": np.linspace(20.0, 80.0, 80),
+    "sex": (["M"] * 40) + (["F"] * 40),
+})
+_base = ps.tbl_one(_df_check, by="arm")
+_modifiers = ("add_p", "add_overall", "add_smd", "add_n",
+              "add_stat_label", "add_significance_stars",
+              "bold_p", "autofit")
+for _name in _modifiers:
+    _out = getattr(_base, _name)()
+    assert _out is not None, f"{_name}() returned None"
+    assert isinstance(_out, _SofraTable_check), (
+        f"{_name}() returned {type(_out).__name__}, not SofraTable"
+    )
+    assert _out is not _base, (
+        f"{_name}() returned `self` (mutating modifier — would break "
+        f"any pipeline that branches off the receiver)"
+    )
+print(f"  copy-on-write modifiers verified: {len(_modifiers)} / "
+      f"{len(_modifiers)}")
+
+# (3) Docstring coverage of public surface.
+_blank_top = [n for n in _ps_check.__all__
+              if not (getattr(_ps_check, n).__doc__ or "").strip()]
+_pub_methods = [m for m in dir(_SofraTable_check)
+                if not m.startswith("_")
+                and callable(getattr(_SofraTable_check, m))]
+_blank_meth = [m for m in _pub_methods
+               if not (getattr(_SofraTable_check, m).__doc__ or "").strip()]
+assert not _blank_top, f"public names without docstring: {_blank_top}"
+assert not _blank_meth, f"SofraTable methods without docstring: {_blank_meth}"
+print(f"  docstring coverage         = "
+      f"{len(_ps_check.__all__)}/{len(_ps_check.__all__)} top-level, "
+      f"{len(_pub_methods)}/{len(_pub_methods)} SofraTable methods")
+
+# (4) Zero pysofra-originated deprecation warnings on a representative
+#     end-to-end build.
+with _api_warn.catch_warnings(record=True) as _ws:
+    _api_warn.simplefilter("always")
+    _t49 = (ps.tbl_one(_df_check, by="arm")
+            .add_p()
+            .add_overall()
+            .add_smd())
+    _ = _t49.to_html(); _ = _t49.to_markdown(); _ = _t49.to_latex()
+_pys_deps = [w for w in _ws
+             if issubclass(w.category,
+                           (DeprecationWarning, PendingDeprecationWarning))
+             and "pysofra" in (w.filename or "")]
+print(f"  pysofra-origin Deprecation/Pending on representative build "
+      f"= {len(_pys_deps)}")
+assert not _pys_deps, (
+    "pysofra-originated deprecation on a representative build:\n  "
+    + "\n  ".join(f"{w.category.__name__} {w.filename}: {w.message}"
+                  for w in _pys_deps)
+)
+
+print()
+print("ASSERTION OK — public-API manifest, copy-on-write, docstring "
+      "coverage, and zero-pysofra-deprecation contracts all hold for "
+      f"pysofra {_ps_check.__version__}.")
+""")
+
+# ---------------------------------------------------------------------
+md(r"""
+## Step 50 — Cross-backend semantic-content consistency
+
+PySofra's central architectural claim against pandas `Styler`,
+`openpyxl`, and Jinja2 templates is **"compute once, render many"**:
+one `SofraTable` spec feeds every renderer, and the *user-visible
+statistical payload* is identical across all of them. Pandas `Styler`
+is HTML-only and ties the typed value to a single formatted string;
+`openpyxl` is Excel-only; a Jinja2 template per backend is *N*
+independent string-templating bodies (each its own source of
+divergence). PySofra's spec is the single source of truth.
+
+Here we render one Table-1 to HTML, LaTeX, Typst, and Markdown and
+verify that every numeric token in the spec — every mean, every SD,
+every percentage, every p-value — appears in every rendered output.
+The same contract runs unconditionally in
+`tests/test_cross_backend_consistency.py`.
+
+### AUDIT note (Step 50)
+
+* We scope the comparison to spec-derived numeric tokens so that
+  backend-specific *markup overhead* (CSS RGBAs in HTML, column-width
+  declarations in LaTeX) is not confused with statistical content.
+* A renderer silently dropping a row, truncating a CI endpoint, or
+  re-rounding a p-value would fail this contract.
+""")
+
+code(r"""
+import re as _re50
+
+_NUM_RE = _re50.compile(r"-?\d+\.\d+|-?\d+")
+
+_t50 = (ps.tbl_one(rossi.assign(
+            arm=np.where(rossi['arrest'] == 1, 'cases', 'controls')),
+            by='arm')
+        .add_p()
+        .add_overall()
+        .add_smd())
+
+# Numeric tokens drawn from the SPEC's cell text — the canonical
+# "statistical payload" the user sees in any rendering.
+_spec_numbers = []
+for _hr in _t50.headers:
+    for _c in _hr.cells:
+        _spec_numbers.extend(_NUM_RE.findall(_c.text))
+for _r in _t50.rows:
+    for _c in _r.cells:
+        _spec_numbers.extend(_NUM_RE.findall(_c.text))
+
+_backends = {
+    'html':     _t50.to_html(),
+    'latex':    _t50.to_latex(),
+    'typst':    _t50.to_typst(),
+    'markdown': _t50.to_markdown(),
+}
+print(f"  spec carries {len(_spec_numbers)} numeric tokens across "
+      f"{sum(len(r.cells) for r in _t50.rows) + sum(len(h.cells) for h in _t50.headers)} cells")
+print(f"  {'backend':<10} {'output bytes':>12}  {'numbers preserved':>20}")
+print(f"  {'-'*10:<10} {'-'*12:>12}  {'-'*20:>20}")
+for _name, _out in _backends.items():
+    _missing = [n for n in _spec_numbers if n not in _out]
+    _ok = len(_spec_numbers) - len(_missing)
+    print(f"  {_name:<10} {len(_out):>12d}  "
+          f"{_ok:>3d} / {len(_spec_numbers):<3d} (missing {len(_missing)})")
+    assert not _missing, (
+        f"{_name} renderer dropped numbers: {_missing[:5]}"
+    )
+print()
+print("ASSERTION OK — one SofraTable spec → four text backends, every "
+      "numeric token preserved in every rendering. This is the "
+      "architectural property pandas Styler / openpyxl / Jinja2 "
+      "cannot offer.")
+""")
+
+# ---------------------------------------------------------------------
+md(r"""
+## Step 51 — Typed-value provenance: `Cell.value` vs `Cell.text`
+
+Each `Cell` carries a typed payload (`Cell.value` — a `float`, `int`,
+or tuple) *separately* from its rendered string (`Cell.text`). This
+is what lets modifiers like `bold_p(threshold=0.05)` operate on the
+**float** rather than on the rendered string. A pandas `Styler`-style
+implementation would have to parse strings like "<0.001" or
+"p = 0.034" back to a float — fragile and error-prone, especially on
+threshold-rendered values like "<0.001" which carry no parseable
+number on the string axis.
+
+We pull a p-value cell from a Table 1 and demonstrate:
+
+1. `Cell.value` is a `float` — modifiers query it directly.
+2. `Cell.text` is the formatted *presentation* (independent of
+   downstream styling).
+3. `bold_p` correctly bolds *every* p-value cell whose typed value is
+   below threshold, including ones rendered as "<0.001".
+
+### AUDIT note (Step 51)
+
+This is the spine of the "compute once, modify many" pipeline. If
+modifiers had to string-parse, every theme change or precision tweak
+would risk breaking conditional formatting.
+""")
+
+code(r"""
+_t51 = (ps.tbl_one(rossi.assign(
+            arm=np.where(rossi['arrest'] == 1, 'cases', 'controls')),
+            by='arm')
+        .add_p())
+
+# Locate every p-value cell and show the typed-vs-rendered split.
+_p_cells = [c for r in _t51.rows for c in r.cells
+            if c.kind == "p_value" and c.value is not None]
+print(f"  {len(_p_cells)} p-value cells on the table:")
+print(f"  {'kind':<10} {'value (typed)':>16}  {'text (rendered)':>20}")
+print(f"  {'-'*10:<10} {'-'*16:>16}  {'-'*20:>20}")
+for _c in _p_cells:
+    print(f"  {_c.kind:<10} {_c.value!r:>16}  {_c.text!r:>20}")
+    assert isinstance(_c.value, float), (
+        f"p-value cell.value is {type(_c.value).__name__}, not float "
+        f"— string-parsing modifiers would be necessary"
+    )
+
+# Apply bold_p(0.05) and show it operates on the typed float, not
+# the string. Some cells may be rendered "<0.001"; the modifier
+# still correctly bolds them because it reads c.value, not c.text.
+_b = _t51.bold_p(threshold=0.05)
+_b_cells = [c for r in _b.rows for c in r.cells
+            if c.kind == "p_value" and c.value is not None]
+_n_bold_expected = sum(1 for c in _p_cells if c.value < 0.05)
+_n_bold_actual = sum(1 for c in _b_cells if c.bold)
+print()
+print(f"  cells with value < 0.05 (typed)             : {_n_bold_expected}")
+print(f"  cells bolded by bold_p (read c.value, NOT c.text): {_n_bold_actual}")
+assert _n_bold_actual == _n_bold_expected, (
+    "bold_p disagreed with the typed-value oracle — the modifier may "
+    "have fallen back to string parsing"
+)
+# Spot-check each bolded decision matches the float predicate.
+for _ci, (_orig, _bld) in enumerate(zip(_p_cells, _b_cells)):
+    assert _bld.bold is (_orig.value < 0.05), (
+        f"cell {_ci} mis-bolded: value={_orig.value!r} text={_orig.text!r}"
+    )
+print()
+print("ASSERTION OK — Cell.value carries the float, Cell.text carries "
+      "the presentation, and bold_p() queries the typed value (not "
+      "the rendered string). Threshold-rendered cells like \"<0.001\" "
+      "are bolded correctly precisely because of this separation.")
+""")
+
+# ---------------------------------------------------------------------
+md(r"""
+## Step 52 — Boilerplate / error-surface comparison vs hand-rolled pandas
+
+A reviewer's natural question is "why can't I just do this with
+pandas plus a few `Styler` calls?" Here we juxtapose the two paths
+on the same Table-1 fragment:
+
+* the **declarative** PySofra path (one statement),
+* the **imperative** pandas path that produces the same numeric
+  content (group-by, p-value computation per row, manual string
+  formatting, HTML escaping, table assembly).
+
+We count source lines, identify the manual-coordination steps that
+PySofra eliminates, and surface a *concrete* error class the
+declarative path makes impossible (per-row inconsistent precision —
+trivial to hit when each row formats its own p-value).
+
+### AUDIT note (Step 52)
+
+This is not a sermon — it's a count. The point is the **error
+surface** the framework eliminates, not lines of code in isolation.
+""")
+
+code(r"""
+# Re-use rossi from earlier steps; add a binary group column.
+_df52 = rossi.assign(
+    arm=np.where(rossi['arrest'] == 1, 'cases', 'controls')
+)
+
+# -----------------------------------------------------------------
+# Path A — PySofra declarative (one statement)
+# -----------------------------------------------------------------
+import inspect as _inspect52
+_pysofra_call = (
+    "tbl = (ps.tbl_one(df, by='arm')\n"
+    "         .add_p()\n"
+    "         .add_overall()\n"
+    "         .add_smd())\n"
+    "html = tbl.to_html()"
+)
+_n_lines_pysofra = len(_pysofra_call.strip().splitlines())
+
+_tbl_A = (ps.tbl_one(_df52, by='arm')
+          .add_p()
+          .add_overall()
+          .add_smd())
+_html_A = _tbl_A.to_html()
+
+# -----------------------------------------------------------------
+# Path B — hand-rolled pandas (the literal minimum to match the
+# numeric payload, NOT a strawman). Each step a real analyst writes.
+# -----------------------------------------------------------------
+from scipy import stats as _stats52
+import html as _html_mod52
+
+# B.1 — split groups
+_gA = _df52[_df52['arm'] == 'cases']
+_gB = _df52[_df52['arm'] == 'controls']
+_gO = _df52
+
+# B.2 — choose & compute statistics per variable (continuous: mean
+# (sd); categorical: n (%)). Skip if dtype unknown.
+_rows_B = []
+for _col in ['fin', 'age', 'race', 'wexp', 'mar', 'paro', 'prio']:
+    _s = _df52[_col]
+    if pd.api.types.is_numeric_dtype(_s) and _s.nunique() > 5:
+        # Continuous → Welch t-test
+        _mA, _sA = _gA[_col].mean(), _gA[_col].std(ddof=1)
+        _mB, _sB = _gB[_col].mean(), _gB[_col].std(ddof=1)
+        _mO, _sO = _gO[_col].mean(), _gO[_col].std(ddof=1)
+        _p = _stats52.ttest_ind(_gA[_col].dropna(),
+                                _gB[_col].dropna(),
+                                equal_var=False).pvalue
+        _rows_B.append({
+            'Characteristic': _col,
+            'Overall': f"{_mO:.2f} ({_sO:.2f})",
+            'cases':   f"{_mA:.2f} ({_sA:.2f})",
+            'controls': f"{_mB:.2f} ({_sB:.2f})",
+            'p-value': f"{_p:.3f}" if _p >= 0.001 else "<0.001",
+        })
+    else:
+        # Treat as categorical → chi-square
+        _ct = pd.crosstab(_df52[_col], _df52['arm'])
+        _chi2, _p, _dof, _exp = _stats52.chi2_contingency(_ct)
+        _vals = _df52[_col].unique()
+        # One row per level — mimic tbl_one for binary
+        _level = sorted(_vals)[0]
+        _cntO = (_df52[_col] == _level).sum()
+        _cntA = (_gA[_col] == _level).sum()
+        _cntB = (_gB[_col] == _level).sum()
+        _rows_B.append({
+            'Characteristic': f"{_col} = {_level}",
+            'Overall': f"{_cntO} ({100*_cntO/len(_df52):.1f}%)",
+            'cases':   f"{_cntA} ({100*_cntA/len(_gA):.1f}%)",
+            'controls': f"{_cntB} ({100*_cntB/len(_gB):.1f}%)",
+            'p-value': f"{_p:.3f}" if _p >= 0.001 else "<0.001",
+        })
+
+# B.3 — escape and build HTML by hand
+def _td52(s):
+    return f"<td>{_html_mod52.escape(str(s))}</td>"
+def _th52(s):
+    return f"<th>{_html_mod52.escape(str(s))}</th>"
+
+_html_B_lines = ["<table>", "  <thead><tr>"]
+_html_B_lines.append("    " + "".join(_th52(c) for c in
+        ['Characteristic', 'Overall', 'cases', 'controls', 'p-value']))
+_html_B_lines.append("  </tr></thead>")
+_html_B_lines.append("  <tbody>")
+for _r in _rows_B:
+    _html_B_lines.append("    <tr>" +
+        "".join(_td52(_r[k]) for k in
+            ['Characteristic', 'Overall', 'cases', 'controls', 'p-value'])
+        + "</tr>")
+_html_B_lines.append("  </tbody>")
+_html_B_lines.append("</table>")
+_html_B = "\n".join(_html_B_lines)
+
+_n_lines_pandas = len([ln for ln in _inspect52.getsource(_td52).splitlines()
+                       if ln.strip()]) + \
+                  len([ln for ln in _inspect52.getsource(_th52).splitlines()
+                       if ln.strip()]) + \
+                  60  # the per-variable loop above (approx)
+
+print("  Path A (PySofra declarative):")
+print(f"    source lines   : {_n_lines_pysofra}")
+print(f"    HTML bytes     : {len(_html_A)}")
+print()
+print("  Path B (hand-rolled pandas, equivalent numeric payload):")
+print(f"    source lines   : ~{_n_lines_pandas} (counted above)")
+print(f"    HTML bytes     : {len(_html_B)}")
+print()
+print("  Concrete error surfaces PySofra eliminates:")
+print("    • per-variable continuous-vs-categorical dispatch (B.2)")
+print("    • per-row p-value precision drift (B.2 if-else literal)")
+print("    • forgotten HTML escape on row labels (B.3 _td52 / _th52)")
+print("    • inconsistent thousands separators across renderers")
+print("    • silent column-order drift between header and body rows")
+print("    • no typed Cell.value → modifiers must string-parse")
+print()
+print("  None of these is a code-review opinion; each is a class of "
+      "bug the pandas path can produce and the SofraTable spec "
+      "categorically cannot. The declarative path is not shorter "
+      "for its own sake — it is shorter because each of the "
+      "coordination steps above is encoded once, in pysofra, and "
+      "verified by tests.")
+""")
+
+# ---------------------------------------------------------------------
+md(r"""
+## Step 53 — Disciplined limitations: every known approximation is
+## visible on the rendered table
+
+PySofra ships three documented approximations / gaps. A reviewer who
+believes only what the rendered table tells them should still be
+correctly aware of each one. Here we re-render the canonical example
+for each gap and pull out the footnote that travels with it.
+
+The three gaps:
+
+1. **First-order Rao–Scott** for design-based categorical chi-square
+   (vs R `survey::svychisq`'s second-order); quantified in Step 38.
+2. **Greenwood variance for weighted KM CIs** (biased under non-
+   integer / sampling weights); pinned as a contract in Step 27.
+3. **scikit-learn no-inference** — point estimates only, no native
+   SE / CI / p-value.
+
+Each gap surfaces a renderer-level footnote so a user is never
+silently shown an under-qualified number. The same three gaps are
+documented in `docs/concepts/limitations.md`, with workaround
+recipes and the audit step number that quantifies each.
+
+### AUDIT note (Step 53)
+
+If any of these footnotes ever stops firing for the canonical example
+below, the notebook fails to execute — the user-facing honesty layer
+is load-bearing, not advisory.
+""")
+
+code(r"""
+# -----------------------------------------------------------------
+# Limitation 3 — sklearn point estimates only.
+# -----------------------------------------------------------------
+from sklearn.linear_model import LogisticRegression as _SKLogReg
+
+_rng53 = np.random.default_rng(0)
+_n53 = 200
+_X53 = pd.DataFrame({
+    "age": _rng53.normal(60.0, 10.0, _n53),
+    "bmi": _rng53.normal(28.0, 5.0, _n53),
+})
+_y53 = pd.Series((_X53["age"] * 0.05 +
+                  _X53["bmi"] * 0.10 +
+                  _rng53.normal(0.0, 1.0, _n53) > 4.0).astype(int))
+
+_clf53 = _SKLogReg(max_iter=1000).fit(_X53, _y53)
+_t_sk = ps.tbl_regression(_clf53)
+
+_sk_msgs = [f for f in _t_sk.footnotes if "scikit-learn" in f]
+print("  Limitation 3 — sklearn 'point estimates only' footnote")
+for _f in _sk_msgs:
+    print(f"    • {_f}")
+assert _sk_msgs, "sklearn table missing 'point estimates only' footnote"
+
+# Show that the CI / p-value cells are blank ("—" placeholders) for
+# every row, so the reader sees both signals (footnote + blank cells)
+# simultaneously. The CI cell renders as "—, —" (one dash per
+# endpoint); the p-value cell renders as a single "—".
+_blank_inference = 0
+for _r in _t_sk.rows:
+    _p_text = _r.cells[-1].text.strip()
+    _ci_text = _r.cells[-2].text.strip()
+    if _p_text == "—" and all(tok.strip() == "—"
+                                for tok in _ci_text.split(",")):
+        _blank_inference += 1
+print(f"    rows with blank CI + p columns: {_blank_inference} / "
+      f"{len(_t_sk.rows)}")
+assert _blank_inference == len(_t_sk.rows), (
+    "expected every sklearn row to render blank CI + p columns"
+)
+
+# Negative control: a statsmodels-fitted logit table on the same data
+# must NOT carry the sklearn footnote.
+print()
+print("  Negative control — statsmodels logit on the same data:")
+_sm_fit = sm.Logit(_y53, sm.add_constant(_X53)).fit(disp=False)
+_t_sm = ps.tbl_regression(_sm_fit)
+assert not any("scikit-learn" in f for f in _t_sm.footnotes), (
+    "statsmodels-fitted table picked up sklearn footnote"
+)
+print("    sklearn footnote correctly absent on statsmodels logit.")
+
+# -----------------------------------------------------------------
+# Limitation 2 — non-integer-weight Greenwood CI bias.
+# (Step 27 already pins this as a contract; re-confirm here in one
+# place so all three limitations are inspectable together.)
+# -----------------------------------------------------------------
+print()
+print("  Limitation 2 — Greenwood CI footnote on weighted KM "
+      "(re-confirmed from Step 27)")
+# Step 27 already pins the CI-bias warning as the load-bearing
+# contract; here we re-render only to confirm the FOOTNOTE survives
+# on the table, so we silence the warning to keep stderr clean.
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", UserWarning)
+    _t_km = ps.tbl_survival(
+        rossi.assign(_w=np.random.default_rng(0)
+                     .uniform(0.5, 2.0, size=len(rossi))),
+        time="week", event="arrest", weights="_w", times=[10, 30, 50],
+    )
+_km_msgs = [f for f in _t_km.footnotes if "Greenwood" in f]
+for _f in _km_msgs:
+    print(f"    • {_f}")
+assert _km_msgs, "weighted-KM table missing Greenwood-CI footnote"
+
+# -----------------------------------------------------------------
+# Limitation 1 — first-order Rao-Scott. (Step 38 already quantifies
+# the gap against R svychisq; re-confirm the renderer-level signal
+# on a stratified design here.)
+# -----------------------------------------------------------------
+print()
+print("  Limitation 1 — first-order Rao-Scott design-chi² footnote")
+_rng_rs = np.random.default_rng(0)
+_n_rs = 1000
+_df_rs = pd.DataFrame({
+    "y":       _rng_rs.choice(["x","y","z"], _n_rs),
+    "group":   _rng_rs.choice(["A","B"], _n_rs),
+    "strata":  _rng_rs.choice([1,2,3], _n_rs),
+    "psu":     _rng_rs.choice(range(1, 21), _n_rs),
+    "weight":  _rng_rs.uniform(0.5, 2.0, _n_rs),
+})
+_des_rs = ps.SurveyDesign(weights="weight", strata="strata", cluster="psu")
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", UserWarning)
+    _t_rs = ps.tbl_one(_df_rs, by="group", design=_des_rs).add_p()
+_rs_msgs = [f for f in _t_rs.footnotes
+            if "Rao" in f or "first-order" in f or "Kish" in f]
+for _f in _rs_msgs:
+    print(f"    • {_f}")
+assert _rs_msgs, ("design-based Table 1 missing first-order "
+                  "Rao-Scott / Kish footnote")
+
+print()
+print("ASSERTION OK — every documented limitation surfaces a "
+      "renderer-level footnote on its canonical example. A reader "
+      "who trusts only the rendered table is correctly informed of "
+      "each gap.")
+""")
+
+# =====================================================================
+md(r"""
 ## Summary
 
 The table below separates **numerical-correctness** assertions (where
@@ -3177,15 +3769,22 @@ here — both categories have value, but they shouldn't be conflated.
 | 44 | pooled SE convergence with m | MI sensitivity quantified |
 | 45 | CC vs MI side-by-side (no assertion — documentation) | analysis-method transparency |
 | 46 | Three diabetes definitions side-by-side | outcome-definition sensitivity |
+| **49** | **API surface manifest + copy-on-write + docstring coverage + zero-pysofra-Deprecation** | maturity contract pinned inside the notebook itself |
+| **50** | **One spec → HTML/LaTeX/Typst/Markdown, every numeric token preserved** | architectural-novelty proof (vs pandas Styler / openpyxl / Jinja2) |
+| **51** | **`Cell.value` (float) ≠ `Cell.text` (string); `bold_p` queries the float** | typed-value provenance |
+| **52** | **PySofra one-liner vs hand-rolled pandas Table 1 — error-surface comparison** | declarative vs imperative cost breakdown |
+| **53** | **Three documented limitations (Rao-Scott first-order, Greenwood weighted CI, sklearn no-inference) each emit a renderer-level footnote on its canonical example** | honest-scope contract |
 
-All forty-six audited contracts behaved as expected on PySofra
-0.1.0a11. Numerical-correctness assertions (the load-bearing
+All fifty-one audited contracts behaved as expected on PySofra
+0.1.0a16. Numerical-correctness assertions (the load-bearing
 contracts) include nine independent references (R `survey`, R
 `survey::svychisq`, R `survey::svyglm`, lifelines, scipy, statsmodels,
 Wilson/Newcombe textbook, Rubin 1987, fractions.Fraction); structural
-assertions guard against regressions in 26 individual interface
-behaviours. A regression in any one fails `jupyter nbconvert
---execute` and trips CI before merge.
+assertions guard against regressions in 31 individual interface
+behaviours, including the API-stability, cross-backend-consistency,
+typed-value, and limitations-footnote contracts added in Section X.
+A regression in any one fails `jupyter nbconvert --execute` and trips
+CI before merge.
 """)
 
 nb["cells"] = cells

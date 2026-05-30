@@ -5,6 +5,64 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0a16] — 2026-05-29
+
+### Added — API maturity contract
+- **`tests/test_api_stability.py`** now pins four behavioural
+  guarantees on top of the existing structural snapshot: builders
+  return `SofraTable` (`tbl_one`, `tbl_summary`, `tbl_cross`);
+  every chainable modifier is copy-on-write (returns a *new*
+  `SofraTable`, never `self` and never `None`); every public top-
+  level name and every public `SofraTable` method carries a non-empty
+  docstring; and a representative end-to-end build emits no
+  `DeprecationWarning` or `PendingDeprecationWarning` whose source
+  frame is inside `pysofra`. 17 API-stability tests total.
+- **`docs/concepts/stability.md`** — written API stability &
+  deprecation policy, including the post-1.0 three-release
+  soft-deprecation → hard-deprecation → removal ladder.
+
+### Added — cross-backend novelty proof
+- **`tests/test_cross_backend_consistency.py`** — pins the "compute
+  once, render many" architectural claim: every numeric token in the
+  spec appears in every text backend's rendered output (HTML, LaTeX,
+  Typst, Markdown); `Cell.value` (the typed payload) is preserved
+  across repeated rendering; `bold_p()` reads the typed float, not
+  the rendered string, so threshold-rendered cells like "<0.001" are
+  still bolded correctly.
+
+### Added — honest limitations
+- `tbl_regression()` now attaches an explicit footnote when a
+  scikit-learn estimator is the source fitter, naming the source
+  family and stating "point estimates only — the source fitter does
+  not expose standard errors, confidence intervals, or p-values".
+  Implemented as a new `ModelSummary.inference_unavailable` field set
+  by the sklearn extractor and surfaced in both the single-model and
+  multi-model paths of `tbl_regression`.
+- **`docs/concepts/limitations.md`** — consolidated "Scope & known
+  limitations" page listing the three documented gaps
+  (first-order Rao–Scott, Greenwood weighted CI, sklearn no-inference)
+  with the user-visible signal, the recommended workaround, and the
+  audit step that quantifies each.
+
+### Notebook
+- New **Section X — Maturity contracts**, Steps 49–53:
+  - Step 49 pins the public-API manifest, copy-on-write contract,
+    docstring coverage, and zero-pysofra-deprecation guarantee
+    inside the notebook itself (the case study is its own
+    reproducibility artefact).
+  - Step 50 renders one `SofraTable` to HTML/LaTeX/Typst/Markdown
+    and asserts every spec-derived numeric token is preserved in
+    every backend.
+  - Step 51 demonstrates typed-value provenance: `Cell.value`
+    (float) vs `Cell.text` (string); `bold_p` queries the float.
+  - Step 52 juxtaposes the PySofra one-liner against an equivalent
+    hand-rolled pandas Table-1 and enumerates the concrete error
+    classes the declarative path eliminates.
+  - Step 53 re-renders the canonical example for each of the three
+    documented limitations and asserts each one surfaces its
+    renderer-level footnote.
+- Summary table updated to 51 contracts.
+
 ## [0.1.0a15] — 2026-05-28
 
 ### Fixed — honest confidence intervals for weighted survival

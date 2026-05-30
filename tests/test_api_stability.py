@@ -209,3 +209,146 @@ def test_sofratable_to_image_signature_stable():
     """The PNG renderer's public kwargs are part of the documented public API."""
     actual = tuple(p[0] for p in _params(SofraTable.to_image))
     assert actual == ("self", "path", "scale", "dpi")
+
+
+# ----------------------------------------------------------------------
+# Behavioural contracts on top of the structural snapshot.
+#
+# These guarantees are part of the *user-visible* maturity contract:
+#
+# * builders construct SofraTable instances (not bare dicts / Styler /
+#   strings), so downstream renderers and modifier chains always have a
+#   uniform target;
+# * every modifier method is copy-on-write — it returns a NEW
+#   SofraTable, never ``self`` and never ``None`` — so chained
+#   pipelines cannot silently mutate an earlier result;
+# * every public symbol carries a docstring (so ``help(...)`` and the
+#   docs site never have to apologise for an empty entry);
+# * a representative end-to-end build emits no DeprecationWarning or
+#   PendingDeprecationWarning whose source frame is inside the pysofra
+#   package — i.e. nothing the user calls today is on a quiet
+#   removal timer.
+# ----------------------------------------------------------------------
+import warnings  # noqa: E402
+
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+
+
+def _toy_frame(n: int = 80) -> pd.DataFrame:
+    rng = np.random.default_rng(2026)
+    return pd.DataFrame({
+        "arm": rng.choice(["A", "B"], n),
+        "age": rng.normal(45.0, 12.0, n),
+        "sex": rng.choice(["M", "F"], n),
+    })
+
+
+def test_tbl_one_returns_sofratable():
+    """``tbl_one`` returns a SofraTable, not a Styler / DataFrame / str."""
+    t = ps.tbl_one(_toy_frame(), by="arm")
+    assert isinstance(t, SofraTable)
+
+
+def test_tbl_summary_returns_sofratable():
+    t = ps.tbl_summary(_toy_frame())
+    assert isinstance(t, SofraTable)
+
+
+def test_tbl_cross_returns_sofratable():
+    t = ps.tbl_cross(_toy_frame(), row="sex", column="arm")
+    assert isinstance(t, SofraTable)
+
+
+# Modifiers we exercise. Each takes a built table and (no args) should
+# return a *new* SofraTable. We pick the ones that work without extra
+# inputs; the rest are signature-locked above.
+_COPY_ON_WRITE_MODIFIERS: tuple[str, ...] = (
+    "add_p",
+    "add_overall",
+    "add_smd",
+    "add_n",
+    "add_stat_label",
+    "add_significance_stars",
+    "bold_p",
+    "autofit",
+)
+
+
+def test_modifiers_are_copy_on_write():
+    """Every chainable modifier must return a NEW SofraTable.
+
+    The immutability contract is the spine of PySofra's pipeline model —
+    if any modifier ever returned ``self`` or ``None`` it would silently
+    break user code that relies on ``t2 = t.add_p()`` leaving ``t``
+    untouched.
+    """
+    base = ps.tbl_one(_toy_frame(), by="arm")
+    for name in _COPY_ON_WRITE_MODIFIERS:
+        method = getattr(base, name)
+        out = method()
+        assert out is not None, f"{name}() returned None"
+        assert isinstance(out, SofraTable), (
+            f"{name}() returned {type(out).__name__}, not SofraTable"
+        )
+        assert out is not base, (
+            f"{name}() returned ``self`` — modifiers must be "
+            f"copy-on-write so chained pipelines don't mutate earlier "
+            f"results"
+        )
+
+
+def test_public_top_level_symbols_have_docstrings():
+    """Every public top-level name documents itself.
+
+    Empty docstrings on the public API are a maturity smell — they show
+    up in ``help(ps.tbl_one)`` and in the rendered docs site as
+    apologetic blanks. Pin them as non-empty here.
+    """
+    blanks = [n for n in EXPECTED_PUBLIC_NAMES
+              if not (getattr(ps, n).__doc__ or "").strip()]
+    assert not blanks, f"public symbols missing docstrings: {blanks}"
+
+
+def test_sofratable_public_methods_have_docstrings():
+    """Every public SofraTable method documents itself."""
+    blanks = [m for m in EXPECTED_SOFRATABLE_METHODS
+              if not (getattr(SofraTable, m).__doc__ or "").strip()]
+    assert not blanks, (
+        f"SofraTable public methods missing docstrings: {blanks}"
+    )
+
+
+def test_representative_build_emits_no_pysofra_deprecation():
+    """A representative end-to-end build emits no DeprecationWarning
+    (or PendingDeprecationWarning) whose source is inside the pysofra
+    package.
+
+    We filter on filename so that any deprecation from upstream
+    libraries (pandas, numpy, statsmodels) — which we cannot control —
+    does not fail this contract. The check is: *nothing the user calls
+    in pysofra today is on a quiet removal timer.*
+    """
+    df = _toy_frame()
+    with warnings.catch_warnings(record=True) as ws:
+        warnings.simplefilter("always")
+        t = (ps.tbl_one(df, by="arm")
+             .add_p()
+             .add_overall()
+             .add_smd())
+        # Exercise every text-renderer once.
+        _ = t.to_html()
+        _ = t.to_markdown()
+        _ = t.to_latex()
+    pysofra_deps = [
+        w for w in ws
+        if issubclass(w.category, (DeprecationWarning,
+                                   PendingDeprecationWarning))
+        and "pysofra" in (w.filename or "")
+    ]
+    assert not pysofra_deps, (
+        "pysofra-originated deprecation warning(s) on representative "
+        "build:\n  "
+        + "\n  ".join(f"{w.category.__name__} {w.filename}: "
+                       f"{w.message}" for w in pysofra_deps)
+    )

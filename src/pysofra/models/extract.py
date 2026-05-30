@@ -50,6 +50,14 @@ class ModelSummary:
     nudged to refit with stratification or time-varying terms before
     publishing a Cox-PH HR that doesn't satisfy the model's central
     assumption.
+
+    ``inference_unavailable`` is set when the source fitter exposes
+    point estimates only — sklearn estimators are the canonical case:
+    ``.coef_`` exists but the package does not natively expose
+    standard errors, confidence intervals, or p-values. The renderer
+    surfaces a footnote so the reader is not silently shown a
+    regression-shaped table with blank CI / p-value columns and left
+    to guess why.
     """
 
     estimates: pd.Series
@@ -62,6 +70,7 @@ class ModelSummary:
     df_resid: float | None = None
     separation_suspected: bool = False
     ph_violations: tuple[str, ...] = ()
+    inference_unavailable: bool = False
 
 
 # Thresholds for detecting non-identification / separation.
@@ -409,4 +418,5 @@ def _extract_sklearn(model: Any) -> ModelSummary:
         pvalues=nan.copy(),
         family=family,
         natural_exponentiate=natural_exp,
+        inference_unavailable=True,
     )

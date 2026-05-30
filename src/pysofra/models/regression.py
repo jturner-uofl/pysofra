@@ -210,6 +210,20 @@ def _build_single(
             "penalised method (e.g. Firth logistic) or drop the "
             "offending term."
         )
+    if getattr(summary, "inference_unavailable", False):
+        # sklearn-class fitters expose .coef_ but no native SE / CI /
+        # p-value. We render point estimates and leave the inferential
+        # columns blank; the footnote tells the reader why so they do
+        # not read missing CIs as "the CI is too wide to display" and
+        # do not silently publish a regression-shaped table without
+        # inference.
+        footnotes.append(
+            f"{summary.family} (scikit-learn): point estimates only — "
+            "the source fitter does not expose standard errors, "
+            "confidence intervals, or p-values. For inferential output "
+            "on the same model, refit with statsmodels "
+            "(e.g. sm.Logit, sm.GLM)."
+        )
     ph_violations = getattr(summary, "ph_violations", ()) or ()
     if ph_violations:
         # Cox PH assumption violation. The HR is a single-number summary
@@ -332,6 +346,15 @@ def _build_multi(
     for s, e, ml in zip(summaries, exp_per, model_labels, strict=True):
         footnotes.append(f"{ml}: {s.family}{' (exponentiated)' if e else ''}.")
     footnotes.append(f"CI = {int(round(conf_level * 100))}% confidence interval.")
+    # Surface the sklearn-class "point estimates only" caveat per-model
+    # in the multi-model rendering (see the single-model branch above).
+    for s, ml in zip(summaries, model_labels, strict=True):
+        if getattr(s, "inference_unavailable", False):
+            footnotes.append(
+                f"{ml} ({s.family}, scikit-learn): point estimates "
+                "only — the source fitter does not expose standard "
+                "errors, confidence intervals, or p-values."
+            )
 
     return SofraTable(
         rows=tuple(rows),
