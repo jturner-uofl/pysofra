@@ -159,6 +159,14 @@ def tbl_one(
                 "Negative weights are not supported; drop or correct them "
                 "before calling tbl_one()."
             )
+        n_nan = int(w_col.isna().sum())
+        if n_nan > 0:
+            raise ValueError(
+                f"weights column {weights!r} contains {n_nan} NaN value(s). "
+                "Drop or impute missing weights before calling tbl_one(). "
+                "(Use data.dropna(subset=[weights_col]) or fill with a "
+                "suitable value first.)"
+            )
         total = float(w_col.fillna(0.0).sum())
         if total <= 0:
             raise ValueError(
@@ -454,6 +462,12 @@ def _build(data: pd.DataFrame, spec: TableSpec) -> SofraTable:
         footnotes.append("n (%) for categorical variables.")
     if show_p and test_names:
         footnotes.append("Tests: " + "; ".join(sorted(test_names)) + ".")
+        if "Rao–Scott chi-square" in test_names:
+            footnotes.append(
+                "Rao–Scott chi-square: first-order Kish-DEFF approximation; "
+                "may disagree with R survey::svychisq (second-order) by 10–15 % "
+                "or more under complex designs with strong intra-cluster correlation."
+            )
     if show_q:
         footnotes.append(f"q-value = {_q_method_label(q_method)} adjusted p-value.")
     if show_smd:
