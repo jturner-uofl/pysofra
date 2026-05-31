@@ -94,16 +94,19 @@ def tbl_one(
         ``{'age': 'wilcoxon', 'race': 'fisher'}``. See
         :func:`pysofra.summary.tests.available_tests` for the registry.
     weights
-        Column name carrying non-negative frequency weights. When
-        supplied, continuous summaries become weighted means / variances
-        and categorical summaries become weighted proportions. The
-        weights column is excluded from the variable list automatically.
+        Column name carrying non-negative sampling weights (integer
+        counts, inverse-probability weights, or raking weights).
+        When supplied, continuous summaries become weighted means /
+        SDs and categorical summaries become weighted proportions.
+        The variance formula matches R's ``Hmisc::wtd.var`` (same as
+        gtsummary). The weights column is excluded from the variable
+        list automatically.
     design
         A :class:`SurveyDesign` describing a complex sampling structure
         (weights + optional strata, clusters, and FPC). When provided,
-        variance estimates use Taylor linearisation instead of the
-        simple frequency-weighted formula. If both ``weights`` and
-        ``design`` are passed, ``design`` wins.
+        variance estimates use Taylor linearisation for design-correct
+        standard errors. If both ``weights`` and ``design`` are passed,
+        ``design`` wins.
     digits
         Decimal places for continuous summaries.
     pct_digits

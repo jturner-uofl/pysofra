@@ -112,7 +112,8 @@ def rake(
     data: pd.DataFrame,
     base_weights: pd.Series | str,
     *,
-    margins: Mapping[str, Mapping[object, float]],
+    margins: Mapping[str, Mapping[object, float]] | None = None,
+    targets: Mapping[str, Mapping[object, float]] | None = None,
     max_iter: int = 50,
     tol: float = 1e-6,
 ) -> pd.Series:
@@ -128,6 +129,10 @@ def rake(
         Mapping of *variable → {level: target_total}*. Each variable's
         targets are summed during one iteration; the algorithm cycles
         through the variables until the weights stabilise.
+    targets
+        Alias for ``margins`` — accepted to match the naming convention
+        used by R's raking functions. Exactly one of ``margins`` or
+        ``targets`` must be supplied.
     max_iter
         Maximum number of full sweeps over ``margins``.
     tol
@@ -139,6 +144,20 @@ def rake(
     pandas.Series
         Calibrated weights aligned to ``data.index``.
     """
+    # Resolve margins / targets alias
+    if margins is not None and targets is not None:
+        raise ValueError(
+            "rake() received both margins= and targets=. "
+            "They are aliases — pass only one."
+        )
+    if margins is None and targets is None:
+        raise ValueError(
+            "rake() requires either margins= or targets= "
+            "(a mapping of variable → {level: population_total})."
+        )
+    if margins is None:
+        margins = targets  # type: ignore[assignment]
+
     if isinstance(base_weights, str):
         w = pd.to_numeric(data[base_weights], errors="coerce").astype(float)
     else:
