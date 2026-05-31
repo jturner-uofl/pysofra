@@ -492,6 +492,20 @@ class SurveyGLMResults:
             self.df_resid = float(df_design) - (k - 1)
         else:
             self.df_resid = float("inf")
+        if np.isfinite(self.df_resid) and self.df_resid <= 0:
+            import warnings as _w
+            _w.warn(
+                f"Degenerate survey design: df_resid = {self.df_resid:.0f} "
+                f"(df_design={df_design:.0f}, k={k}). "
+                "This happens when the number of PSUs equals or is fewer "
+                "than the number of strata plus model parameters. "
+                "Standard errors will be zero or undefined and confidence "
+                "intervals will not be meaningful. "
+                "Consider combining strata, reducing model complexity, or "
+                "using a replicate-weight variance estimator.",
+                UserWarning,
+                stacklevel=3,
+            )
         self.bse = pd.Series(np.sqrt(np.diag(self._vcov)), index=idx)
 
     def conf_int(self, alpha: float = 0.05) -> Any:

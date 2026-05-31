@@ -1067,6 +1067,17 @@ class SofraTable:
                     "(``tbl_merge`` / ``tbl_stack``) — neither path carries "
                     "a re-runnable spec"
                 )
+            elif self._spec.builder == "tbl_uvregression":
+                raise NotImplementedError(
+                    "tbl_uvregression bakes p-values and confidence intervals "
+                    "into the table at build time — there is nothing to "
+                    "recompute with add_p(). To change the confidence level "
+                    "or p-value format, pass conf_level= and digits= at "
+                    "construction: ps.tbl_uvregression(..., conf_level=0.90). "
+                    "Presentational modifiers (theme, set_caption, "
+                    "with_footnotes, bold_p, etc.) and renderers work as "
+                    "usual."
+                )
             elif self._spec.builder == "tbl_cross":  # pragma: no cover — tbl_cross now carries _rebuild; reachable only on an unpickled tbl_cross (rebuild closure stripped)
                 cause = (
                     "an unpickled ``tbl_cross`` table — the recomputation "

@@ -323,16 +323,20 @@ class TestRegressionDataListSuccess:
         # Use POSITIVE weights — _refit_with_design now rejects
         # non-positive / non-finite weights with a ValueError (matching
         # the tbl_one(weights=) policy).
+        # Use 10 PSU levels so df_resid = 10-1-(2-1) = 8 — non-degenerate.
+        # (2 levels produced df_resid=0 and triggered the degenerate-design
+        # UserWarning; that path is tested in test_survey_degenerate_design.)
+        clusters = [f"psu{i:02d}" for i in range(10)]
         df1 = pd.DataFrame({
             "x": rng.normal(size=n),
             "w": rng.uniform(0.5, 2.0, size=n),
-            "g": rng.choice(["a", "b"], n),
+            "g": [clusters[i % 10] for i in range(n)],
         })
         df1["y"] = df1["x"] + rng.normal(size=n)
         df2 = pd.DataFrame({
             "x": rng.normal(size=n),
             "w": rng.uniform(0.5, 2.0, size=n),
-            "g": rng.choice(["a", "b"], n),
+            "g": [clusters[i % 10] for i in range(n)],
         })
         df2["y"] = 2 * df2["x"] + rng.normal(size=n)
         m1 = sm.OLS(df1["y"], sm.add_constant(df1["x"])).fit()
@@ -341,6 +345,40 @@ class TestRegressionDataListSuccess:
         t = ps.tbl_regression([m1, m2], data=[df1, df2], design=d,
                               model_labels=["m1", "m2"])
         assert len(t.rows) >= 1
+
+
+class TestSurveyDegenerateDesign:
+    """When df_resid ≤ 0 a UserWarning must fire naming the degenerate DF."""
+
+    def test_degenerate_df_resid_warns(self):
+        sm_api = pytest.importorskip("statsmodels.api")
+        import statsmodels.formula.api as smf
+        from pysofra.models.regression import _refit_with_design
+
+        # 2 PSUs, 2 strata → df_design = 0 → df_resid = -1 with k=2.
+        # Use 20 rows (10 per cluster) with genuine variance so statsmodels
+        # fits without triggering PerfectSeparationWarning.
+        rng = np.random.default_rng(999)
+        n_per_cluster = 10
+        df = pd.DataFrame({
+            "y":       np.concatenate([rng.normal(0, 1, n_per_cluster),
+                                       rng.normal(0, 1, n_per_cluster)]),
+            "x1":      np.concatenate([rng.normal(0, 1, n_per_cluster),
+                                       rng.normal(0, 1, n_per_cluster)]),
+            "stratum": np.repeat([1, 2], n_per_cluster),
+            "cluster": np.repeat([0, 1], n_per_cluster),
+            "w":       np.ones(2 * n_per_cluster),
+        })
+        design = ps.SurveyDesign(weights="w", strata="stratum", cluster="cluster")
+        fit = smf.glm("y ~ x1", data=df,
+                      family=sm_api.families.Gaussian()).fit()
+
+        with pytest.warns(UserWarning, match="[Dd]egenerate"):
+            surv = _refit_with_design(fit, design=design, data=df)
+
+        assert surv.df_resid < 0, (
+            "Expected negative df_resid for 2-PSU / 2-stratum design"
+        )
 
 
 # ----------------------------------------------------------------------
