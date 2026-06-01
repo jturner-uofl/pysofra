@@ -283,6 +283,120 @@ for (var in c("BMXBMI", "BPXSY1", "INDFMPIR")) {
 }
 
 # ----------------------------------------------------------------------
+# Table-1 per-group cell statistics for gtsummary::tbl_svysummary parity.
+#
+# For each continuous variable we compute, within each diabetes group:
+#   mean  = Σ w_i x_i / Σ w_i            (same as svymean)
+#   sd    = sqrt( Σ w_i (x_i - mean)² / (Σ w_i - 1) )
+#              ≡ Hmisc::wtd.var(normwt=FALSE) — the formula PySofra uses
+#              ≈ sqrt(svyvar) within 0.02% on NHANES
+#   n_eff = Σ w_i   (effective sample size in that group × variable)
+#
+# For each categorical variable we compute weighted proportions per level
+# per group — equivalent to what gtsummary::tbl_svysummary({p}) reports.
+#
+# These values are the ground truth for notebook Step 41.
+# ----------------------------------------------------------------------
+
+# Continuous: age, bmi, sbp — for diabetes=0 and diabetes=1
+cont_r_col  <- c(age = "RIDAGEYR", bmi = "BMXBMI", sbp = "BPXSY1")
+tbl1_cont   <- list()
+for (py_name in names(cont_r_col)) {
+  r_col <- cont_r_col[[py_name]]
+  tbl1_cont[[py_name]] <- list()
+  for (grp in c(0, 1)) {
+    des_sub <- subset(des, diabetes == grp & !is.na(df[[r_col]]))
+    w <- weights(des_sub)
+    x <- des_sub$variables[[r_col]]
+    n_eff <- sum(w)
+    m     <- sum(w * x) / n_eff                        # = svymean
+    sd_w  <- sqrt(sum(w * (x - m)^2) / (n_eff - 1))   # = Hmisc::wtd.var
+    tbl1_cont[[py_name]][[paste0("grp", grp)]] <- list(
+      mean  = m,
+      sd    = sd_w,
+      n_eff = n_eff
+    )
+  }
+}
+
+# Categorical: sex, race, education, insured
+# Each level maps to one or more raw NHANES integer codes.
+cat_spec <- list(
+  sex = list(
+    r_col  = "RIAGENDR",
+    levels = list(Male = 1L, Female = 2L)
+  ),
+  race = list(
+    r_col  = "RIDRETH3",
+    levels = list(
+      "Mex-Am"         = 1L,
+      "Other-Hispanic" = 2L,
+      "NH-White"       = 3L,
+      "NH-Black"       = 4L,
+      "NH-Asian"       = 6L,
+      "Other/Multi"    = 7L
+    )
+  ),
+  education = list(
+    r_col  = "DMDEDUC2",
+    levels = list(
+      "<HS"          = c(1L, 2L),   # less than HS: codes 1 + 2 combined
+      "HS"           = 3L,
+      "Some-college" = 4L,
+      "College+"     = 5L
+    )
+  ),
+  insured = list(
+    r_col  = "HIQ011",
+    # Python: (HIQ011 == 1).astype(int) maps yes→1, no/refused/DK→0.
+    # Listing both levels here makes all_valid_codes = c(1,2,7,9) so the
+    # denominator matches Python's (all non-NaN HIQ011 rows).
+    levels = list("1" = 1L, "0" = c(2L, 7L, 9L))
+  )
+)
+
+tbl1_cat <- list()
+for (py_var in names(cat_spec)) {
+  spec  <- cat_spec[[py_var]]
+  r_col <- spec$r_col
+  # Valid codes = all codes that appear in at least one level definition.
+  # This matches Python's behaviour: rows whose code doesn't map to any
+  # level (e.g. refused=7, don't-know=9 for DMDEDUC2) become NaN in
+  # Python and are therefore excluded from both numerator and denominator.
+  all_valid_codes <- unique(unlist(spec$levels))
+  tbl1_cat[[py_var]] <- list()
+  for (grp in c(0, 1)) {
+    key <- paste0("grp", grp)
+    des_sub <- subset(des,
+                      diabetes == grp &
+                      !is.na(df[[r_col]]) &
+                      df[[r_col]] %in% all_valid_codes)
+    w       <- weights(des_sub)
+    x       <- des_sub$variables[[r_col]]
+    n_total <- sum(w)
+    tbl1_cat[[py_var]][[key]] <- list()
+    for (lbl in names(spec$levels)) {
+      vals   <- spec$levels[[lbl]]
+      n_lev  <- sum(w[x %in% vals])
+      tbl1_cat[[py_var]][[key]][[lbl]] <- list(
+        proportion = n_lev / n_total,
+        n_eff      = n_lev,
+        n_eff_tot  = n_total
+      )
+    }
+  }
+}
+
+cat("\n==== Table-1 per-group continuous stats (for Step 41) ====\n")
+for (py_name in names(tbl1_cont)) {
+  for (grp in c(0, 1)) {
+    g <- tbl1_cont[[py_name]][[paste0("grp", grp)]]
+    cat(sprintf("  %s grp%d: mean=%.6f  sd=%.6f  n_eff=%.1f\n",
+                py_name, grp, g$mean, g$sd, g$n_eff))
+  }
+}
+
+# ----------------------------------------------------------------------
 # Assemble + write the JSON.
 # ----------------------------------------------------------------------
 out <- list(
@@ -323,7 +437,9 @@ out <- list(
   ),
   svychisq_battery = chi_battery,
   svymean_battery  = mean_battery,
-  svyttest_battery = ttest_battery
+  svyttest_battery = ttest_battery,
+  tbl1_continuous  = tbl1_cont,
+  tbl1_categorical = tbl1_cat
 )
 
 writeLines(toJSON(out, pretty = TRUE, auto_unbox = TRUE, digits = NA),

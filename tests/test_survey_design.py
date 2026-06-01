@@ -129,13 +129,16 @@ class TestDesignMeanVar:
 
 
 class TestTblOneWithDesign:
-    def test_design_with_strata_shows_SE_footnote(self, survey_df):
+    def test_design_with_strata_shows_SD_footnote(self, survey_df):
+        # Descriptive Table 1 cells always show mean (SD) — matching
+        # gtsummary::tbl_svysummary convention — regardless of whether
+        # strata/cluster are present.  Design-based SE is used for
+        # p-values (svyttest), not for the descriptive display cell.
         design = ps.SurveyDesign(weights="w", strata="strata")
         t = ps.tbl_one(survey_df, by="arm", design=design)
-        assert any("design-based" in f for f in t.footnotes)
-        assert any("Mean (SE)" in f for f in t.footnotes)
+        assert any("Mean (SD)" in f for f in t.footnotes)
 
-    def test_weights_only_design_still_uses_SD_footnote(self, survey_df):
+    def test_weights_only_design_uses_SD_footnote(self, survey_df):
         design = ps.SurveyDesign(weights="w")  # no strata / cluster
         t = ps.tbl_one(survey_df, by="arm", design=design)
         assert any("Mean (SD)" in f for f in t.footnotes)

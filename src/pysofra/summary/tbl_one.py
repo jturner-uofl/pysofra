@@ -446,16 +446,7 @@ def _build(data: pd.DataFrame, spec: TableSpec) -> SofraTable:
     cont_vars = [v for v in variables if kinds[v] == "continuous"]
     nn_vars = [v for v in cont_vars if v in nonnormal]
     nm_vars = [v for v in cont_vars if v not in nonnormal]
-    design_with_variance = (
-        design is not None and weights_col is not None
-        and (design.strata is not None or design.cluster is not None)
-    )
-    if nm_vars and design_with_variance:
-        footnotes.append(
-            "Mean (SE) for continuous variables (design-based "
-            "Taylor-linearised variance)."
-        )
-    elif nm_vars:
+    if nm_vars:
         footnotes.append("Mean (SD) for continuous variables.")
     if nn_vars:
         labelled = ", ".join(labels.get(v, v) for v in nn_vars)
@@ -627,38 +618,12 @@ def _continuous_rows(
     """Produce 1 (+ optional missing) rows for one continuous variable."""
 
     def _summary_for(mask: pd.Series) -> str:
-        # Design-based: report mean (SE) when the user has opted into a
-        # complex design (strata or cluster). For weight-only designs we
-        # fall through to the frequency-weighted mean (SD) path below.
-        if design is not None and weights is not None and (
-            design.strata is not None
-            or design.cluster is not None
-            or design.replicate_weights is not None
-        ):
-            if design.replicate_weights is not None:
-                rep_series = [data.loc[mask, c] for c in design.replicate_weights]
-                mean, var_, n_eff = replicate_mean_var(
-                    data.loc[mask, var],
-                    weights.loc[mask],
-                    rep_series,
-                    replicate_type=design.replicate_type,
-                )
-            else:
-                mean, var_, n_eff = design_mean_var(
-                    data.loc[mask, var],
-                    weights.loc[mask],
-                    strata=(data.loc[mask, design.strata]
-                            if design.strata else None),
-                    cluster=(data.loc[mask, design.primary_cluster]
-                             if design.cluster else None),
-                    fpc=(data.loc[mask, design.fpc]
-                         if design.fpc else None),
-                )
-            if n_eff <= 0:
-                return "—"
-            import math
-            se = math.sqrt(max(var_, 0.0)) if not math.isnan(var_) else float("nan")
-            return fmt_mean_sd(mean, se, digits=digits)
+        # Descriptive Table 1 cells always show mean (SD) — this
+        # characterises the population distribution and matches
+        # gtsummary::tbl_svysummary convention regardless of whether a
+        # complex design (strata/cluster) is present.  The design-based
+        # Taylor-linearised SE is used only for p-values (svyttest),
+        # not for the descriptive cell.
         if weights is not None:
             st = weighted_continuous_stats(data.loc[mask, var], weights.loc[mask])
             if st.n_eff <= 0:
