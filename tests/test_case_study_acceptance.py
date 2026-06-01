@@ -454,7 +454,32 @@ class TestStep40Battery:
         assert "svymean (5 vars) AND svyttest (3 vars) agree" in text
 
 
-class TestStep41WeightControl:
+class TestStep41GtsummaryParity:
+    """Step 41 — gtsummary::tbl_svysummary parity on NHANES.
+
+    Weighted mean, SD, and proportions for the NHANES Table-1 variables
+    must agree with the R reference (computed via the Hmisc-compatible
+    formula) at floating-point machine precision (< 1e-9 relative error).
+    Observed: 3.26e-15 / 3.76e-15 / 4.57e-15.
+    """
+
+    def test_gtsummary_parity_mean_sd(self, executed_notebook):
+        cell = _cell_with(executed_notebook, "tbl1_continuous")
+        text = _stream_text(cell)
+        assert "ASSERTION OK — weighted mean and SD agree with R to" in text
+
+    def test_gtsummary_parity_proportions(self, executed_notebook):
+        cell = _cell_with(executed_notebook, "tbl1_continuous")
+        text = _stream_text(cell)
+        assert "ASSERTION OK — weighted proportions agree with R to" in text
+
+    def test_gtsummary_parity_step_complete(self, executed_notebook):
+        cell = _cell_with(executed_notebook, "tbl1_continuous")
+        text = _stream_text(cell)
+        assert "STEP 41 COMPLETE" in text
+
+
+class TestStep42WeightControl:
     def test_weight_responsiveness(self, executed_notebook):
         cell = _cell_with(executed_notebook, "WTINT2YR")
         text = _stream_text(cell)
@@ -462,7 +487,7 @@ class TestStep41WeightControl:
                 "estimates") in text
 
 
-class TestStep42FreqWeightsControl:
+class TestStep43FreqWeightsControl:
     def test_freq_weights_df_inflation(self, executed_notebook):
         cell = _cell_with(executed_notebook, "freq_weights=w_arr")
         text = _stream_text(cell)
@@ -470,21 +495,21 @@ class TestStep42FreqWeightsControl:
         assert "_refit_with_design uses var_weights" in text
 
 
-class TestStep43StrataControl:
+class TestStep44StrataControl:
     def test_strata_responsiveness(self, executed_notebook):
         cell = _cell_with(executed_notebook, "WRONG_STR")
         text = _stream_text(cell)
         assert "Strata wiring is responsive" in text
 
 
-class TestStep44PoolMConvergence:
+class TestStep45PoolMConvergence:
     def test_pool_m_sensitivity(self, executed_notebook):
         cell = _cell_with(executed_notebook, "pool_at_m")
         text = _stream_text(cell)
         assert "m-sensitivity quantified" in text
 
 
-class TestStep45CCvsMI:
+class TestStep46CCvsMI:
     def test_cc_mi_side_by_side(self, executed_notebook):
         cell = _cell_with(executed_notebook, "mi_betas")
         text = _stream_text(cell)
@@ -492,7 +517,7 @@ class TestStep45CCvsMI:
         assert "CC and MI estimates displayed side-by-side" in text
 
 
-class TestStep46AltOutcomes:
+class TestStep47AltOutcomes:
     def test_three_definitions_displayed(self, executed_notebook):
         cell = _cell_with(executed_notebook, "weighted_prev")
         text = _stream_text(cell)
@@ -501,8 +526,8 @@ class TestStep46AltOutcomes:
         assert "Self-report only" in text
 
 
-class TestStep47MCCoverage:
-    """Step 47 — Monte Carlo coverage simulation must run end-to-end and
+class TestStep48MCCoverage:
+    """Step 48 — Monte Carlo coverage simulation must run end-to-end and
     print empirical coverage for both x1 and x2 below the nominal level
     (the expected finding given the Step-39 SE gap). We don't assert a
     *specific* coverage number — it's a documentation step — but we do
@@ -519,7 +544,7 @@ class TestStep47MCCoverage:
         assert "x1" in text and "x2" in text
 
 
-class TestStep48CIAsymmetry:
+class TestStep49CIAsymmetry:
     def test_exponentiated_ci_asymmetric(self, executed_notebook):
         cell = _cell_with(executed_notebook, "manual exp")
         text = _stream_text(cell)
