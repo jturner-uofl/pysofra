@@ -46,7 +46,6 @@ jobs:
           jupyter nbconvert \
             --to html \
             --no-execute \
-            --template lab \
             examples/jss_case_study/jss_case_study.ipynb \
             --output-dir site/notebooks/ \
             --output jss_case_study.html
