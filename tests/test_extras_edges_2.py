@@ -353,6 +353,7 @@ class TestSurveyDegenerateDesign:
     def test_degenerate_df_resid_warns(self):
         sm_api = pytest.importorskip("statsmodels.api")
         import statsmodels.formula.api as smf
+
         from pysofra.models.regression import _refit_with_design
 
         # 2 PSUs, 2 strata → df_design = 0 → df_resid = -1 with k=2.

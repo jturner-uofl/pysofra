@@ -32,7 +32,7 @@ from ..core.format import (
 from ..core.frames import to_pandas
 from ..core.schema import Cell, HeaderCell, HeaderRow, Row, make_cell
 from ..core.table import SofraTable, TableSpec
-from .design import SurveyDesign, design_mean_var, replicate_mean_var
+from .design import SurveyDesign
 from .smd import categorical_smd, continuous_smd
 from .stats import continuous_stats
 from .tests import (
