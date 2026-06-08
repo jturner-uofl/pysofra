@@ -114,8 +114,8 @@ import pysofra as ps
 # counts no longer apply. An external auditor running this notebook
 # should see this assertion succeed silently; if it fails, install
 # the exact version with:
-#     pip install pysofra==0.1.0a17
-EXPECTED_PYSOFRA_VERSION = "0.1.0a17"
+#     pip install pysofra==0.1.0
+EXPECTED_PYSOFRA_VERSION = "0.1.0"
 assert ps.__version__ == EXPECTED_PYSOFRA_VERSION, (
     f"VERSION DRIFT — this notebook is pinned to pysofra "
     f"=={EXPECTED_PYSOFRA_VERSION}, but the installed version is "
@@ -3791,8 +3791,8 @@ here — both categories have value, but they shouldn't be conflated.
 | **52** | **PySofra one-liner vs hand-rolled pandas Table 1 — error-surface comparison** | declarative vs imperative cost breakdown |
 | **53** | **Three documented limitations (Rao-Scott first-order, Greenwood weighted CI, sklearn no-inference) each emit a renderer-level footnote on its canonical example** | honest-scope contract |
 
-All fifty-one audited contracts behaved as expected on PySofra
-0.1.0a17. Numerical-correctness assertions (the load-bearing
+All fifty-two audited contracts behaved as expected on PySofra
+0.1.0. Numerical-correctness assertions (the load-bearing
 contracts) include nine independent references (R `survey`, R
 `survey::svychisq`, R `survey::svyglm`, lifelines, scipy, statsmodels,
 Wilson/Newcombe textbook, Rubin 1987, fractions.Fraction); structural
@@ -3808,7 +3808,7 @@ CI before merge.
 # this notebook end-to-end should see exactly one line of output at
 # the bottom:
 #
-#   AUDIT COMPLETE — 51/51 contracts passed | pysofra 0.1.0a17 | <UTC>
+#   AUDIT COMPLETE — 52/52 contracts passed | pysofra 0.1.0 | <UTC>
 #
 # This cell prints that line. If any earlier assertion failed, Jupyter
 # halted on that cell and this one never executes — so the presence
@@ -3822,7 +3822,7 @@ md(r"""
 The cell below prints the canonical reviewer-facing success line:
 
 ```
-AUDIT COMPLETE — 51/51 contracts passed | pysofra <version> | <UTC>
+AUDIT COMPLETE — 52/52 contracts passed | pysofra <version> | <UTC>
 ```
 
 If you (the auditor) see that line, every numerical-correctness and
@@ -3842,10 +3842,10 @@ assert ps.__version__ == EXPECTED_PYSOFRA_VERSION, (
 )
 
 # Hard-coded contract count matches the Summary table at the end of
-# Section X. The "51" reflects: Steps 1–48 across Sections 0–IX plus
-# Steps 49–53 in Section X (maturity contracts). If you add or remove
+# Section X. The "52" reflects: Steps 1–49 across Sections 0–IX plus
+# Steps 50–54 in Section X (maturity contracts). If you add or remove
 # a contract step, update this constant *and* the Summary table.
-N_CONTRACTS = 51
+N_CONTRACTS = 52
 
 _now_utc = _dt_final.datetime.now(_dt_final.timezone.utc).strftime(
     "%Y-%m-%d %H:%M:%S UTC"

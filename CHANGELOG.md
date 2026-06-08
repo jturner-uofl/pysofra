@@ -5,6 +5,21 @@ All notable changes to PySofra will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0] — 2026-06-08
+
+First stable release.  All 1,036 tests pass on Python 3.11 and 3.12
+(Linux and macOS).  The NHANES 2017–18 validation notebook executes
+end-to-end with 52 passing numerical contracts against R `survey` and
+`gtsummary`.  API is considered stable; the public signature snapshot
+is pinned in `tests/test_api_stability.py`.
+
+### Added
+- Replication scripts for JSS paper Examples 4 (survey-weighted Table 1)
+  and 5 (multiple-imputation pooling): `paper/replication/survey_example.py`
+  and `paper/replication/mi_example.py`.
+
+---
+
 ## [0.1.0a17] — 2026-05-30
 
 ### Fixed — `tbl_one` correctness
