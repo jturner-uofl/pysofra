@@ -1,0 +1,48 @@
+{% extends "main.html" %}
+
+{% block tabs %}
+  {{ super() }}
+
+  {# Un-sticky the header so it scrolls away with the hero on the home page #}
+  <style>
+    .md-header    { position: initial }
+    .md-main__inner { margin-top: 0 }
+    .md-content__inner { padding-top: 1.5rem }
+    .md-content__inner > h1:first-child { display: none }
+    .md-main { background: var(--md-default-bg-color) }
+  </style>
+
+  <section class="pysofra-hero">
+    <div class="md-grid md-typeset">
+      <div class="pysofra-hero__inner">
+
+        <div class="pysofra-hero__content">
+          <h1>PySofra</h1>
+          <p class="pysofra-hero__tagline">
+            The missing statistical reporting layer for Python
+          </p>
+          <p class="pysofra-hero__claim">
+            Publication-ready tables from a single immutable object.<br>
+            Seven output formats. Validated at machine precision.
+          </p>
+          <a href="{{ 'quickstart/' | url }}" class="md-button md-button--primary">
+            Get started
+          </a>
+          <a href="https://github.com/jturner-uofl/pysofra" class="md-button pysofra-hero__btn-outline">
+            Source on GitHub
+          </a>
+        </div>
+
+        <div class="pysofra-hero__image">
+          <img
+            src="{{ 'assets/readme/table_one.png' | url }}"
+            alt="Baseline-characteristics Table 1 produced by PySofra"
+            draggable="false"
+          >
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+{% endblock %}

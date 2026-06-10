@@ -1,0 +1,139 @@
+/* ── Custom colour palette ─────────────────────────────────────────── */
+
+:root {
+  --md-primary-fg-color:        #7f1d1d;
+  --md-primary-fg-color--light: #991b1b;
+  --md-primary-fg-color--dark:  #5f1111;
+  --md-accent-fg-color:         #dc2626;
+  --md-accent-fg-color--transparent: rgba(220, 38, 38, .1);
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:        #c0392b;
+  --md-primary-fg-color--light: #e74c3c;
+  --md-primary-fg-color--dark:  #a93226;
+}
+
+/* ── Hero section ──────────────────────────────────────────────────── */
+
+.pysofra-hero {
+  background: linear-gradient(150deg, #7f1d1d 0%, #2d0000 100%);
+  padding: 3.5rem 0 4.5rem;
+  margin-top: -0.05rem; /* close any gap between tabs bar and hero */
+}
+
+.pysofra-hero .md-grid {
+  max-width: 1280px;
+}
+
+.pysofra-hero__inner {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  flex-wrap: wrap;
+}
+
+/* Text column */
+.pysofra-hero__content {
+  flex: 0 0 400px;
+  color: #fff;
+}
+
+.pysofra-hero__content h1 {
+  color: #fff !important;
+  font-size: 3.75rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin: 0 0 0.75rem;
+}
+
+.pysofra-hero__tagline {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95) !important;
+  margin: 0 0 0.5rem !important;
+}
+
+.pysofra-hero__claim {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.72) !important;
+  line-height: 1.65;
+  margin: 0 0 1.75rem !important;
+}
+
+/* Buttons */
+.pysofra-hero__content .md-button {
+  margin: 0 0.5rem 0.5rem 0;
+}
+
+.pysofra-hero__content .md-button--primary {
+  background-color: #fff !important;
+  color: #7f1d1d !important;
+  border-color: #fff !important;
+  font-weight: 700;
+}
+
+.pysofra-hero__content .md-button--primary:hover {
+  background-color: rgba(255, 255, 255, 0.88) !important;
+}
+
+.pysofra-hero__btn-outline {
+  color: #fff !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  background: transparent !important;
+}
+
+.pysofra-hero__btn-outline:hover {
+  border-color: #fff !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Screenshot column */
+.pysofra-hero__image {
+  flex: 1;
+  min-width: 260px;
+}
+
+.pysofra-hero__image img {
+  width: 100%;
+  max-width: 700px;
+  border-radius: 10px;
+  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.5);
+  display: block;
+}
+
+/* ── Feature cards ─────────────────────────────────────────────────── */
+
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid.cards > ol > li {
+  border-top: 3px solid var(--md-primary-fg-color);
+}
+
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid.cards > ol > li:hover {
+  border-top-color: var(--md-accent-fg-color);
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────── */
+
+@media screen and (max-width: 76.1875em) {
+  .pysofra-hero__inner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .pysofra-hero__content {
+    flex: 0 0 auto;
+  }
+
+  .pysofra-hero__content h1 {
+    font-size: 2.75rem;
+  }
+
+  .pysofra-hero__image {
+    width: 100%;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+}

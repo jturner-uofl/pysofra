@@ -1,5 +1,5 @@
 site_name: PySofra
-site_description: Statistical reporting and table preparation framework for Python.
+site_description: "Python equivalent of R's gtsummary and tableone. Publication-ready Table 1, regression, and survival analysis tables with survey weights, multiple imputation, and seven output formats."
 site_author: Jason Turner
 repo_url: https://github.com/jturner-uofl/pysofra
 repo_name: jturner-uofl/pysofra
@@ -7,31 +7,40 @@ copyright: Copyright &copy; 2026 Jason Turner — GPL-3.0-or-later
 
 theme:
   name: material
+  custom_dir: docs/overrides
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: indigo
-      accent: indigo
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-night
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: indigo
-      accent: indigo
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-sunny
         name: Switch to light mode
+  font:
+    text: Inter
+    code: JetBrains Mono
   features:
-    - content.code.copy
-    - content.code.annotate
+    - navigation.tabs
+    - navigation.tabs.sticky
     - navigation.instant
     - navigation.sections
     - navigation.top
+    - content.code.copy
+    - content.code.annotate
     - search.suggest
     - toc.integrate
   icon:
     repo: fontawesome/brands/github
+
+extra_css:
+  - stylesheets/extra.css
 
 nav:
   - Home: index.md

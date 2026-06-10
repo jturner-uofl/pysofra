@@ -14,14 +14,17 @@
 
 </div>
 
-PySofra is a statistical reporting framework for Python. It produces the
-table types standard in clinical and epidemiological manuscripts —
-baseline-characteristics tables (Table 1), regression summaries,
-Kaplan–Meier tables — from a single immutable object across seven output
-formats: HTML, Markdown, LaTeX, DOCX, PPTX, XLSX, and PNG.
+PySofra is the Python equivalent of R's `gtsummary` and `tableone`.
+It produces the table types standard in clinical and epidemiological
+manuscripts — baseline-characteristics tables (Table 1), regression
+summaries, Kaplan–Meier survival tables — from a single immutable object
+across seven output formats: HTML, Markdown, LaTeX, DOCX, PPTX, XLSX,
+and PNG.
 
-The R ecosystem has `gtsummary`, `tableone`, and `flextable`. Python did
-not — until now.
+Python researchers have long reached for `gtsummary`, `tableone`, and
+`flextable` in R for manuscript tables. PySofra brings that workflow
+natively to Python, with survey-weighted designs and multiple-imputation
+pooling built in.
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/jturner-uofl/pysofra/main/assets/readme/table_one.png"
