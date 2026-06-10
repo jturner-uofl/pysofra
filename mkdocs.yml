@@ -1,4 +1,5 @@
 site_name: PySofra
+site_url: https://jturner-uofl.github.io/pysofra/
 site_description: "Python equivalent of R's gtsummary and tableone. Publication-ready Table 1, regression, and survival analysis tables with survey weights, multiple imputation, and seven output formats."
 site_author: Jason Turner
 repo_url: https://github.com/jturner-uofl/pysofra
@@ -46,21 +47,21 @@ nav:
   - Home: index.md
   - Quickstart: quickstart.md
   - Guides:
-      - Table 1 (tbl_one): guides/tbl_one.md
-      - Summary (tbl_summary): guides/tbl_summary.md
-      - Regression (tbl_regression): guides/tbl_regression.md
-      - Survival (tbl_survival): guides/survival.md
-      - Survey weights: guides/weights.md
-      - Inline plots (forest, KM): guides/plots.md
-      - Composition (merge & stack): guides/composition.md
-      - Themes & styling: guides/themes.md
-      - Exports (HTML/MD/DOCX/LaTeX/PPTX/XLSX): guides/exports.md
+      - Baseline characteristics table (Table 1): guides/tbl_one.md
+      - Descriptive summary table: guides/tbl_summary.md
+      - Regression results table: guides/tbl_regression.md
+      - Survival analysis table (Kaplan–Meier): guides/survival.md
+      - Survey-weighted tables: guides/weights.md
+      - Forest plots and KM curves: guides/plots.md
+      - Merging and stacking tables: guides/composition.md
+      - Themes and styling: guides/themes.md
+      - Exporting tables (Word, LaTeX, HTML, Excel, PowerPoint): guides/exports.md
   - Concepts:
-      - SofraTable: concepts/sofratable.md
+      - SofraTable architecture: concepts/sofratable.md
       - Statistical tests: concepts/tests.md
-      - Validation: concepts/validation.md
-      - API stability & deprecation policy: concepts/stability.md
-      - Scope & known limitations: concepts/limitations.md
+      - Numerical validation: concepts/validation.md
+      - API stability and deprecation policy: concepts/stability.md
+      - Scope and known limitations: concepts/limitations.md
   - API Reference:
       - Builders: api/builders.md
       - Composition: api/composition.md

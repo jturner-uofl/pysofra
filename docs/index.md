@@ -1,6 +1,11 @@
 ---
 template: home.html
 title: PySofra — Publication-ready statistical tables for Python
+description: >
+  PySofra is the Python equivalent of R's gtsummary and tableone.
+  Create baseline characteristics tables (Table 1), regression tables,
+  and Kaplan–Meier survival tables for clinical manuscripts — with
+  survey weights, multiple imputation, and seven output formats.
 hide:
   - navigation
   - toc

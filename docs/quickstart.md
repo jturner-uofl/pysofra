@@ -1,3 +1,10 @@
+---
+description: >
+  Install PySofra and create your first Table 1, regression table, and
+  survival table in Python. The gtsummary-style workflow for clinical
+  and epidemiological manuscripts.
+---
+
 # Quickstart
 
 ## Install
