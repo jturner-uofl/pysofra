@@ -14,17 +14,21 @@
 
 </div>
 
-> R has `gtsummary`, `tableone`, and `flextable`. Python doesn't — or didn't.
-> PySofra turns datasets, fitted models, and summary statistics into
-> **publication-ready tables** across HTML · Markdown · LaTeX · DOCX ·
-> PPTX · XLSX · PNG from a single immutable object.
+PySofra is a statistical reporting framework for Python. It produces the
+table types standard in clinical and epidemiological manuscripts —
+baseline-characteristics tables (Table 1), regression summaries,
+Kaplan–Meier tables — from a single immutable object across seven output
+formats: HTML, Markdown, LaTeX, DOCX, PPTX, XLSX, and PNG.
+
+The R ecosystem has `gtsummary`, `tableone`, and `flextable`. Python did
+not — until now.
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/jturner-uofl/pysofra/main/assets/readme/table_one.png"
        alt="Baseline characteristics table by treatment arm — clinical theme, p-values, SMDs, Overall column"
        width="820">
   <br>
-  <sub><em>Baseline-characteristics Table 1, by treatment arm. JAMA theme. <strong>One call.</strong></em></sub>
+  <sub><em>Baseline-characteristics Table 1, stratified by treatment arm. Clinical theme. p-values, standardised mean differences, and an Overall column added as single-line modifiers.</em></sub>
 </div>
 
 ---
@@ -55,8 +59,9 @@ Nominal 95% CIs from survey-weighted logistic regression attain **94.2% and 93.8
 empirical coverage** in a 1,000-replicate Monte Carlo study with known truth.
 
 Every contract runs in CI on every push.
-[→ Read the full audit](https://jturner-uofl.github.io/pysofra/notebooks/jss_case_study.html) ·
-[→ Reproduce it yourself](AUDITOR.md)
+The [full audit notebook](https://jturner-uofl.github.io/pysofra/notebooks/jss_case_study.html)
+is pre-executed and readable without installing anything;
+see [AUDITOR.md](AUDITOR.md) for the single-command reproduction recipe.
 
 ---
 
@@ -129,17 +134,17 @@ pooled = ps.pool(fits)   # list of per-imputation model fits
 
 ## Why PySofra
 
-| | R ecosystem | PySofra | Python alternatives |
-|---|---|---|---|
-| **Table 1 (auto stats)** | `tableone`, `gtsummary` | ✅ | `tableone` (partial) |
-| **Regression table** | `gtsummary` | ✅ | — |
-| **Survival (KM) summary** | `gtsummary` | ✅ | — |
-| **Survey-weighted Table 1** | `gtsummary` + `survey` | ✅ | — |
-| **MI pooling built-in** | manual `mice` coordination | ✅ | — |
-| **Word + LaTeX + 5 more formats** | separate packages | ✅ | — |
-| **Byte-deterministic output** | — | ✅ | — |
-| **Safety diagnostics in table** | — | ✅ | — |
-| **Machine-precision validation** | — | ✅ | — |
+| Feature | R ecosystem | PySofra | Python alternatives |
+|---------|-------------|---------|---------------------|
+| Table 1 — baseline characteristics | `tableone`, `gtsummary` | Yes | `tableone` (partial) |
+| Regression table | `gtsummary` | Yes | — |
+| Survival (KM) summary | `gtsummary` | Yes | — |
+| Survey-weighted Table 1 | `gtsummary` + `survey` | Yes | — |
+| Multiple-imputation pooling | manual `mice` coordination | Yes | — |
+| Word + LaTeX + five more formats | separate packages | Yes | — |
+| Byte-deterministic output | — | Yes | — |
+| Safety diagnostics embedded in table | — | Yes | — |
+| Machine-precision numerical validation | — | Yes | — |
 
 **One immutable object, seven output formats.** Build a `SofraTable` once; render to
 HTML, Markdown, LaTeX, DOCX, PPTX, XLSX, or PNG. Output is byte-identical across
@@ -161,7 +166,7 @@ a console warning that disappears in batch output.
 
 ---
 
-## Outputs
+## Example outputs
 
 <table>
 <tr>
@@ -169,20 +174,20 @@ a console warning that disappears in batch output.
   <img src="https://raw.githubusercontent.com/jturner-uofl/pysofra/main/assets/readme/regression_forest.png"
        alt="Adjusted odds ratios with inline forest plot" width="100%">
   <br>
-  <sub><em>Adjusted ORs + inline forest plot</em><br><code>tbl_regression(fit).with_forest_plot()</code></sub>
+  <sub><em>Adjusted odds ratios with inline forest plot</em><br><code>tbl_regression(fit).with_forest_plot()</code></sub>
 </td>
 <td width="50%" valign="top" align="center">
   <img src="https://raw.githubusercontent.com/jturner-uofl/pysofra/main/assets/readme/survival_km.png"
-       alt="Kaplan–Meier survival table with embedded KM curve" width="100%">
+       alt="Kaplan–Meier survival table with embedded survival curve" width="100%">
   <br>
-  <sub><em>KM table + inline survival curve</em><br><code>tbl_survival(...).with_km_plot()</code></sub>
+  <sub><em>Kaplan–Meier table with embedded survival curve</em><br><code>tbl_survival(...).with_km_plot()</code></sub>
 </td>
 </tr>
 </table>
 
 ---
 
-## What's in the box
+## API overview
 
 **Builders**
 
@@ -272,21 +277,6 @@ Quality bar at this release:
 - **Byte-deterministic** renderer output — identical input → identical bytes, across
   processes, required for reproducible git-tracked manuscript artefacts
 - **mypy strict** · **ruff clean** · public signatures fully type-annotated
-
----
-
-## Independently verifying PySofra
-
-Reviewers, sceptics, and downstream users: see [**AUDITOR.md**](AUDITOR.md) for
-the single-command recipe that downloads NHANES from the CDC, runs the full
-54-step audit notebook, and prints:
-
-```
-AUDIT COMPLETE — 52/52 contracts passed | pysofra 0.1.0 | <UTC>
-```
-
-The [pre-executed notebook](https://jturner-uofl.github.io/pysofra/notebooks/jss_case_study.html)
-is available for read-only review without installing anything.
 
 ---
 
