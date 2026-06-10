@@ -1,17 +1,11 @@
-/* ── Custom colour palette ─────────────────────────────────────────── */
+/* ── Header / tabs: red bar ────────────────────────────────────────── */
 
-:root {
-  --md-primary-fg-color:        #7f1d1d;
-  --md-primary-fg-color--light: #991b1b;
-  --md-primary-fg-color--dark:  #5f1111;
-  --md-accent-fg-color:         #dc2626;
-  --md-accent-fg-color--transparent: rgba(220, 38, 38, .1);
+.md-header {
+  background-color: #7f1d1d;
 }
 
-[data-md-color-scheme="slate"] {
-  --md-primary-fg-color:        #c0392b;
-  --md-primary-fg-color--light: #e74c3c;
-  --md-primary-fg-color--dark:  #a93226;
+.md-tabs {
+  background-color: #6b1818;
 }
 
 /* ── Hero section ──────────────────────────────────────────────────── */
@@ -19,7 +13,7 @@
 .pysofra-hero {
   background: linear-gradient(150deg, #7f1d1d 0%, #2d0000 100%);
   padding: 3.5rem 0 4.5rem;
-  margin-top: -0.05rem; /* close any gap between tabs bar and hero */
+  margin-top: -0.05rem;
 }
 
 .pysofra-hero .md-grid {
@@ -101,18 +95,6 @@
   border-radius: 10px;
   box-shadow: 0 24px 72px rgba(0, 0, 0, 0.5);
   display: block;
-}
-
-/* ── Feature cards ─────────────────────────────────────────────────── */
-
-.md-typeset .grid.cards > ul > li,
-.md-typeset .grid.cards > ol > li {
-  border-top: 3px solid var(--md-primary-fg-color);
-}
-
-.md-typeset .grid.cards > ul > li:hover,
-.md-typeset .grid.cards > ol > li:hover {
-  border-top-color: var(--md-accent-fg-color);
 }
 
 /* ── Responsive ─────────────────────────────────────────────────────── */
